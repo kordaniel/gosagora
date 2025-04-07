@@ -2,5 +2,6 @@
 | Date | Hours | What |
 | ---- | ----: | ---- |
 | 2025.04.07 | 0 | Initialize repository |
-|Total | 0 | |
+| 2025.04.07 | 0.5 | Initialize backend |
+| Total | 0.5 | |
 
