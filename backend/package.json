@@ -4,7 +4,7 @@
   "description": "Backend for GosaGora Service",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ts-node-dev index.ts",
+    "dev": "cross-env NODE_ENV=development ts-node-dev src/index.ts",
     "lint": "eslint .",
     "start": "NODE_ENV=production node build/index.js",
     "tsc": "tsc",

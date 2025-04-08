@@ -1,0 +1,18 @@
+### POST invalid JSON
+
+POST http://localhost:3000/api/auth/does-not-exist
+Content-Type: application/json
+
+{
+  "foo": "bar",
+  "invalid:" "data",
+  "baz": 1337,
+  "obj": {
+    "yes": true,
+    "no": false
+  }
+}
+
+### Non-existing endpoint
+
+GET http://localhost:3000/api/auth/does-not-exist
