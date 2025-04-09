@@ -21,4 +21,5 @@ Make sure that all the required environment variables that are defined in the en
 ```bash
 npm run dev
 npm run tsc && npm run start
+npm run test
 ```

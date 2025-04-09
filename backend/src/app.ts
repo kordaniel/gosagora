@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/healthcheck', (_req, res) => {
-  res.send('ok');
+  res.sendStatus(200);
 });
 
 app.use(middleware.unknownEndpoint);

@@ -8,7 +8,6 @@ dotenv.config();
 const startupEnv: string | undefined = process.env.NODE_ENV;
 
 if (startupEnv) {
-  logger.infoAllEnvs('startup env:', startupEnv);
   dotenv.config({
     path: [`.env.${startupEnv}`],
   });
