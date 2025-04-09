@@ -10,12 +10,12 @@ npm install
 ```
 
 ### Setup environment
-The following environments are configured:
+The following environments are supported:
 - production
 - development
 - test
 
-Make sure that all the required environment variables that are defined in the envSchema of [config](https://github.com/kordaniel/gosagora/blob/main/backend/src/utils/config.ts) are set. You can define these in a [`.env.<ENVIRONMENT>`](https://github.com/kordaniel/gosagora/blob/main/backend/.env.example) file that is parsed at startup for the selected environment. This is the recommended way for development and test environments. For production environments please refer to your cloud providers instructions for howto setup the environment variables.
+Make sure that all the required environment variables that are defined in the envSchema of [config](https://github.com/kordaniel/gosagora/blob/main/backend/src/utils/config.ts) are set. You can define these in a [`.env.<ENVIRONMENT>`](https://github.com/kordaniel/gosagora/blob/main/backend/.env.example) file, where you substitute `<ENVIRONMENT>` for any of the supported environments. This is the recommended way for development and test environments. For production environments please refer to your cloud providers instructions for how to setup the environment variables in a secure way.
 
 ### Run
 ```bash
