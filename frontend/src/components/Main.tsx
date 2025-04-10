@@ -8,8 +8,7 @@ import StyledText from './StyledText';
 import { useAppTheme } from '../hooks/useAppTheme';
 
 const Main = () => {
-  const theme = useAppTheme();
-  const isDarkScheme = theme ? theme.isDarkScheme : true;
+  const { isDarkScheme, toggleScheme } = useAppTheme();
 
   const styleContainer = StyleSheet.flatten([
     styles.light.container,
@@ -27,8 +26,7 @@ const Main = () => {
       <StyledText>Welcome to GosaGora!</StyledText>
       <Button
         title={isDarkScheme ? "Toggle light theme" : "Toggle dark theme"}
-        disabled={!theme}
-        onPress={theme?.toggleScheme}
+        onPress={toggleScheme}
       />
       <StatusBar
         style={isDarkScheme ? "light" : "dark"}

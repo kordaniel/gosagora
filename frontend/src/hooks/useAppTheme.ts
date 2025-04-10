@@ -29,5 +29,9 @@ export const useTheme = () => {
 export const ThemeContext = createContext<ReturnType<typeof useTheme> | undefined>(undefined);
 
 export const useAppTheme = () => {
-  return useContext(ThemeContext);
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useAppTheme ThemeContext must be initialized before usage.');
+  }
+  return context;
 };
