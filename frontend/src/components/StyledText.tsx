@@ -1,10 +1,17 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import type { TextProps } from 'react-native';
 
 const StyledText = (props: TextProps) => {
+  const theme = useTheme();
+
+  const style = StyleSheet.compose(theme.fonts.default, {
+    color: theme.colors.onPrimaryContainer
+  });
+
   return (
-    <Text {...props} />
+    <Text style={style} {...props} />
   );
 };
 
