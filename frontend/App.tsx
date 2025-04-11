@@ -1,3 +1,4 @@
+import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Main from './src/components/Main';
@@ -14,6 +15,6 @@ const App = () => {
       </ThemeContext.Provider>
     </SafeAreaProvider>
   );
-}
+};
 
 export default App;

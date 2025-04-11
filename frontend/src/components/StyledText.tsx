@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 import type { TextProps as NativeTextProps } from 'react-native';
 

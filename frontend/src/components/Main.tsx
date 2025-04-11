@@ -1,3 +1,4 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,10 +14,6 @@ const Main = () => {
   const styleContainer = StyleSheet.flatten([
     styles.light.container,
     isDarkScheme && styles.dark.container
-  ]);
-  const styleText = StyleSheet.flatten([
-    styles.light.text,
-    isDarkScheme && styles.dark.text
   ]);
 
   return (
@@ -44,16 +41,10 @@ const styles = {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    text: {
-      color: '#252500',
-    },
   }),
   dark: StyleSheet.create({
     container: {
       backgroundColor: '#000025',
-    },
-    text: {
-      color: '#ffffff',
     },
   }),
 };
