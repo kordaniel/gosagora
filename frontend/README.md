@@ -12,4 +12,6 @@ npm install
 ### Run
 ```bash
 npm run start
+npm run start:cc
+npm run lint
 ```
