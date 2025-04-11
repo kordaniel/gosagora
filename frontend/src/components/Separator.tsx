@@ -1,13 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppTheme } from '../types';
 
-const Separator = () => (
-  <SafeAreaView mode="margin" style={styles.separator} />
-);
-
-const styles = StyleSheet.create({
-  separator: { height: 1, },
-});
+const Separator = () => {
+  const theme = useTheme<AppTheme>();
+  return (
+    <SafeAreaView mode="margin" style={theme.styles.separator} />
+  );
+};
 
 export default Separator;

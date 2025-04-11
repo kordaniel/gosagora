@@ -1,52 +1,31 @@
 import React from 'react';
+import { useTheme } from 'react-native-paper';
+import { Button } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Separator from './Separator';
 import StyledText from './StyledText';
 
-import { useAppTheme } from '../hooks/useAppTheme';
+import type { AppTheme } from '../types';
 
 const Main = () => {
-  const { isDarkScheme, toggleScheme } = useAppTheme();
-
-  const styleContainer = StyleSheet.flatten([
-    styles.light.container,
-    isDarkScheme && styles.dark.container
-  ]);
+  const theme = useTheme<AppTheme>();
 
   return (
-    <SafeAreaView style={styleContainer}>
+    <SafeAreaView style={theme.styles.primaryContainer}>
       <StyledText>GosaGora</StyledText>
       <Separator />
       <StyledText>Welcome to GosaGora!</StyledText>
       <Button
-        title={isDarkScheme ? "Toggle light theme" : "Toggle dark theme"}
-        onPress={toggleScheme}
+        title={theme.dark ? "Toggle light theme" : "Toggle dark theme"}
+        onPress={theme.toggleScheme}
       />
       <StatusBar
-        style={isDarkScheme ? "light" : "dark"}
-        backgroundColor={styleContainer.backgroundColor}
+        style={theme.dark ? "light" : "dark"}
       />
     </SafeAreaView>
   );
-};
-
-const styles = {
-  light: StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#ffffff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  }),
-  dark: StyleSheet.create({
-    container: {
-      backgroundColor: '#000025',
-    },
-  }),
 };
 
 export default Main;

@@ -9,4 +9,5 @@
 | 2025.04.10 | 0   | Configure github repo. Prevent pushes to main and require a pull request before merging. Add png to git lfs |
 | 2025.04.10 | 3   | FRONTEND: Initialize expo-react-native app, create basic structure, components. Implement themecontext for light/dark styling |
 | 2025.04.11 | 1   | FRONTEND: Configure eslint |
-| Total | 8  | |
+| 2025.04.11 | 3   | FRONTEND: Add react-native-paper, react-native-vector-icons. Setup light and dark themes, selected by Platform. Refactor themecontext to use react-native-paper context |
+| Total | 11 | |

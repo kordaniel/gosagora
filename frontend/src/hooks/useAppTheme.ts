@@ -1,10 +1,14 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Appearance } from 'react-native';
 
-import type { ColorSchemeName } from 'react-native';
+import { getTheme } from '../theme';
 
-export const useTheme = () => {
+import type { ColorSchemeName } from 'react-native';
+import type { AppTheme } from '../types';
+
+const useAppTheme = (): AppTheme => {
   const [colorScheme, setColorScheme] = useState<ColorSchemeName>(Appearance.getColorScheme());
+  const theme = getTheme(colorScheme);
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(
@@ -20,18 +24,9 @@ export const useTheme = () => {
   };
 
   return {
-    colorScheme,
-    isDarkScheme: colorScheme === 'dark',
+    ...theme,
     toggleScheme,
   };
 };
 
-export const ThemeContext = createContext<ReturnType<typeof useTheme> | undefined>(undefined);
-
-export const useAppTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useAppTheme ThemeContext must be initialized before usage.');
-  }
-  return context;
-};
+export default useAppTheme;

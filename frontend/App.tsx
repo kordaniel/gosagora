@@ -1,18 +1,18 @@
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PaperProvider } from 'react-native-paper';
 
 import Main from './src/components/Main';
 
-import { useTheme, ThemeContext } from './src/hooks/useAppTheme';
+import useAppTheme from './src/hooks/useAppTheme';
 
 const App = () => {
-  const theme = useTheme();
-
+  const theme = useAppTheme();
   return (
-    <SafeAreaProvider>
-      <ThemeContext.Provider value={theme}>
+    <SafeAreaProvider style={{ backgroundColor: theme.colors.background }}>
+      <PaperProvider theme={theme}>
         <Main />
-      </ThemeContext.Provider>
+      </PaperProvider>
     </SafeAreaProvider>
   );
 };
