@@ -35,7 +35,12 @@ if (!parsedEnv.success) {
   process.exit(1);
 }
 
-export default {
+const configuration = {
   NODE_ENV: parsedEnv.data.NODE_ENV,
   PORT: parsedEnv.data.PORT,
+  IS_PRODUCTION_ENV: parsedEnv.data.NODE_ENV === 'production',
+  IS_DEVELOPMENT_ENV: parsedEnv.data.NODE_ENV === 'development',
+  IS_TEST_ENV: parsedEnv.data.NODE_ENV === 'test',
 };
+
+export default configuration;
