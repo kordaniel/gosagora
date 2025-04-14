@@ -1,4 +1,6 @@
 import supertest from 'supertest';
+import type { Express } from 'express';
+
 import app from '../src/app';
 
 const api = supertest(app);
@@ -47,5 +49,58 @@ describe('App', () => {
       },
     });
   });
+
+  describe('CORS in development environment', () => {
+    const OLD_ENV = process.env;
+    let devApp: Express | undefined = undefined;
+
+    beforeAll(() => {
+      jest.resetModules();
+      process.env = {
+        ...OLD_ENV,
+        NODE_ENV: 'development',
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+      devApp = require('../src/app').default;
+    });
+
+    afterAll(() => {
+      process.env = OLD_ENV;
+    });
+
+    test('Request succeeds from whitelisted origin', async () => {
+      const origin = 'http://localhost:8081/';
+      const res = await supertest(devApp!)
+        .get('/healthcheck')
+        .set('Origin', origin)
+        .expect(200);
+
+      expect(res.headers['access-control-allow-origin']).toEqual(origin);
+      expect(res.text).toEqual('OK');
+    });
+
+    test('Request from unknown origin returns 403', async () => {
+      const origin = 'http://bad.unknown.url.com/';
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+
+      const res = await supertest(devApp!)
+        .get('/healthcheck')
+        .set('Origin', origin)
+        .expect(403)
+        .expect('Content-Type', /application\/json/);
+
+      expect(consoleSpy.mock.calls[0][1]).toEqual(`CorsError: status 403. Request has been blocked by CORS policy. Origin: '${origin}'`);
+      consoleSpy.mockRestore();
+
+      expect(res.body).toEqual({
+        status: 403,
+        error: {
+          message: 'Request has been blocked by CORS policy',
+          origin,
+        },
+      });
+    });
+
+  }); // CORS in development environment
 
 }); // App
