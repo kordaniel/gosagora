@@ -8,17 +8,17 @@ import Separator from './Separator';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
-import ServiceHealth from './ServiceHealth';
+import DeveloperView from './DeveloperView';
 
 const Main = () => {
   const theme = useTheme<AppTheme>();
 
   return (
     <SafeAreaView style={theme.styles.primaryContainer}>
+      <DeveloperView />
       <StyledText>GosaGora</StyledText>
       <Separator />
       <StyledText>Welcome to GosaGora!</StyledText>
-      <ServiceHealth />
       <Button
         title={theme.dark ? "Toggle light theme" : "Toggle dark theme"}
         onPress={theme.toggleScheme}

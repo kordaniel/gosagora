@@ -15,4 +15,5 @@
 | 2025.04.14 | 2.5 | BACKEND: Add CORS for development env. Improve error, response handling |
 | 2025.04.15 | 0   | BACKEND: Allow CORS for unknown origins in dev env (android emulator) |
 | 2025.04.15 | 5   | FRONTEND: Add env, config, axiosInstance, error handling and rendering, service status component with hook |
-| Total | 19 | |
+| 2025.04.15 | 0.5 | FRONTEND: Add DeveloperView that shows app status in dev env |
+| Total | 19.5 | |
