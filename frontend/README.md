@@ -9,9 +9,17 @@ Start by installing the required libraries:
 npm install
 ```
 
+### Setup environment
+Make sure that all the environment variables listed in the file [.env.example](https://github.com/kordaniel/gosagora/blob/main/frontend/.env.example) are set. You can for example copy the `.env.example` file to a file called `.env` and specify the variables there.
+
+The following environments are supported:
+- production
+- development
+- test
+
 ### Run
 ```bash
 npm run start
-npm run start:cc
+npm run start:cc (Clears expo cache)
 npm run lint
 ```

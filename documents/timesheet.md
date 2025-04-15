@@ -13,4 +13,6 @@
 | 2025.04.11 | 0   | FRONTEND: Add theme to StyledText |
 | 2025.04.11 | 0.5 | FRONTEND: Configure tsconfig |
 | 2025.04.14 | 2.5 | BACKEND: Add CORS for development env. Improve error, response handling |
-| Total | 14 | |
+| 2025.04.15 | 0   | BACKEND: Allow CORS for unknown origins in dev env (android emulator) |
+| 2025.04.15 | 5   | FRONTEND: Add env, config, axiosInstance, error handling and rendering, service status component with hook |
+| Total | 19 | |
