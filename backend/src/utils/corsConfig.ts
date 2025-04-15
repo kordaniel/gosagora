@@ -31,7 +31,7 @@ const whitelist = [
 
 const corsConfig: CorsOptions = {
   origin: config.IS_TEST_ENV ? '*' : (origin, cb) => {
-    if (origin && whitelist.some(addr => origin.startsWith(addr))) {
+    if (!origin || whitelist.some(addr => origin.startsWith(addr))) {
       cb(null, true);
     } else {
       cb(new CorsError(

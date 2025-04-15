@@ -8,12 +8,14 @@ import Separator from './Separator';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
+import DeveloperView from './DeveloperView';
 
 const Main = () => {
   const theme = useTheme<AppTheme>();
 
   return (
     <SafeAreaView style={theme.styles.primaryContainer}>
+      <DeveloperView />
       <StyledText>GosaGora</StyledText>
       <Separator />
       <StyledText>Welcome to GosaGora!</StyledText>
