@@ -22,4 +22,6 @@ The following environments are supported:
 npm run start
 npm run start:cc (Clears expo cache)
 npm run lint
+npm run test
+npm run test:dev (Watch)
 ```

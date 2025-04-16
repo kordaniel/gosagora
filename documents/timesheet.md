@@ -16,4 +16,5 @@
 | 2025.04.15 | 0   | BACKEND: Allow CORS for unknown origins in dev env (android emulator) |
 | 2025.04.15 | 5   | FRONTEND: Add env, config, axiosInstance, error handling and rendering, service status component with hook |
 | 2025.04.15 | 0.5 | FRONTEND: Add DeveloperView that shows app status in dev env |
-| Total | 19.5 | |
+| 2025.04.16 | 2.5 | FRONTEND: Setup test framework. Unit testing works, testing components with testing-library/react-native does not. Fixed a few packages versions to be compatible with expo/react native-18.3 |
+| Total | 22 | |

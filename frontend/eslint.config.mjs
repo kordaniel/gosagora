@@ -7,14 +7,20 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
-
+import jestPlugin from 'eslint-plugin-jest';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  {
+    ignores: [
+      'dist',
+      'coverage'
+    ]
+  },
   {
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
+
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -22,6 +28,7 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.jest,
+        ...jestPlugin.environments.globals.globals,
       },
       parserOptions: {
         projectService: true,
@@ -35,6 +42,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       '@stylistic': stylistic,
+      'jest': jestPlugin,
     },
     rules: {
       ...reactEslint.configs.recommended.rules,
@@ -59,6 +67,11 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/prefer-to-have-length': 'warn',
+      'jest/valid-expect': 'error',
     },
     settings: {
       react: {
