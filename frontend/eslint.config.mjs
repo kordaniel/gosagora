@@ -7,10 +7,15 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
-
+import jestPlugin from 'eslint-plugin-jest';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  {
+    ignores: [
+      'dist',
+      'coverage'
+    ]
+  },
   {
     extends: [
       js.configs.recommended,
@@ -22,6 +27,7 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.jest,
+        ...jestPlugin.environments.globals.globals,
       },
       parserOptions: {
         projectService: true,
@@ -35,6 +41,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       '@stylistic': stylistic,
+      'jest': jestPlugin,
     },
     rules: {
       ...reactEslint.configs.recommended.rules,
@@ -59,6 +66,27 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'react-native/no-unused-styles': 2,
+      'react-native/split-platform-components': 2,
+      'react-native/no-inline-styles': 2,
+      'react-native/no-color-literals': 2,
+      'react-native/no-raw-text': 2,
+      'react-native/sort-styles': ['warn', 'asc', {
+        'ignoreClassNames': false,
+        'ignoreStyleProperties': false
+      }],
+      'sort-imports': ['warn', {
+        'ignoreCase': false,
+        'ignoreDeclarationSort': false,
+        'ignoreMemberSort': false,
+        'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
+        'allowSeparatedGroups': true
+      }],
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/prefer-to-have-length': 'warn',
+      'jest/valid-expect': 'error',
     },
     settings: {
       react: {

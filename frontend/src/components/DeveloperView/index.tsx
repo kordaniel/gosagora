@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Platform, View } from 'react-native';
 
 import StyledText from '../StyledText';

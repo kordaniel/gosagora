@@ -1,14 +1,15 @@
 import React from 'react';
-import { useTheme } from 'react-native-paper';
-import { Button } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { useTheme } from 'react-native-paper';
+
+import DeveloperView from './DeveloperView';
 import Separator from './Separator';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
-import DeveloperView from './DeveloperView';
 
 const Main = () => {
   const theme = useTheme<AppTheme>();

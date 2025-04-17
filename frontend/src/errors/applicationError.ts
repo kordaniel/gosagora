@@ -8,8 +8,8 @@ export abstract class ApplicationError extends Error {
   constructor() {
     super();
     Object.setPrototypeOf(this, ApplicationError.prototype);
-  };
-};
+  }
+}
 
 export class HttpError extends ApplicationError {
   kind = 'HttpError' as const;
@@ -18,8 +18,8 @@ export class HttpError extends ApplicationError {
   ) {
     super();
     Object.setPrototypeOf(this, HttpError.prototype);
-  };
-};
+  }
+}
 
 // TODO: Delete this temporary class that should never be used. It's defined
 //       here only so we can use CorsError in a discriminated union before
@@ -32,7 +32,7 @@ export class TemporaryUnionFillerError extends ApplicationError {
     super();
     Object.setPrototypeOf(this, TemporaryUnionFillerError.prototype);
   }
-};
+}
 
 export type ApplicationErrorType =
   | ApplicationError

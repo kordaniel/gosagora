@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import Constants from 'expo-constants';
+import { z } from 'zod';
 
 import { isBackendUrlRegex } from './regexes';
 

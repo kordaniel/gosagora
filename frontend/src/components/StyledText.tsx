@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { StyleSheet, Text } from 'react-native';
-import { useTheme } from 'react-native-paper';
 import type { TextProps } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
 const StyledText = (props: TextProps) => {
   const theme = useTheme();

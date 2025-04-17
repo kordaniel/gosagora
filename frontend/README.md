@@ -22,4 +22,7 @@ The following environments are supported:
 npm run start
 npm run start:cc (Clears expo cache)
 npm run lint
+npm run test
+npm run test:watch
+npm run typeCheck (Compile ts with noEmit)
 ```
