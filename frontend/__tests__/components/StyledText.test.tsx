@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { render, screen } from '@testing-library/react-native';
 
 import StyledText from '../../src/components/StyledText';

@@ -1,6 +1,7 @@
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Main from './src/components/Main';
 

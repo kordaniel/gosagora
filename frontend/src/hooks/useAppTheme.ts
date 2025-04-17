@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Appearance } from 'react-native';
-
-import { getTheme } from '../theme';
-
 import type { ColorSchemeName } from 'react-native';
+
 import type { AppTheme } from '../types';
+import { getTheme } from '../theme';
 
 const useAppTheme = (): AppTheme => {
   const [colorScheme, setColorScheme] = useState<ColorSchemeName>(Appearance.getColorScheme());

@@ -1,8 +1,8 @@
-import { StyleSheet } from 'react-native';
-import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
-
+import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import type { ColorSchemeName } from 'react-native';
 import type { MD3Theme } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+
 import type { AppTheme } from './types';
 
 const lightTheme: MD3Theme = {
@@ -99,8 +99,8 @@ const darkTheme: MD3Theme = {
 
 const styles = StyleSheet.create({
   primaryContainer: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
   },
   separator: {
     height: 1,

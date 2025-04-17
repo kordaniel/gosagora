@@ -76,6 +76,13 @@ export default tseslint.config(
         'ignoreClassNames': false,
         'ignoreStyleProperties': false
       }],
+      'sort-imports': ['warn', {
+        'ignoreCase': false,
+        'ignoreDeclarationSort': false,
+        'ignoreMemberSort': false,
+        'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
+        'allowSeparatedGroups': true
+      }],
       'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
       'jest/no-identical-title': 'error',

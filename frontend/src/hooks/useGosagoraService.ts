@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import gosagoraService from '../services/gosagoraService';
 import { ApplicationError } from '../errors/applicationError';
+import gosagoraService from '../services/gosagoraService';
 
 const useGosagoraService = () => {
   const [status, setStatus] = useState<string>('');

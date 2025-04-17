@@ -1,13 +1,13 @@
-import axios, { AxiosError } from 'axios';
 import type {
   AxiosInstance,
   AxiosRequestConfig,
-  InternalAxiosRequestConfig,
   AxiosResponse,
+  InternalAxiosRequestConfig,
 } from 'axios';
+import axios, { AxiosError } from 'axios';
 
-import appConfig from '../utils/config';
 import { HttpError } from '../errors/applicationError';
+import appConfig from '../utils/config';
 
 // https://axios-http.com/docs/intro
 // https://github.com/axios/axios
