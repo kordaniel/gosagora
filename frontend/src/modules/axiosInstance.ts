@@ -19,7 +19,7 @@ declare module 'axios' {
     skipInterceptors?: boolean;
     silent?: boolean; // if true => mute notifications
   }
-};
+}
 
 const axiosConfig: AxiosRequestConfig = {
   allowAbsoluteUrls: false,
