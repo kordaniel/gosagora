@@ -18,4 +18,5 @@
 | 2025.04.15 | 0.5 | FRONTEND: Add DeveloperView that shows app status in dev env |
 | 2025.04.16 | 2.5 | FRONTEND: Setup test framework. Unit testing works, testing components with testing-library/react-native does not. Fixed a few packages versions to be compatible with expo/react native-18.3 |
 | 2025.04.17 | 1   | FRONTEND: Fix testing framework, unit- and component testing works, add more linting rules, reconfigure project/packages to be expo compatible |
-| Total | 23 | |
+| 2025.04.19 | 3   | FRONTEND: Add formik, yup, firebase packages. Add Form component |
+| Total | 26 | |
