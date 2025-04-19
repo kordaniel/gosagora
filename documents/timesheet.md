@@ -19,4 +19,5 @@
 | 2025.04.16 | 2.5 | FRONTEND: Setup test framework. Unit testing works, testing components with testing-library/react-native does not. Fixed a few packages versions to be compatible with expo/react native-18.3 |
 | 2025.04.17 | 1   | FRONTEND: Fix testing framework, unit- and component testing works, add more linting rules, reconfigure project/packages to be expo compatible |
 | 2025.04.19 | 3   | FRONTEND: Add formik, yup, firebase packages. Add Form component |
-| Total | 26 | |
+| 2025.04.19 | 1   | FRONTEND: Add tests for Form Component |
+| Total | 27 | |
