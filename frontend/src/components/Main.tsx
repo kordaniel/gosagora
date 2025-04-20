@@ -7,6 +7,7 @@ import { useTheme } from 'react-native-paper';
 
 import DeveloperView from './DeveloperView';
 import Separator from './Separator';
+import SignIn from '../pages/Authentication/SignIn';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
@@ -17,13 +18,15 @@ const Main = () => {
   return (
     <SafeAreaView style={theme.styles.primaryContainer}>
       <DeveloperView />
-      <StyledText>GosaGora</StyledText>
+      <StyledText variant="headline">GosaGora</StyledText>
       <Separator />
       <StyledText>Welcome to GosaGora!</StyledText>
       <Button
         title={theme.dark ? "Toggle light theme" : "Toggle dark theme"}
         onPress={theme.toggleScheme}
       />
+      <Separator />
+      <SignIn />
       <StatusBar
         style={theme.dark ? "light" : "dark"}
       />

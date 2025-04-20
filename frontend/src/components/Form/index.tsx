@@ -3,23 +3,26 @@ import React from 'react';
 import * as Yup from 'yup';
 import type { FormikHelpers, FormikValues } from 'formik';
 import type { GestureResponderEvent, TextInputProps } from 'react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
+import { View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
-import StyledText from '../StyledText';
+import Button from '../Button';
 import TextField from './TextField';
+
+import type { AppTheme } from '../../types';
 
 interface FormFields {
   [key:string]: {
-    label: string;
+    label?: string;
     placeholder: string;
     props?: TextInputProps;
   };
 }
 
-interface FormProps<T> {
+export interface FormProps<T> {
   formFields: FormFields;
-  onSubmit: (values: T) => void;
+  onSubmit: (values: T) => Promise<void>;
   submitLabel: string;
   validationSchema: Yup.Schema<T>;
 }
@@ -34,11 +37,13 @@ const Form = <FormValuesType extends FormikStringValues, >({
   submitLabel,
   validationSchema
 }: FormProps<FormValuesType>) => {
-  const handleOnSubmit = (
+  const theme = useTheme<AppTheme>();
+
+  const handleOnSubmit = async (
     values: FormValuesType,
     { setSubmitting }: FormikHelpers<FormValuesType>
   ) => {
-    onSubmit(values);
+    await onSubmit(values);
     setSubmitting(false);
   };
 
@@ -55,9 +60,9 @@ const Form = <FormValuesType extends FormikStringValues, >({
       onSubmit={handleOnSubmit}
       validationSchema={validationSchema}
     >
-      {({ handleSubmit }) => {
+      {({ handleSubmit, isValid, isSubmitting }) => {
         return (
-          <View>
+          <View style={theme.styles.containerFlexColumn}>
             {Object.entries(formFields).map(([field, val]) => (
               <TextField
                 key={field}
@@ -68,26 +73,18 @@ const Form = <FormValuesType extends FormikStringValues, >({
               />
             ))}
             {/* 2025-04-19: onPress handleSubmit cb type must be casted: https://github.com/jaredpalmer/formik/issues/3643 */}
-            <Pressable
-              style={styles.submitButton}
+            <Button
+              ctxLoading={isSubmitting}
+              disabled={!isValid || isSubmitting}
               onPress={handleSubmit as (e?: GestureResponderEvent) => void}
             >
-              <StyledText>{submitLabel}</StyledText>
-            </Pressable>
+              {submitLabel}
+            </Button>
           </View>
         );
       }}
     </Formik>
   );
 };
-
-const styles = StyleSheet.create({
-  submitButton: {
-    alignItems: 'center',
-    borderWidth: 1,
-    padding: 8,
-    width: 104,
-  }
-});
 
 export default Form;

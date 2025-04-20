@@ -98,30 +98,152 @@ const darkTheme: MD3Theme = {
 };
 
 const styles = StyleSheet.create({
-  primaryContainer: {
+  button: {
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    padding: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.4,
+  },
+  buttonLoading: {
+    opacity: 0.8,
+  },
+  container: {
     alignItems: 'center',
     flex: 1,
   },
+  containerFlexColumn: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  containerFlexRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   separator: {
     height: 1,
+  },
+  textInput: {
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 8,
   },
 });
 
 const lightStyle = StyleSheet.create({
   ...styles,
+  button: {
+    ...styles.button,
+    borderColor: lightTheme.colors.onPrimary,
+  },
+  buttonText: {
+    ...lightTheme.fonts.default,
+    backgroundColor: lightTheme.colors.primary,
+    color: lightTheme.colors.onPrimary,
+  },
+  errorContainer: {
+    backgroundColor: lightTheme.colors.errorContainer,
+    color: lightTheme.colors.onErrorContainer,
+  },
+  onErrorContainer: {
+    ...lightTheme.fonts.default,
+    color: lightTheme.colors.onErrorContainer,
+  },
+  onPrimaryContainer: {
+    ...lightTheme.fonts.default,
+    color: lightTheme.colors.onPrimaryContainer,
+  },
   primaryContainer: {
-    ...styles.primaryContainer,
+    ...styles.container,
     backgroundColor: lightTheme.colors.primaryContainer,
     color: lightTheme.colors.onPrimaryContainer,
+  },
+  secondaryContainer: {
+    ...styles.container,
+    backgroundColor: lightTheme.colors.secondaryContainer,
+    color: lightTheme.colors.onSecondaryContainer,
+  },
+  tertiaryContainer: {
+    ...styles.container,
+    backgroundColor: lightTheme.colors.tertiaryContainer,
+    color: lightTheme.colors.onTertiaryContainer,
+  },
+  textHeadline: {
+    ...lightTheme.fonts.headlineSmall,
+  },
+  textInput: {
+    ...lightTheme.fonts.default,
+    ...styles.textInput,
+    backgroundColor: lightTheme.colors.surface,
+    borderColor: lightTheme.colors.surfaceVariant,
+    color: lightTheme.colors.onSurface,
+  },
+  textInputError: {
+    borderColor: lightTheme.colors.error,
+  },
+  textTitle: {
+    ...lightTheme.fonts.titleMedium,
   },
 });
 
 const darkStyle = StyleSheet.create({
   ...styles,
+  button: {
+    ...styles.button,
+    borderColor: darkTheme.colors.onPrimary,
+  },
+  buttonText: {
+    ...darkTheme.fonts.default,
+    backgroundColor: darkTheme.colors.primary,
+    color: darkTheme.colors.onPrimary,
+  },
+  errorContainer: {
+    backgroundColor: darkTheme.colors.errorContainer,
+    color: darkTheme.colors.onErrorContainer,
+  },
+  onErrorContainer: {
+    ...darkTheme.fonts.default,
+    color: darkTheme.colors.onErrorContainer,
+  },
+  onPrimaryContainer: {
+    ...darkTheme.fonts.default,
+    color: darkTheme.colors.onPrimaryContainer,
+  },
   primaryContainer: {
-    ...styles.primaryContainer,
+    ...styles.container,
     backgroundColor: darkTheme.colors.primaryContainer,
     color: darkTheme.colors.onPrimaryContainer,
+  },
+  secondaryContainer: {
+    ...styles.container,
+    backgroundColor: darkTheme.colors.secondaryContainer,
+    color: darkTheme.colors.onSecondaryContainer,
+  },
+  tertiaryContainer: {
+    ...styles.container,
+    backgroundColor: darkTheme.colors.tertiaryContainer,
+    color: darkTheme.colors.onTertiaryContainer,
+  },
+  textHeadline: {
+    ...darkTheme.fonts.headlineSmall,
+  },
+  textInput: {
+    ...darkTheme.fonts.default,
+    ...styles.textInput,
+    backgroundColor: darkTheme.colors.surface,
+    borderColor: darkTheme.colors.surfaceVariant,
+    color: darkTheme.colors.onSurface,
+  },
+  textInputError: {
+    borderColor: darkTheme.colors.error,
+  },
+  textTitle: {
+    ...darkTheme.fonts.titleMedium,
   },
 });
 

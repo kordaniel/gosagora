@@ -1,7 +1,7 @@
 import React from 'react';
 
 import * as Yup from 'yup';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, renderWithProvidersWrapped, screen, waitFor } from '../../gosagora-testing-library/react-native';
 
 import Form from '../../../src/components/Form';
 
@@ -49,7 +49,7 @@ describe('Form component', () => {
   it('Renders all textfields and submit button with label passed as props', () => {
     const onSubmit = jest.fn();
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel='Submit Form'
@@ -67,7 +67,7 @@ describe('Form component', () => {
     const password = 'my-Top-s3cr3t!PasswD';
     const onSubmit = jest.fn();
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel='Submit Form'
@@ -86,7 +86,7 @@ describe('Form component', () => {
   it('Displays validation errors for unchanged fields on submit', async () => {
     const onSubmit = jest.fn();
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel='Submit Form'
@@ -105,7 +105,7 @@ describe('Form component', () => {
     const onSubmit = jest.fn();
     const submitLabel = 'Submit';
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel={submitLabel}
@@ -150,7 +150,7 @@ describe('Form component', () => {
     const submitLabel = 'Submit to complete SignIn';
     const onSubmit = jest.fn();
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel={submitLabel}
@@ -176,7 +176,7 @@ describe('Form component', () => {
     const submitLabel = 'Submit to complete SignIn';
     const onSubmit = jest.fn();
 
-    render(<Form
+    renderWithProvidersWrapped(<Form
       formFields={formFields}
       onSubmit={onSubmit}
       submitLabel={submitLabel}

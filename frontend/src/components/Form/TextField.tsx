@@ -1,23 +1,27 @@
 import React, { PropsWithChildren } from 'react';
 
 import { ErrorMessage, useField } from 'formik';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
 
+import type { AppTheme } from '../../types';
+import ErrorRenderer from '../ErrorRenderer';
 import StyledText from '../StyledText';
+import { useTheme } from 'react-native-paper';
 
 interface FieldBaseProps {
-  label: string;
+  label?: string;
   name: string;
 }
 
 const FieldBase = ({ label, name, children }: PropsWithChildren<FieldBaseProps>) => {
+  const theme = useTheme<AppTheme>();
   return (
-    <View style={styles.container}>
-      <StyledText>{label}:&nbsp;</StyledText>
+    <View style={theme.styles.containerFlexColumn}>
+      {label && <StyledText>{label}:&nbsp;</StyledText>}
       {children}
       <ErrorMessage name={name}>
-        {msg => <StyledText style={styles.error}>{msg}</StyledText>}
+        {msg => <ErrorRenderer>{msg}</ErrorRenderer>}
       </ErrorMessage>
     </View>
   );
@@ -34,9 +38,14 @@ const TextField = ({
   textInputProps,
   label
 }: TextFieldProps) => {
+  const theme = useTheme<AppTheme>();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_field, meta, helpers] = useField<string>(name);
 
+  const textInputStyle = [
+    theme.styles.textInput,
+    meta.error && theme.styles.textInputError,
+  ];
   const handleChange = (newValue: string) => {
     void helpers.setTouched(newValue !== meta.initialValue);
     void helpers.setValue(newValue);
@@ -48,8 +57,9 @@ const TextField = ({
       name={name}
     >
       <TextInput
-        style={styles.input}
+        style={textInputStyle}
         placeholder={placeholder}
+        placeholderTextColor={theme.colors.surfaceVariant}
         onChangeText={handleChange}
         value={meta.value}
         {...textInputProps}
@@ -57,19 +67,5 @@ const TextField = ({
     </FieldBase>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-  },
-  error: {
-    fontSize: 12,
-  },
-  input: {
-    borderWidth: 1,
-    height: 32,
-    width: 200,
-  },
-});
 
 export default TextField;
