@@ -20,5 +20,5 @@
 | 2025.04.17 | 1   | FRONTEND: Fix testing framework, unit- and component testing works, add more linting rules, reconfigure project/packages to be expo compatible |
 | 2025.04.19 | 3   | FRONTEND: Add formik, yup, firebase packages. Add Form component |
 | 2025.04.19 | 1   | FRONTEND: Add tests for Form Component |
-| 2025.04.20 | 4 | FRONTEND: Add SignIn page & Button, ErrorRenderer components. Update theme, stylize Form & extend StyledText. Refactored tests to accomodate themes |
+| 2025.04.20 | 4   | FRONTEND: Add SignIn, SignUp page & Button, ErrorRenderer components. Update theme, stylize Form & extend StyledText. Refactored tests to accomodate themes |
 | Total | 31 | |

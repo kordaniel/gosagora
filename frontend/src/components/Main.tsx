@@ -8,6 +8,7 @@ import { useTheme } from 'react-native-paper';
 import DeveloperView from './DeveloperView';
 import Separator from './Separator';
 import SignIn from '../pages/Authentication/SignIn';
+import SignUp from '../pages/Authentication/SignUp';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
@@ -27,6 +28,8 @@ const Main = () => {
       />
       <Separator />
       <SignIn />
+      <Separator />
+      <SignUp />
       <StatusBar
         style={theme.dark ? "light" : "dark"}
       />
