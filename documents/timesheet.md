@@ -21,4 +21,5 @@
 | 2025.04.19 | 3   | FRONTEND: Add formik, yup, firebase packages. Add Form component |
 | 2025.04.19 | 1   | FRONTEND: Add tests for Form Component |
 | 2025.04.20 | 4   | FRONTEND: Add SignIn, SignUp page & Button, ErrorRenderer components. Update theme, stylize Form & extend StyledText. Refactored tests to accomodate themes |
-| Total | 31 | |
+| 2025.04.21 | 1   | BACKEND: Add sequelize, pg, firebase-admin packages, postgres container. Implement module for sequelize.
+| Total | 32 | |
