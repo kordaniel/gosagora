@@ -10,9 +10,8 @@ import StyledText from '../../components/StyledText';
 
 import type { AppTheme } from '../../types';
 import config from '../../utils/config';
-import { sleep } from '../../utils/helpers';
 
-type SignInValuesType = {
+export type SignInValuesType = {
   email: string;
   password: string;
 };
@@ -55,12 +54,16 @@ const formFields: FormProps<SignInValuesType>['formFields'] = {
   },
 };
 
-const SignIn = () => {
+interface SignInProps {
+  handleSignIn: (credentials: SignInValuesType) => Promise<void>;
+}
+
+const SignIn = ({ handleSignIn }: SignInProps) => {
   const theme = useTheme<AppTheme>();
 
   const onSubmit = async (values: SignInValuesType) => {
     console.log('sign in component, values:', values);
-    await sleep();
+    await handleSignIn(values);
     console.log('done submitting!');
   };
 

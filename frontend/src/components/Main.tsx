@@ -5,10 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from 'react-native-paper';
 
+import Authentication from '../pages/Authentication';
 import DeveloperView from './DeveloperView';
 import Separator from './Separator';
-import SignIn from '../pages/Authentication/SignIn';
-import SignUp from '../pages/Authentication/SignUp';
 import StyledText from './StyledText';
 
 import type { AppTheme } from '../types';
@@ -27,9 +26,7 @@ const Main = () => {
         onPress={theme.toggleScheme}
       />
       <Separator />
-      <SignIn />
-      <Separator />
-      <SignUp />
+      <Authentication />
       <StatusBar
         style={theme.dark ? "light" : "dark"}
       />

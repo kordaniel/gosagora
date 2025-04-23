@@ -10,7 +10,6 @@ import StyledText from '../../components/StyledText';
 
 import { AppTheme } from '../../types';
 import config from '../../utils/config';
-import { sleep } from '../../utils/helpers';
 
 
 type SignUpValuesType = {
@@ -72,12 +71,16 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
   },
 };
 
-const SignUp = () => {
+interface SignUpProps {
+  handleSignUp: (email: string, password: string) => Promise<void>;
+}
+
+const SignUp = ({ handleSignUp }: SignUpProps) => {
   const theme = useTheme<AppTheme>();
 
   const onSubmit = async (values: SignUpValuesType) => {
     console.log('sign up component, values:', values);
-    await sleep();
+    await handleSignUp(values.email, values.password);
     console.log('done submitting!');
   };
 
