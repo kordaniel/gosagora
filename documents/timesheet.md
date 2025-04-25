@@ -23,4 +23,5 @@
 | 2025.04.20 | 4   | FRONTEND: Add SignIn, SignUp page & Button, ErrorRenderer components. Update theme, stylize Form & extend StyledText. Refactored tests to accomodate themes |
 | 2025.04.21 | 1   | BACKEND: Add sequelize, pg, firebase-admin packages, postgres container. Implement module for sequelize.
 | 2025.04.23 | 2   | FRONTEND: Refactor Authentication page: Render sign in, sign up and sign out conditionally. Use firebase email/pass auth as backend |
-| Total | 34 | |
+| 2025.04.25 | 2   | BACKEND: Add umzug package. Configure sequelize migrations, add User model |
+| Total | 36 | |

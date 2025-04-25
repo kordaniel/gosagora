@@ -12,7 +12,8 @@
     "tsc": "tsc",
     "test": "cross-env NODE_ENV=test && jest",
     "testdb:start": "docker compose -f docker-compose.test.yml up -d",
-    "testdb:stop": "docker compose -f docker-compose.test.yml down"
+    "testdb:stop": "docker compose -f docker-compose.test.yml down",
+    "migration:dev:down": "cross-env NODE_ENV=development ts-node-dev src/database/rollbackMigrations.ts"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "firebase-admin": "^13.2.0",
     "pg": "^8.14.1",
     "sequelize": "^6.37.7",
+    "umzug": "^3.8.2",
     "zod": "^3.24.2"
   }
 }
