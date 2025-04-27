@@ -1,0 +1,4 @@
+ssl/*
+build/
+node_modules/
+firebaseServiceAccount.json

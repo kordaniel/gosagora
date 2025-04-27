@@ -6,7 +6,7 @@ import configuration from '../utils/config';
 import logger from '../utils/logger';
 import { stripCredentialsFromDBUri } from '../utils/helpers';
 
-const db_uri = 'BLANK';
+const db_uri = configuration.DB_URI;
 
 logger.info(`Connecting to SQL DB: ${stripCredentialsFromDBUri(db_uri)}`);
 export const sequelize = new Sequelize(db_uri, {

@@ -24,4 +24,7 @@
 | 2025.04.21 | 1   | BACKEND: Add sequelize, pg, firebase-admin packages, postgres container. Implement module for sequelize.
 | 2025.04.23 | 2   | FRONTEND: Refactor Authentication page: Render sign in, sign up and sign out conditionally. Use firebase email/pass auth as backend |
 | 2025.04.25 | 2   | BACKEND: Add umzug package. Configure sequelize migrations, add User model |
-| Total | 36 | |
+| 2025.04.25 | 3   | BACKEND: Add "/auth" router with signup, signin. Work on request parsing, errorhandling and responses (zod, strict typescript typing) |
+| 2025.04.27 | 3   | Write README's, instructions, configure environments. Use different containers for backend dev and test envs with persisting storage |
+| 2025.04.27 | 2   | BACKEND: Work on auth, types, errorhandling |
+| Total | 44 | |

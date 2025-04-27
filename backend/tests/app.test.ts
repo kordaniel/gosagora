@@ -58,10 +58,15 @@ describe('App', () => {
       jest.resetModules();
       process.env = {
         ...OLD_ENV,
-        NODE_ENV: 'development',
+        NODE_ENV: 'test-production',
       };
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
       devApp = require('../src/app').default;
+
+      consoleSpy.mockRestore();
     });
 
     afterAll(() => {

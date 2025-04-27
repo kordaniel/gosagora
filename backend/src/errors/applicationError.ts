@@ -1,6 +1,15 @@
 type ApplicationErrorKind =
-  | 'CorsError'
-  | 'TemporaryUnionFillerError';
+  | 'APIRequestError'
+  | 'AuthError'
+  | 'CorsError';
+
+interface IApplicationErrorJSON {
+  status: number;
+  error: object | {
+    message: string;
+    origin?: string | null;
+  }
+}
 
 export abstract class ApplicationError extends Error {
   abstract readonly kind: ApplicationErrorKind;
@@ -12,7 +21,7 @@ export abstract class ApplicationError extends Error {
     Object.setPrototypeOf(this, ApplicationError.prototype);
   };
 
-  toJSONObj() {
+  toJSONObj(): IApplicationErrorJSON {
     return {
       status: this.status,
       error: {
@@ -53,21 +62,46 @@ export class CorsError extends ApplicationError {
   }
 };
 
-// TODO: Delete this temporary class that should never be used. It's defined
-//       here only so we can use CorsError in a discriminated union before
-//       adding additional Errors.
-export class TemporaryUnionFillerError extends ApplicationError {
-  kind = 'TemporaryUnionFillerError' as const;
+export class APIRequestError extends ApplicationError {
+  kind = 'APIRequestError' as const;
   constructor(
-    public override message: string = 'Internal server (developer) error. Should never be thrown',
-    public status: number = 500,
+    public override message: string = 'Invalid request for target path',
+    public status: number = 400,
+    public readonly errorObj?: object,
   ) {
     super();
-    Object.setPrototypeOf(this, TemporaryUnionFillerError.prototype);
+    Object.setPrototypeOf(this, APIRequestError.prototype);
+  }
+
+  override toJSONObj() {
+    return !this.errorObj ? super.toJSONObj() : {
+      ...super.toJSONObj(),
+      error: this.errorObj,
+    };
+  }
+
+  override toLogString() {
+    return `${this.kind}: status ${this.status}. ${this.errorObj ? JSON.stringify(this.errorObj) : this.message}`;
+  }
+};
+
+export class AuthError extends ApplicationError {
+  kind = 'AuthError' as const;
+
+  /**
+   * @param status Default value 409 - Conflict. This response is sent when a request conflicts with the current state of the server.
+   */
+  constructor(
+    public override message: string = 'Invalid authentication',
+    public status: number = 409,
+  ) {
+    super();
+    Object.setPrototypeOf(this, AuthError.prototype);
   }
 };
 
 export type ApplicationErrorType =
   | ApplicationError
-  | CorsError
-  | TemporaryUnionFillerError;
+  | APIRequestError
+  | AuthError
+  | CorsError;

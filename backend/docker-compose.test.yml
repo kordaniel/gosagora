@@ -4,5 +4,8 @@ services:
     environment:
       POSTGRES_USER: jesttest
       POSTGRES_PASSWORD: jesttest
+      POSTGRES_DB: gosagora-test-db
     ports:
-      - "5432:5432"
+      - 5433:5432
+    volumes:
+      - ../data/test/postgres/data:/var/lib/postgresql/data
