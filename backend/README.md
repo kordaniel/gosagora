@@ -40,7 +40,7 @@ npm run tsc && npm run start
 ### Run in dev & test environments
 
 ### Dev
-Use `npm run dev` for development under normal circumstances, it will terminate all processes and docker containers when stopping.
+Use `npm run dev` for development under normal circumstances. This command will terminate all processes and docker containers when exited.
 ```bash
 npm run devdb:start - start postgres dev container
 npm run devdb:stop  - stop postgres dev container
@@ -52,7 +52,7 @@ npm run migration:dev:down - rollback database migration
 ```
 
 ### Test
-Use `npm run test` for single test runs, it will terminate all proceses and docker containers when done. You can use `npm run test:leavedb` for repetitive runs and manually run `npm run testdb:stop` when done.
+Use `npm run test` for single test runs. This command will terminate all processes and docker containers when done. You can use `npm run test:leavedb` for repetitive runs and manually run `npm run testdb:stop` when done.
 ```bash
 npm run testdb:start - start postgres test container
 npm run testdb:stop  - stop postgres test container

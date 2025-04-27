@@ -60,13 +60,14 @@ Even though the frontend is a React Native app it uses a web config object.
 - Make sure that `.env.<production|development|test>` contains the variable `GOOGLE_APPLICATION_CREDENTIALS` and that it points to the JSON file
 
 ### Project structure, important files
+Make sure that you have these files set up correctly. See the instruction above and in the respective directories for both the front- and backends
 ```console
-├── data/ - dev & test database data is mounted in this directory
+├── data/ - This is initilized automatically and the dev & test database data is mounted inside this directory by docker
 ├── backend/
-│   ├── firebaseServiceAccount.json - required to be set when running outside Google Cloud
+│   ├── firebaseServiceAccount.json - Required to be set when running outside Google Cloud
 │   └── .env.<production|development|test> - See backend/.env.example for required variables
 ├── frontend/
-│   ├── firebaseConfig.ts
-│   └── .env - See frontent/.env.example for required variables
+│   ├── firebaseConfig.ts - Required
+│   └── .env - See frontend/.env.example for required variables
 └── firebase-service-account.json
 ```
