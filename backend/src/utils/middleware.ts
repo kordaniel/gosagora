@@ -22,6 +22,7 @@ const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
       break;
     }
     case 'CorsError': {
+      logger.info(err.toLogString());
       res.status(err.status).json(err.toJSONObj());
       break;
     }
