@@ -18,6 +18,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
   declare email: string;
   declare firebaseUid: string;
+  declare displayName: string;
   declare lastseenAt: Date | null;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -54,6 +55,14 @@ User.init({
     type: DataTypes.TEXT,
     unique: true,
     allowNull: false,
+  },
+  displayName: {
+    type: DataTypes.TEXT,
+    unique: true,
+    allowNull: false,
+    validate: {
+      len: [4, 64],
+    },
   },
   lastseenAt: {
     type: DataTypes.DATE,

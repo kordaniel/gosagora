@@ -25,6 +25,7 @@ const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> =
 
   const user = await userService.createNewUser({
     email: decodedIdToken.email,
+    displayName: newUserArguments.displayName,
     firebaseUid: decodedIdToken.uid,
     lastseenAt: new Date(),
   });

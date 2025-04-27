@@ -18,6 +18,11 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      display_name: {
+        type: DataTypes.TEXT,
+        unique: true,
+        allowNull: false,
+      },
       lastseen_at:{
         type: DataTypes.DATE,
         allowNull: true,

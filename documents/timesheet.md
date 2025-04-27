@@ -27,4 +27,5 @@
 | 2025.04.25 | 3   | BACKEND: Add "/auth" router with signup, signin. Work on request parsing, errorhandling and responses (zod, strict typescript typing) |
 | 2025.04.27 | 3   | Write README's, instructions, configure environments. Use different containers for backend dev and test envs with persisting storage |
 | 2025.04.27 | 2   | BACKEND: Work on auth, types, errorhandling |
-| Total | 44 | |
+| 2025.04.27 | 1   | BACKEND: Fix npm scripts. Update README's. Switch bind->named volumes in docker compose. Add displayName field to User |
+| Total | 45 | |

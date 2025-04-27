@@ -6,6 +6,7 @@ const createNewUser = async (
 ): Promise<User> => {
   return await User.create({
     email: newUserArguments.email,
+    displayName: newUserArguments.displayName,
     firebaseUid: newUserArguments.firebaseUid,
   });
 };

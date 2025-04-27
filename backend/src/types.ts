@@ -20,6 +20,7 @@ export interface APIAuthRequest<
 
 export interface SignUpArguments {
   email: string;
+  displayName: string;
 
    // The primary way to identify a user is by their uid, a unique identifier for that user. The Admin SDK provides a method that allows fetching the profile information of users by their uid
   firebaseUid: string;
