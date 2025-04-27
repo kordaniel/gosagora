@@ -64,5 +64,5 @@ npm run test - runs test:leavedb and then testdb:stop when tests finishes
 ### Connect to dockerized postgres
 Dev and test environments are configured to run and use a dockerized postgres container running at the dev localhost. You can connect to it using psql with the following command:
 ```bash
-docker exec -it <CONTAINER_ID> psql -U <username> <password>
+docker exec -it <CONTAINER_ID> psql -U <username> <database-name, specified in docker-compose-files>
 ```

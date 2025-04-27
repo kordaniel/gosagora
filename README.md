@@ -62,7 +62,6 @@ Even though the frontend is a React Native app it uses a web config object.
 ### Project structure, important files
 Make sure that you have these files set up correctly. See the instruction above and in the respective directories for both the front- and backends
 ```console
-├── data/ - This is initilized automatically and the dev & test database data is mounted inside this directory by docker
 ├── backend/
 │   ├── firebaseServiceAccount.json - Required to be set when running outside Google Cloud
 │   └── .env.<production|development|test> - See backend/.env.example for required variables
