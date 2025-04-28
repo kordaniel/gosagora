@@ -1,13 +1,16 @@
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 
 import {
+  Auth,
   type DecodedIdToken,
+  FirebaseAuthError,
   //type ListUsersResult,
   getAuth,
   //UserRecord,
 } from 'firebase-admin/auth';
 
 import logger from '../utils/logger';
+import { ServiceError } from '../errors/applicationError';
 
 /**********************************************
  * Documentation
@@ -44,12 +47,47 @@ import logger from '../utils/logger';
 // Connect your app and start prototyping: https://firebase.google.com/docs/emulator-suite/connect_and_prototype
 
 
-// TODO: Add callable connectToFirebase function, call from index.ts
 const fbAdminApp = initializeApp({ credential: applicationDefault(), });
-const auth = getAuth(fbAdminApp);
+logger.info('Firebase-admin initialized, name:', fbAdminApp.name); // [DEFAULT]
 
-logger.info('Firebase-admin loaded, name:', fbAdminApp.name); // [DEFAULT]
+let auth: Auth | undefined;
 
+export const connectToFirebase = async () => {
+  logger.info('Setting up firebase connection(s)');
+  auth = getAuth(fbAdminApp);
+  if (await checkConnection()) {
+    logger.info('Firebase connection(s) established');
+    logger.info('Firebase service connections:');
+    Object.entries(isUsingEmulator()).forEach(([k, v]) => {
+      logger.info(` - ${k}: connected to ${v ? 'emulator': 'live API'}`);
+    });
+  } else {
+    logger.error(
+      'Error connecting to Firebase, exiting. Attempted to use emulator:',
+      Object.entries(isUsingEmulator()).map(([k, v]) => ({ [k]: v }))
+    );
+    process.exit(69); // EX_UNAVAILABLE: service unavailable
+  }
+};
+
+const isUsingEmulator = () => {
+  return {
+    auth: Boolean(process.env.FIREBASE_AUTH_EMULATOR_HOST),
+  };
+};
+
+const checkConnection = async () => {
+  try {
+    if (!auth) {
+      return false;
+    }
+    await auth.getUser('no-existing-id');
+    return true;
+  } catch (error: unknown) {
+    return error instanceof FirebaseAuthError &&
+           error.code === 'auth/user-not-found';
+  }
+};
 
 // relevant FirebaseAuthError types, TODO: Add error handling
 // auth/id-token-revoked
@@ -59,6 +97,10 @@ logger.info('Firebase-admin loaded, name:', fbAdminApp.name); // [DEFAULT]
 // auth/invalid-uid The provided uid must be a non-empty string with at most 128 characters.
 // auth/too-many-requests
 const verifyIdToken = async (fbIdToken: string): Promise<DecodedIdToken> => {
+  if (!auth) {
+    throw new ServiceError('GosaGora service error: unable to perform IdToken verification');
+  }
+
   const decodedToken = await auth.verifyIdToken(fbIdToken);
   //console.log('decoded token:', decodedToken);
   //console.log(' firebase:', decodedToken.firebase);

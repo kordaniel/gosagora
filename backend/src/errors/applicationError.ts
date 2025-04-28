@@ -1,7 +1,8 @@
 type ApplicationErrorKind =
   | 'APIRequestError'
   | 'AuthError'
-  | 'CorsError';
+  | 'CorsError'
+  | 'ServiceError';
 
 interface IApplicationErrorJSON {
   status: number;
@@ -100,8 +101,21 @@ export class AuthError extends ApplicationError {
   }
 };
 
+export class ServiceError extends ApplicationError {
+  kind = 'ServiceError' as const;
+
+  constructor(
+    public override message: string = 'GosaGora service internal error',
+    public status: number = 500,
+  ) {
+    super();
+    Object.setPrototypeOf(this, ServiceError.prototype);
+  }
+};
+
 export type ApplicationErrorType =
   | ApplicationError
   | APIRequestError
   | AuthError
-  | CorsError;
+  | CorsError
+  | ServiceError;

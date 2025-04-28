@@ -25,10 +25,14 @@ const EnvSchema = z.object({
   // TODO: Implement a check that the file exists and has correct format
   // TODO: Dont require this variable to be set if the env var already is set (google cloud)
   GOOGLE_APPLICATION_CREDENTIALS: z.string(),
+  // Should be set in development and test environments
+  // If not set, firebase-admin uses the live API
+  // Defined her only as a reference. Dont export in config, firebase-admin reads the env variable
+  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
 });
 
 export interface IConfiguration extends Omit<
-  z.infer<typeof EnvSchema>, 'GOOGLE_APPLICATION_CREDENTIALS'
+  z.infer<typeof EnvSchema>, 'GOOGLE_APPLICATION_CREDENTIALS' | 'FIREBASE_AUTH_EMULATOR_HOST'
 > {
   IS_PRODUCTION_ENV: boolean;
   IS_DEVELOPMENT_ENV: boolean;

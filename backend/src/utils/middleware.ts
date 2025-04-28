@@ -26,6 +26,11 @@ const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
       res.status(err.status).json(err.toJSONObj());
       break;
     }
+    case 'ServiceError': {
+      logger.info(err.toLogString());
+      res.status(err.status).json(err.toJSONObj());
+      break;
+    }
     default: {
       assertNever(err);
       break;
@@ -100,6 +105,7 @@ const errorHandler: ErrorRequestHandler = (err: unknown, _req, res, next) => {
       error: err.format(),
     });
   } else if (err instanceof FirebaseAuthError) {
+    // https://firebase.google.com/docs/reference/admin/error-handling
     handleFirebaseAuthError(err, res);
   } else if (err instanceof SequelizeBaseError) {
     handleSequelizeError(err, res);
