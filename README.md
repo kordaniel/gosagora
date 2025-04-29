@@ -131,5 +131,7 @@ Make sure that you have these files set up correctly. See the instruction above 
 ├── frontend/
 │   ├── firebaseConfig.ts - Required
 │   └── .env - See frontend/.env.example for required variables
-└── firebase-service-account.json
+├── firebase.json - This file is generated when you run firebase init and is not used
+├── firebase-dev.json - Firebase emulator config for dev-env
+└── firebase-test.json - Firebase emulator config for test-env
 ```

@@ -14,6 +14,7 @@ Backend for GosaGora service
 The versions listed below are the ones that have been used while developing and testing
 - Node.js 20.10
 - Npm 10.2.3
+- Npx 10.2.3
 - Docker 28.1.1
 - Docker Compose 2.35.1
 
@@ -38,21 +39,34 @@ npm run tsc && npm run start
 ```
 
 ### Run in dev & test environments
+These environments requires that the Firebase Local Emulator Suite is running.
 
-### Dev
-Use `npm run dev` for development under normal circumstances. This command will terminate all processes and docker containers when exited.
+#### Leave emulator running and use npm scripts
+Start the emulator for the desired environment
+
+```bash
+firebase --config ../firebase-<dev|test>.json emulators:start
+```
+When the emulator is running you can use the configured npm scripts
+
+#### Dev env
+Use `npm run dev` for development under normal circumstances. This command will stop the postgres docker container when exited. You can use `npm run dev:leavedb` for repetitive runs and manually run `npm run devdb:stop` when done.
 ```bash
 npm run devdb:start - start postgres dev container
 npm run devdb:stop  - stop postgres dev container
 npm run devdb:clear - stop postgres dev container, deleting all stored data
 npm run dev:leavedb - runs devdb:start and the express application, leaving devdb running
-npm run dev  - runs dev:leavedb and finally devdb:stop at SIGINT (ctrl+c) event
+npm run dev  - runs dev:leavedb and finally devdb:stop when express app exits programmatically or at SIGINT (ctrl+c) signal
 npm run lint - run linting
 npm run migration:dev:down - rollback database migration
 ```
 
-### Test
-Use `npm run test` for single test runs. This command will terminate all processes and docker containers when done. You can use `npm run test:leavedb` for repetitive runs and manually run `npm run testdb:stop` when done.
+#### Test
+Run the tests by executing the script `run-tests-with-firebase-emulator.sh`. It will spin up the test postgres docker container db, firebase emulator and then runs the tests. Once the tests complete, all started processes will be terminated gracefully.
+
+Alternatively you can use the provided npm scripts directly, assuming you have the Firebase Emulator running.
+
+Use `npm run test` for single test runs. This command will stop the postgres docker container when exited. You can use `npm run test:leavedb` for repetitive runs and manually run `npm run testdb:stop` when done.
 ```bash
 npm run testdb:start - start postgres test container
 npm run testdb:stop  - stop postgres test container
@@ -60,6 +74,8 @@ npm run testdb:clear - stop postgres test container, deleting all stored data
 npm run test:leavedb - runs testdb:start and runs tests, leaving testdb running
 npm run test - runs test:leavedb and then testdb:stop when tests finishes
 ```
+
+
 
 ### Connect to dockerized postgres
 Dev and test environments are configured to run and use a dockerized postgres container running at the dev localhost. You can connect to it using psql with the following command:
