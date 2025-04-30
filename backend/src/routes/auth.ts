@@ -23,7 +23,7 @@ router.post('/signup', signupUserParser, async (
   res: Response<User>
 ) => {
   const newUser = await authService.createNewUser(req.body.data);
-  res.json(newUser);
+  res.status(201).json(newUser);
 });
 
 export default router;

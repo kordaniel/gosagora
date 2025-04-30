@@ -30,4 +30,5 @@
 | 2025.04.27 | 1   | BACKEND: Fix npm scripts. Update README's. Switch bind->named volumes in docker compose. Add displayName field to User |
 | 2025.04.28 | 2   | BACKEND: Write instructions for Firebase Local Emulator Suite and dev/test environments. Refactor firebase setup to account for different environments |
 | 2025.04.29 | 3   | BACKEND: Configure, setup scripts, write instruction for Firebase Local Emulator. Spent too much time trying to configure FB emulator to exec npm-scripts with its command *emulators:exec "npm run.."*, with no success. So implemented a bash-script that uses npx to run tests. ts-node-dev does not work with the same setup so no bash-script for dev-env |
-| Total | 50 | |
+| 2025.04.30 | 2   | BACKEND: Add firebase (client, for tests), faker packages. Implement first test for "/auth" route, signup success case |
+| Total | 52 | |

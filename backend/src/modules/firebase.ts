@@ -3,14 +3,15 @@ import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import {
   Auth,
   type DecodedIdToken,
+  type ListUsersResult,
   FirebaseAuthError,
-  //type ListUsersResult,
   getAuth,
-  //UserRecord,
+  type DeleteUsersResult,
 } from 'firebase-admin/auth';
 
 import logger from '../utils/logger';
 import { ServiceError } from '../errors/applicationError';
+import config from '../utils/config';
 
 /**********************************************
  * Documentation
@@ -55,6 +56,7 @@ let auth: Auth | undefined;
 export const connectToFirebase = async () => {
   logger.info('Setting up firebase connection(s)');
   auth = getAuth(fbAdminApp);
+
   if (await checkConnection()) {
     logger.info('Firebase connection(s) established');
     logger.info('Firebase service connections:');
@@ -101,10 +103,7 @@ const verifyIdToken = async (fbIdToken: string): Promise<DecodedIdToken> => {
     throw new ServiceError('GosaGora service error: unable to perform IdToken verification');
   }
 
-  const decodedToken = await auth.verifyIdToken(fbIdToken);
-  //console.log('decoded token:', decodedToken);
-  //console.log(' firebase:', decodedToken.firebase);
-  return decodedToken;
+  return await auth.verifyIdToken(fbIdToken);
 };
 
 /*
@@ -139,20 +138,47 @@ const deleteUser = async (fbUid: string): Promise<boolean> => {
     return false;
   }
 };
+*/
 
-const getAllUsers = async (pageToken?: string): Promise<ListUsersResult | null> => {
+const getAllUsers = async (maxResults: number = 10, pageToken?: string): Promise<ListUsersResult | null> => {
+  if (!auth) {
+    throw new ServiceError('GosaGora service error: unable to get all users');
+  }
+
   try {
-    const users = await auth.listUsers(100, pageToken);
-    console.log('listUsers pageToken:', users.pageToken);
-    console.log('listUsers:', users.users);
+    const users = await auth.listUsers(maxResults, pageToken);
+    if (users.users.length >= 1000) {
+      throw new ServiceError('Internal error, unable to handle user batches with a size >= 1000');
+    }
     return users;
   } catch (error: unknown) {
+    // TODO: Add proper error handling
     console.log('listUsersError:', error);
     return null;
   }
 };
-*/
+
+const deleteUsers = async (firebaseUserUidsToDelete: string[]): Promise<DeleteUsersResult | null> => {
+  if (!auth) {
+    throw new ServiceError('GosaGora service error: unable to delete all users');
+  }
+  if (config.IS_PRODUCTION_ENV) {
+    // TODO: Implement suitable Error type
+    throw new ServiceError('Attempted to batch delete users in production environment');
+  }
+
+  try {
+    return await auth.deleteUsers(firebaseUserUidsToDelete);
+  } catch (error: unknown) {
+    // TODO: Add proper error handling
+    console.log('deleteUsersError:', error);
+    return null;
+  }
+};
+
 
 export default {
   verifyIdToken,
+  getAllUsers,
+  deleteUsers,
 };

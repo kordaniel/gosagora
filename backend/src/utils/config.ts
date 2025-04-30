@@ -28,7 +28,9 @@ const EnvSchema = z.object({
   // Should be set in development and test environments
   // If not set, firebase-admin uses the live API
   // Defined her only as a reference. Dont export in config, firebase-admin reads the env variable
-  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
+  FIREBASE_AUTH_EMULATOR_HOST: process.env.NODE_ENV !== 'production'
+    ? z.string().min(4)
+    : z.string().optional(),
 });
 
 export interface IConfiguration extends Omit<
