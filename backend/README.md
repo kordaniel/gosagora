@@ -42,15 +42,17 @@ npm run tsc && npm run start
 These environments requires that the Firebase Local Emulator Suite is running.
 
 #### Leave emulator running and use npm scripts
-Start the emulator for the desired environment
+Start the emulator for the desired environment with the provided scripts
 
 ```bash
 firebase --config ../firebase-<dev|test>.json emulators:start
+./run-firebase-dev-emulator.sh
+./run-firebase-test-emulator.sh
 ```
 When the emulator is running you can use the configured npm scripts
 
 #### Dev env
-Use `npm run dev` for development under normal circumstances. This command will stop the postgres docker container when exited. You can use `npm run dev:leavedb` for repetitive runs and manually run `npm run devdb:stop` when done.
+Use `npm run dev` for development under normal circumstances. This command will start the required postgres docker container automatically as well as stop it at exit. You can use `npm run dev:leavedb` for repetitive runs and manually run `npm run devdb:stop` when done.
 ```bash
 npm run devdb:start - start postgres dev container
 npm run devdb:stop  - stop postgres dev container
@@ -75,10 +77,9 @@ npm run test:leavedb - runs testdb:start and runs tests, leaving testdb running
 npm run test - runs test:leavedb and then testdb:stop when tests finishes
 ```
 
-
-
 ### Connect to dockerized postgres
 Dev and test environments are configured to run and use a dockerized postgres container running at the dev localhost. You can connect to it using psql with the following command:
 ```bash
+docker container ls
 docker exec -it <CONTAINER_ID> psql -U <username> <database-name, specified in docker-compose-files>
 ```

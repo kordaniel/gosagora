@@ -53,7 +53,7 @@ Start by creating a Firebase project to connect to.
 - Click **"Create a Firebase project"**, choose a name, and follow the steps
 
 #### 2. Enable Email/Password Authentication
-- In the Firebase console, go to **Authentication -> Sign-in method**
+- In the Firebase console, go to **Build/Authentication -> Sign-in method**
 - Click **"Add new provider"**
 - Enable **Email/Password**
 
@@ -62,7 +62,7 @@ Even though the frontend is a React Native app it uses a web config object.
 - Go to **Project Overview/Project Settings -> General**
 - Under **Your apps**, click **</> Web App**
 - Register the app name, skip Firebase Hosting
-- **Copy the provided Firebase config JSON into `frontend/firebaseConfig.json`**
+- **Copy the provided FirebaseConfig object into `frontend/firebaseConfig.json` and format it as JSON**
 - The config contains no secrets
 
 #### 4. Generate Admin SDK Credentials for the backend
@@ -74,7 +74,7 @@ Even though the frontend is a React Native app it uses a web config object.
 - Make sure that `.env.<production|development|test>` contains the variable `GOOGLE_APPLICATION_CREDENTIALS` and that it points to the JSON file
 
 
-### Firebase CLI and Firebase Local Emulator Suite
+### Firebase CLI and Firebase Local Emulator Suite for DEV/TEST environments
 Use [Firebase CLI](https://firebase.google.com/docs/cli) in development and test environments.
 
 #### Supported Firebase CLI version and its requirements
@@ -107,31 +107,51 @@ Select the following options:
 - Enable Emulator UI YES, leave port empty (defaults to 4000)
 - Download emulators now
 
-Now you should be able to run the emulator, which needs to be running when you run GosaGora tests or the development environment.
+This creates the files `.firebaserc` and `firebase.json` files in the root directory, which contains the basic config for the emulator for running in production environment.
 
-#### 4. Start the Firebase Local Emulator Suite
-```bash
-firebase emulators:start
-```
-#### 5. View the Firebase Local Emulator Suite UI
-Open http://localhost:4000/ in your browser to inspect the status of the emulator.
+#### 4. Create dev and test environemnts (Firebase projects)
+- Follow steps 1-4 in the previous section (Firebase) and create two new projects in the firebase console.
+- The configuration and scripts provided in this repository assumes that you name these as `gosagora-dev` and `gosagora-test`. If you choose any other names you will have to edit the provided configuration manually.
+- In step 3 name the frontend firebaseConfig files as
+  - **`frontend/firebaseDevConfig.json`**
+  - **`frontend/firebaseTestConfig.json`**
+- In step 4 name the backend configuration files as
+  - **`backend/firebaseDevServiceAccount.json`**
+  - **`backend/firebaseTestServiceAccount.json`**
 
-#### 6. Configure backend to use the Local Emulator
-- Make sure that `.env.<development|test>` contains the variable `FIREBASE_AUTH_EMULATOR_HOST` and that it is set to the Host:Port of the running emulator. This url should not contain anything except the **host/ip:Port**. No schemes, no paths, nothing!
+#### 5. Add your newly created projects to `.firebaserc`
+- Add the following key:value pairs to the projects map
+  - "dev": "gosagora-dev"
+  - "test": "gosagora-test"
+
+#### 6. Execute in dev/test env
+Follow the instructions inside the `backend/` directory to run the application in dev and test environments.
+#### 6.1. Configure backend to use the Local Emulator
+- Make sure that the backend environment configuration `.env.<development|test>` file contains the variable `FIREBASE_AUTH_EMULATOR_HOST` and that it is set to the Host:Port of the running emulator for the desired env. This url should not contain anything except the **host/ip:port**.
 - **The backend will use the live Firebase API if this is not set correctly!!**
 
+#### 7. View the Firebase Local Emulator Suite UI
+When the emulator is running you can open the suitable url from the following list in your browser to inspect the status of the emulator.
+- `http://localhost:4000/` for dev env
+- `http://localhost:4001/` for test env
 
 
 ### Project structure, important files
 Make sure that you have these files set up correctly. See the instruction above and in the respective directories for both the front- and backends
 ```console
 ├── backend/
-│   ├── firebaseServiceAccount.json - Required to be set when running outside Google Cloud
-│   └── .env.<production|development|test> - See backend/.env.example for required variables
+│   ├── firebaseServiceAccount.json - For production environment, required to be configured when running outside Google Cloud
+│   ├── firebaseDevServiceAccount.json - Required for dev env
+│   ├── firebaseTestServiceAccount.json - Required for test env
+│   └── .env.<production|development|test> - Required, See backend/.env.example for required variables
+├── firebase-emulator-data/ - Persistent data directory for the emulator
 ├── frontend/
-│   ├── firebaseConfig.ts - Required
+│   ├── firebaseConfig.ts - For production environment, required
+│   ├── firebaseDevConfig.ts - Required for dev env
+│   ├── firebaseTestConfig.ts - Required for test env
 │   └── .env - See frontend/.env.example for required variables
-├── firebase.json - This file is generated when you run firebase init and is not used
-├── firebase-dev.json - Firebase emulator config for dev-env
-└── firebase-test.json - Firebase emulator config for test-env
+├── .firebaserc - Contains your configured firebase projects
+├── firebase.json - Firebase emulator config for your project. This file is generated when you run firebase init and is not used
+├── firebase.dev.json - Firebase emulator config for dev-env
+└── firebase.test.json - Firebase emulator config for test-env
 ```
