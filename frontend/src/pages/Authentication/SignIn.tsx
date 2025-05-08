@@ -9,6 +9,7 @@ import type { FormProps } from '../../components/Form';
 import StyledText from '../../components/StyledText';
 
 import type { AppTheme } from '../../types';
+import ErrorRenderer from '../../components/ErrorRenderer';
 import config from '../../utils/config';
 
 export type SignInValuesType = {
@@ -55,21 +56,21 @@ const formFields: FormProps<SignInValuesType>['formFields'] = {
 };
 
 interface SignInProps {
-  handleSignIn: (credentials: SignInValuesType) => Promise<void>;
+  handleSignIn: (username: string, password: string) => Promise<void>;
+  errorMsg: string;
 }
 
-const SignIn = ({ handleSignIn }: SignInProps) => {
+const SignIn = ({ handleSignIn, errorMsg }: SignInProps) => {
   const theme = useTheme<AppTheme>();
 
   const onSubmit = async (values: SignInValuesType) => {
-    console.log('sign in component, values:', values);
-    await handleSignIn(values);
-    console.log('done submitting!');
+    await handleSignIn(values.email, values.password);
   };
 
   return (
     <View style={theme.styles.primaryContainer}>
       <StyledText variant="title">Sign In</StyledText>
+      <ErrorRenderer>{errorMsg}</ErrorRenderer>
       <Form<SignInValuesType>
         formFields={formFields}
         onSubmit={onSubmit}

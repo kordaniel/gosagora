@@ -9,11 +9,13 @@ import type { FormProps } from '../../components/Form';
 import StyledText from '../../components/StyledText';
 
 import { AppTheme } from '../../types';
+import ErrorRenderer from '../../components/ErrorRenderer';
 import config from '../../utils/config';
 
 
 type SignUpValuesType = {
   email: string;
+  displayName: string;
   password: string;
   passwordConfirmation: string;
 };
@@ -24,6 +26,10 @@ const validationSchema: Yup.Schema<SignUpValuesType> = Yup.object().shape({
     .max(256, 'Email can not be longer than 256 characters')
     .email()
     .required('Email is required'),
+  displayName: Yup.string()
+    .min(4, 'Visible name must be at least 4 characters long')
+    .max(64, 'Visible name can not be longer than 64 characters')
+    .required('Visible name is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters long')
     .max(30, 'Password can not be longer than 30 characters')
@@ -44,6 +50,16 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
       autoFocus: true,
       inputMode: 'email',
     },
+  },
+  displayName: {
+    label: config.IS_MOBILE ? undefined : 'Visible name',
+    placeholder: 'Shown in your profile and interactions',
+    props: {
+      autoCapitalize: 'none',
+      autoCorrect: false,
+      autoFocus: false,
+      inputMode: 'text',
+    }
   },
   password: {
     label: config.IS_MOBILE ? undefined : 'Password',
@@ -72,21 +88,21 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
 };
 
 interface SignUpProps {
-  handleSignUp: (email: string, password: string) => Promise<void>;
+  handleSignUp: (email: string, password: string, displayName: string) => Promise<void>;
+  errorMsg: string;
 }
 
-const SignUp = ({ handleSignUp }: SignUpProps) => {
+const SignUp = ({ handleSignUp, errorMsg }: SignUpProps) => {
   const theme = useTheme<AppTheme>();
 
   const onSubmit = async (values: SignUpValuesType) => {
-    console.log('sign up component, values:', values);
-    await handleSignUp(values.email, values.password);
-    console.log('done submitting!');
+    await handleSignUp(values.email, values.password, values.displayName);
   };
 
   return (
     <View style={theme.styles.primaryContainer}>
       <StyledText variant="title">Sign Up</StyledText>
+      <ErrorRenderer>{errorMsg}</ErrorRenderer>
       <Form<SignUpValuesType>
         formFields={formFields}
         onSubmit={onSubmit}

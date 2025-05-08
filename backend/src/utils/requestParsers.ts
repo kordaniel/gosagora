@@ -10,9 +10,8 @@ const SignUpUserSchema = matchingZodSchema<APIAuthRequest<'signup', SignUpArgume
     type: z.literal('signup'),
     data: z.object({
       email: z.string().min(8).max(256).email(),
+      password: z.string().min(8).max(30),
       displayName: z.string().min(4).max(64),
-      firebaseUid: z.string(),
-      firebaseIdToken: z.string(),
     }).strict(),
   }).strict() // strict => throws when parsing if object contains additional fields
 );

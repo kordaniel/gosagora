@@ -7,6 +7,7 @@ import {
   FirebaseAuthError,
   getAuth,
   type DeleteUsersResult,
+  type UserRecord,
 } from 'firebase-admin/auth';
 
 import logger from '../utils/logger';
@@ -140,6 +141,14 @@ const deleteUser = async (fbUid: string): Promise<boolean> => {
 };
 */
 
+const createUser = async (email: string, password: string, displayName: string): Promise<UserRecord> => {
+  if (!auth) {
+    throw new ServiceError('GosaGora service error: Unable to create user');
+  }
+
+  return await auth.createUser({ email, password, displayName });
+};
+
 const getAllUsers = async (maxResults: number = 10, pageToken?: string): Promise<ListUsersResult | null> => {
   if (!auth) {
     throw new ServiceError('GosaGora service error: unable to get all users');
@@ -179,6 +188,7 @@ const deleteUsers = async (firebaseUserUidsToDelete: string[]): Promise<DeleteUs
 
 export default {
   verifyIdToken,
+  createUser,
   getAllUsers,
   deleteUsers,
 };

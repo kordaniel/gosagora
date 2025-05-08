@@ -13,36 +13,41 @@ import useAuth from '../../hooks/useAuth';
 
 const Authentication = () => {
   const theme = useTheme<AppTheme>();
-  const { user, handleSignIn, handleSignUp, handleSignOut } = useAuth();
+  const { user, error, handleSignIn, handleSignUp, handleSignOut } = useAuth();
   const [view, setView] = useState<'signIn' | 'signUp'>('signIn');
 
   const toggleView = () => {
     setView(view === 'signIn' ? 'signUp' : 'signIn');
   };
 
-  console.log('AUTH, user:', user);
+  if (!user) {
+    return (
+      <View style={theme.styles.primaryContainer}>
+        {view === 'signIn'
+          ? <>
+              <SignIn handleSignIn={handleSignIn} errorMsg={error} />
+              <StyledText>Don&apos;t have an account?&nbsp;
+                <Pressable onPress={toggleView}>
+                  <StyledText style={{ fontWeight: "bold" }}>Sign Up</StyledText>
+                </Pressable>
+              </StyledText>
+            </>
+          : <>
+              <SignUp handleSignUp={handleSignUp} errorMsg={error} />
+              <StyledText>Already have an account?&nbsp;
+                <Pressable onPress={toggleView}>
+                  <StyledText style={{ fontWeight: "bold" }}>Sign In</StyledText>
+                </Pressable>
+              </StyledText>
+            </>
+        }
+      </View>
+    );
+  }
 
-  /**
-   * TODO: Implement auth type selection:
-   * ****
-   * - Sign In using your email
-   * - Sign In with Google
-   */
-
-  return user ? (
-    <SignOut handleSignOut={handleSignOut} />
-  ) : (
+  return (
     <View style={theme.styles.primaryContainer}>
-      {view === 'signIn'
-        ? <>
-            <SignIn handleSignIn={handleSignIn} />
-            <StyledText>No account? <Pressable style={{ fontWeight: "bold" }} onPress={toggleView}>Sign Up</Pressable></StyledText>
-          </>
-        : <>
-            <SignUp handleSignUp={handleSignUp} />
-            <StyledText>Already have an account? <Pressable style={{ fontWeight: "bold" }} onPress={toggleView}>Sign In</Pressable></StyledText>
-          </>
-      }
+      <SignOut handleSignOut={handleSignOut} />
     </View>
   );
 };

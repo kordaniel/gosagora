@@ -4,7 +4,7 @@ Frontend for GosaGora service
 ### Tech Stack
 - Typescript
 - Expo React Native
-- Firebase
+- Firebase JS SDK
 
 ## Setup
 

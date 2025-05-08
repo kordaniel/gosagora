@@ -11,7 +11,7 @@ GosaGora integrates with [Firebase](https://firebase.google.com/) API for user a
 
 ```console
 ┌────────────┐                        ┌──────────────────┐
-│            |----[1] Sign In/Up----->│                  |
+│            |----[1] Sign In-------->│                  |
 |  Frontend  |                        |     Firebase     |
 |            |<---[2] Credentials-----│  Authentication  |
 └┬─────────┬─┘     (with IdToken)     |                  |
@@ -21,7 +21,7 @@ GosaGora integrates with [Firebase](https://firebase.google.com/) API for user a
 Authorization header |                      |  |
 of every request     |                      |  |
  |         ┌---------┘                      |  |
- |     [6] Sign In/Up                       |  |
+ |     [6] Sign In/API request              |  |
  |     Status response                      |  |
 \ /        |                                |  |
 ┌┴─────────┴┐                               |  |
@@ -125,10 +125,11 @@ This creates the files `.firebaserc` and `firebase.json` files in the root direc
   - "test": "gosagora-test"
 
 #### 6. Execute in dev/test env
-Follow the instructions inside the `backend/` directory to run the application in dev and test environments.
-#### 6.1. Configure backend to use the Local Emulator
+Follow the instructions inside the `backend/` and `frontend/` directories to run the application in dev and test environments.
+#### 6.1. Configure back- and frontends to use the Local Emulator
 - Make sure that the backend environment configuration `.env.<development|test>` file contains the variable `FIREBASE_AUTH_EMULATOR_HOST` and that it is set to the Host:Port of the running emulator for the desired env. This url should not contain anything except the **host/ip:port**.
-- **The backend will use the live Firebase API if this is not set correctly!!**
+- Similarily for the frontend make sure that the `.env` file contains the same `FIREBASE_AUTH_EMULATOR_HOST` variable in dev and test environments.
+- **If this variable is not set correctly the live Firebase API will be used instead of the emulator**
 
 #### 7. View the Firebase Local Emulator Suite UI
 When the emulator is running you can open the suitable url from the following list in your browser to inspect the status of the emulator.
