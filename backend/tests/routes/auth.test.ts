@@ -356,7 +356,7 @@ describe('/auth', () => {
       }
 
       await testDatabase.insertUsers(userCredentials.map(({ userBase, credentials }) => ({
-        email: userBase.email,
+        email: userBase.email.toLowerCase(),
         displayName: userBase.displayName,
         firebaseUid: credentials.user.uid
       })));
@@ -398,7 +398,7 @@ describe('/auth', () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         expect(Date.parse(updatedAt)).not.toBeNaN();
 
-        expect(bodyRest).toEqual({
+        expect(bodyRest).toStrictEqual({
           lastseenAt: null,
           deletedAt: null,
           disabledAt: null,
@@ -475,6 +475,50 @@ describe('/auth', () => {
       }); // Fails if unique constraints are validated
 
     }); // Addition of new users
+
+    describe('Signing in users', () => {
+
+      test('Succeeds with valid user details and updates lastseenAt', async () => {
+        const user = userCredentials[0];
+        const userInDb = await testDatabase.getUserByFirebaseUid(user.credentials.user.uid);
+        expect(userInDb).not.toBeNull();
+        expect(userInDb!.lastseenAt).toBeNull();
+
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+            data: {
+              email: user.userBase.email,
+              firebaseUid: user.credentials.user.uid,
+              firebaseIdToken: await user.credentials.user.getIdToken(),
+            },
+          })
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { id, createdAt, updatedAt, lastseenAt, ...bodyRest } = res.body;
+
+        expect(id).toEqual(userInDb!.id);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(Date.parse(createdAt)).not.toBeNaN();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(Date.parse(updatedAt)).not.toBeNaN();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(Date.parse(lastseenAt)).not.toBeNaN();
+
+        expect(bodyRest).toStrictEqual({
+          email: user.userBase.email.toLowerCase(),
+          firebaseUid: user.credentials.user.uid,
+          displayName: user.userBase.displayName,
+          deletedAt: null,
+          disabledAt: null,
+        });
+      });
+    }); // Signing in users
 
   }); // When there are users in the db
 

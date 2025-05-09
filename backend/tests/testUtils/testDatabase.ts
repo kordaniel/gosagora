@@ -42,6 +42,12 @@ const userCount = async () => {
   return await User.count({});
 };
 
+const getUserByFirebaseUid = async (firebaseUid: string) => {
+  return await User.findOne({
+    where: { firebaseUid }
+  });
+};
+
 export default {
   connectToDatabase,
   disconnectFromDatabase,
@@ -50,4 +56,5 @@ export default {
   insertUser,
   insertUsers,
   userCount,
+  getUserByFirebaseUid,
 };
