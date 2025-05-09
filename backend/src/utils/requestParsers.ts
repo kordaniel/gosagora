@@ -9,9 +9,9 @@ const SignUpUserSchema = matchingZodSchema<APIAuthRequest<'signup', SignUpArgume
   z.object({
     type: z.literal('signup'),
     data: z.object({
-      email: z.string().min(8).max(256).email(),
-      password: z.string().min(8).max(30),
-      displayName: z.string().min(4).max(64),
+      email: z.string().trim().toLowerCase().min(8).max(256).email(),
+      password: z.string().trim().min(8).max(30),
+      displayName: z.string().trim().min(4).max(64),
     }).strict(),
   }).strict() // strict => throws when parsing if object contains additional fields
 );
@@ -20,9 +20,9 @@ const SignInUserSchema = matchingZodSchema<APIAuthRequest<'login', SignInArgumen
   z.object({
     type: z.literal('login'),
     data: z.object({
-      email: z.string().min(8).max(256).email(),
-      firebaseUid: z.string(),
-      firebaseIdToken: z.string(),
+      email: z.string().trim().toLowerCase().min(8).max(256).email(),
+      firebaseUid: z.string().trim(),
+      firebaseIdToken: z.string().trim(),
     }).strict(),
   }).strict() // strict => throws when parsing if object contains additional fields
 );
@@ -45,7 +45,7 @@ export const signupUserParser = (
   }
 
   try {
-    SignUpUserSchema.parse(req.body);
+    req.body = SignUpUserSchema.parse(req.body);
     next();
   } catch (error: unknown) {
     next(error);
@@ -69,7 +69,7 @@ export const signinUserParser = (
   }
 
   try {
-    SignInUserSchema.parse(req.body);
+    req.body = SignInUserSchema.parse(req.body);
     next();
   } catch (error: unknown) {
     next(error);
