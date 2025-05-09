@@ -7,8 +7,9 @@ import {
 } from 'sequelize';
 
 import logger from './logger';
-import { ApplicationError, type ApplicationErrorType } from '../errors/applicationError';
+import { APIRequestError, ApplicationError, type ApplicationErrorType } from '../errors/applicationError';
 import { assertNever, isNumber } from './typeguards';
+import { snakeToCamelCase } from './helpers';
 
 
 const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
@@ -39,37 +40,46 @@ const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
 };
 
 const handleFirebaseAuthError = (err: FirebaseAuthError, res: Response) => {
-  logger.info('FirebaseAuthError:', err.message);
-  logger.error('TODO: Implement error handling for FirebaseAuthError');
-  res.status(418).send(err.toJSON()); // TODO: Setup proper error handling
-  return;
   switch (err.code) {
+    //case 'auth/argument-error': {
+    // Firebase ID token has incorrect "aud" (audience) claim.
+    // Expected "backend-firebase-project-name" but got "another-firebase-project-name".
+    // Make sure the ID token comes from the same Firebase project as the service account
+    // used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
+    // for details on how to retrieve an ID token.
+    //  // Thrown when
+    //  break;
+    //}
     case 'auth/email-already-exists': {
+      res.status(409).json(new APIRequestError(err.code, 409, err.toJSON()).toJSONObj());
       break;
     }
-    case 'auth/id-token-expired': {
-      break;
-    }
-    case 'auth/invalid-email': {
-      break;
-    }
-    case 'auth/invalid-id-token': {
-      // The provided ID token is not a valid Firebase ID token.
-      break;
-    }
-    case 'auth/invalid-password': {
-      // The provided value for the password user property is invalid. It must be a string with at least six characters.
-      break;
-    }
-    case 'auth/phone-number-already-exists': {
-      // The provided phoneNumber is already in use by an existing user. Each user must have a unique phoneNumber.
-      break;
-    }
-    case 'auth/user-not-found': {
-      // There is no existing user record corresponding to the provided identifier.
-      break;
-    }
+    //case 'auth/id-token-expired': {
+    //  break;
+    //}
+    //case 'auth/invalid-email': {
+    //  break;
+    //}
+    //case 'auth/invalid-id-token': {
+    //  // The provided ID token is not a valid Firebase ID token.
+    //  break;
+    //}
+    //case 'auth/invalid-password': {
+    //  // The provided value for the password user property is invalid. It must be a string with at least six characters.
+    //  break;
+    //}
+    //case 'auth/phone-number-already-exists': {
+    //  // The provided phoneNumber is already in use by an existing user. Each user must have a unique phoneNumber.
+    //  break;
+    //}
+    //case 'auth/user-not-found': {
+    //  // There is no existing user record corresponding to the provided identifier.
+    //  break;
+    //}
     default: {
+      logger.error('unhandled FirebaseAuthError, code:', err.code);
+      logger.error('name:', err.name, '. Message:', err.message);
+      res.status(418).send(err.toJSON()); // TODO: Setup proper error handling
       break;
     }
   }
@@ -77,20 +87,32 @@ const handleFirebaseAuthError = (err: FirebaseAuthError, res: Response) => {
 
 const handleSequelizeError = (err: SequelizeBaseError, res: Response) => {
   if (err instanceof SequelizeValidationError) {
-    res.status(400).json({
-      status: 400,
-      error: {
-        message: err.name, // "SequelizeValidationError"
-        body: err.errors.map(e => e.message).join(', '),
-      },
-    });
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      res.status(409).json({
+        status: 409,
+        error: {
+          code: err.name, // "SequelizeValidationError"
+          message: `${err.errors.map(({ path, value }) => `${path ? snakeToCamelCase(path) : path}: "${value}"`).join(', ')} is already in use by another account`,
+        },
+      });
+    } else {
+      logger.error(`unhandled SequelizeValidationError, name: ${err. name}. message: ${err.message}`);
+      res.status(418).json({
+        status: 418,
+        error: {
+          code: err.name,
+          message: err.message,
+          body: err.errors.map(e => e.message).join(', '),
+        },
+      });
+    }
   } else {
-    logger.error(`unhandled sequelize error, name: ${err. name} -`, err.message);
+    logger.error(`unhandled SequelizeBaseError, name: ${err. name}. message: ${err.message}`);
     res.status(400).json({
       status: 400,
       error: {
-        message: err.name,
-        body: err.message,
+        code: err.name,
+        message: err.message,
       },
     });
   }

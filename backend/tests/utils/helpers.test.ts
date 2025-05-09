@@ -1,4 +1,7 @@
-import { stripCredentialsFromDBUri } from '../../src/utils/helpers';
+import {
+  snakeToCamelCase,
+  stripCredentialsFromDBUri,
+} from '../../src/utils/helpers';
 
 describe('Helpers', () => {
 
@@ -32,5 +35,31 @@ describe('Helpers', () => {
     });
 
   }); // stripCredentialsFromDBUri
+
+  describe('snakeToCamelCase', () => {
+    const testCases = [
+      { input: 'snake_case', expected: 'snakeCase' },
+      { input: 'display_name', expected: 'displayName' },
+      { input: 'firebase_uid', expected: 'firebaseUid' },
+      { input: 'lastseen_at',  expected: 'lastseenAt' },
+      { input: 'long_snake_cased_string', expected: 'longSnakeCasedString' },
+      { input: 'Pascal_snake', expected: 'PascalSnake' },
+
+      { input: 'snake_Not_case', expected: 'snake_Not_case' },
+      { input: 'camelCase', expected: 'camelCase' },
+      { input: 'kebab-case', expected: 'kebab-case' },
+      { input: 'PascalCase', expected: 'PascalCase' },
+      { input: 'kebab-snake_cased_string', expected: 'kebab-snake_cased_string' },
+      { input: 'Pascal-not-snake_Cased-_String', expected: 'Pascal-not-snake_Cased-_String' },
+      { input: 'Long_Not_Snake_Cased-String', expected: 'Long_Not_Snake_Cased-String' },
+    ];
+
+    test('returns snake_cased strings in camelCase', () => {
+      testCases.forEach(({ input, expected }) => {
+        expect(snakeToCamelCase(input)).toEqual(expected);
+      });
+    });
+
+  }); // snakeToCamelCase
 
 }); // Helpers

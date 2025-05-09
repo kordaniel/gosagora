@@ -21,7 +21,7 @@ export interface IUserBaseObject {
 const createUserBase = (): IUserBaseObject => {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
-  const email = faker.internet.email({ firstName, lastName});
+  const email = faker.internet.email({ firstName, lastName });
 
   return {
     email, // Length must be in the closed range [8,256]
@@ -37,23 +37,24 @@ const createUserBase = (): IUserBaseObject => {
   };
 };
 
-const userBaseObjects: IUserBaseObject[] = [];
+//const userBaseObjects: IUserBaseObject[] = [];
 
 function* generateUserBaseObj(): Generator<
-{ index: number; userBaseObject: IUserBaseObject },
-{ index: number; userBaseObject: IUserBaseObject },
+IUserBaseObject,
+IUserBaseObject,
 void
 > {
-  let i: number = 0;
+  //let i: number = 0;
   while (true) {
-    userBaseObjects.push(createUserBase());
-    yield { index: i, userBaseObject: userBaseObjects[i++] };
+    yield createUserBase();
+    //userBaseObjects.push(createUserBase());
+    //yield { index: i, userBaseObject: userBaseObjects[i++] };
   }
 }
 
 const userBaseObjectGenerator = generateUserBaseObj();
 
 export default {
-  userBaseObjects,
+  //userBaseObjects,
   userBaseObjectGenerator
 };

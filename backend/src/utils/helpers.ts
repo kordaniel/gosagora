@@ -1,3 +1,13 @@
+export const snakeToCamelCase = (str: string): string => {
+  if (!(/_[a-z]/).test(str) || (/_[A-Z]|-([a-z]|[A-Z])/).test(str) ) {
+    return str;
+  }
+
+  return str.replace(/(_[a-z])/g, group =>
+    group.toUpperCase().replace('_', '')
+  );
+};
+
 /**
  * Returns a new string that is identical to the one passed in as the
  * only argument, but with all characters between the only allowed

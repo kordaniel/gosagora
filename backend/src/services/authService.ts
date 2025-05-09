@@ -11,17 +11,19 @@ const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> =
 
   if (!userRecord.email) {
     logger.error('firebase.createUser returned userRecord without email property');
+    //TODO: implement firebase.deleteUser( uid )
     throw new AuthError('Unable to create user, no email');
   }
   if (!userRecord.displayName) {
     logger.error('firebase.createUser returned userRecord without displayName property');
+    //TODO: implement firebase.deleteUser( uid )
     throw new Error('Unable to create user, no displayName');
   }
 
   const user = await userService.createNewUser({
     email: userRecord.email,
     displayName: userRecord.displayName,
-    firebaseUid: userRecord.uid
+    firebaseUid: userRecord.uid,
   });
 
   return user;

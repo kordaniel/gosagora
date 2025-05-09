@@ -33,4 +33,5 @@
 | 2025.04.30 | 2   | BACKEND: Add firebase (client, for tests), faker packages. Implement first test for "/auth" route, signup success case |
 | 2025.05.03 | 1   | BACKEND: Firebase emulator configuration. Persistent, isolated storage for environments, update and add scripts and instructions |
 | 2025.05.08 | 3   | SERVICE/BACKEND: Refactor auth logic => create all users trough backend, login trough frontend. FRONTEND: SignIn/Up implemented: useAuth hook, firebase, authService. Add firebaseConfig. Configure dev/test envs to use firebase local emulator |
-| Total | 56 | |
+| 2025.05.09 | 3   | BACKEND: Implement tests for signup, improve error handling/responses |
+| Total | 59 | |

@@ -1,6 +1,7 @@
 import config from '../../src/utils/config';
 import { connectToDatabase, sequelize } from '../../src/database';
 import { User } from '../../src/models';
+import { UserCreationAttributesType } from '../../src/models/user';
 
 const disconnectFromDatabase = async () => {
   await sequelize.close();
@@ -29,9 +30,24 @@ const dropUsers = async () => {
   });
 };
 
+const insertUser = async (attributes: UserCreationAttributesType) => {
+  return await User.create(attributes);
+};
+
+const insertUsers = async (attributes: UserCreationAttributesType[]) => {
+  return await User.bulkCreate(attributes);
+};
+
+const userCount = async () => {
+  return await User.count({});
+};
+
 export default {
   connectToDatabase,
   disconnectFromDatabase,
   dropDb,
   dropUsers,
+  insertUser,
+  insertUsers,
+  userCount,
 };
