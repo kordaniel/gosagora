@@ -35,4 +35,5 @@
 | 2025.05.08 | 3   | SERVICE/BACKEND: Refactor auth logic => create all users trough backend, login trough frontend. FRONTEND: SignIn/Up implemented: useAuth hook, firebase, authService. Add firebaseConfig. Configure dev/test envs to use firebase local emulator |
 | 2025.05.09 | 3   | BACKEND: Implement tests for signup, improve error handling/responses |
 | 2025.05.09 | 1   | BACKEND: Trim all /auth arguments, store user email in lowercase. Add test for successful SignIn |
-| Total | 60 | |
+| 2025.05.09 | 1   | BACKEND: Implement SignIn tests, improve error handling/responses |
+| Total | 61 | |

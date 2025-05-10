@@ -7,7 +7,7 @@ import {
 } from 'sequelize';
 
 import logger from './logger';
-import { APIRequestError, ApplicationError, type ApplicationErrorType } from '../errors/applicationError';
+import { APIRequestError, ApplicationError, AuthError, type ApplicationErrorType } from '../errors/applicationError';
 import { assertNever, isNumber } from './typeguards';
 import { snakeToCamelCase } from './helpers';
 
@@ -41,15 +41,15 @@ const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
 
 const handleFirebaseAuthError = (err: FirebaseAuthError, res: Response) => {
   switch (err.code) {
-    //case 'auth/argument-error': {
-    // Firebase ID token has incorrect "aud" (audience) claim.
-    // Expected "backend-firebase-project-name" but got "another-firebase-project-name".
-    // Make sure the ID token comes from the same Firebase project as the service account
-    // used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
-    // for details on how to retrieve an ID token.
-    //  // Thrown when
-    //  break;
-    //}
+    case 'auth/argument-error': {
+      // Thrown when firebase.verifyIdToken() fails.
+      // Firebase ID token has incorrect "aud" (audience) claim.
+      // Make sure the ID token comes from the same Firebase project as the service account
+      // used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
+      // for details on how to retrieve an ID token.
+      res.status(401).json(new AuthError().toJSONObj());
+      break;
+    }
     case 'auth/email-already-exists': {
       res.status(409).json(new APIRequestError(err.code, 409, err.toJSON()).toJSONObj());
       break;
@@ -132,7 +132,7 @@ const errorHandler: ErrorRequestHandler = (err: unknown, _req, res, next) => {
   } else if (err instanceof SequelizeBaseError) {
     handleSequelizeError(err, res);
   } else if (err instanceof SyntaxError && 'body' in err && 'status' in err && isNumber(err.status)) {
-    //JSON parsing failed
+    // JSON parsing failed
     res.status(err.status).json({
       status: err.status,
       error: {

@@ -6,7 +6,8 @@ import testFirebase from '../testUtils/testFirebase';
 
 import app from '../../src/app';
 import userUtils, { type IUserBaseObject } from '../testUtils/userUtils';
-import { generateRandomString } from '../testUtils/testHelpers';
+import { generateRandomString, shuffleString } from '../testUtils/testHelpers';
+import { User } from '../../src/models';
 
 const api = supertest(app);
 
@@ -74,7 +75,7 @@ describe('/auth', () => {
         expect(await testDatabase.userCount()).toEqual(initialUserCount + 1);
       });
 
-      test('Fails when wrong request type is sent', async () => {
+      test('Fails when request type is not signup', async () => {
         const initialUserCount = await testDatabase.userCount();
         const res = await api
           .post(`${baseUrl}/signup`)
@@ -91,8 +92,7 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        expect(res.body.data).not.toBeDefined();
-
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -114,7 +114,7 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        expect(res.body.data).not.toBeDefined();
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -122,7 +122,7 @@ describe('/auth', () => {
         expect(await testDatabase.userCount()).toEqual(initialUserCount);
       });
 
-      test('Fails when data is missing', async () => {
+      test('Fails when data is empty object', async () => {
         const initialUserCount = await testDatabase.userCount();
         const res = await api
           .post(`${baseUrl}/signup`)
@@ -135,7 +135,7 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        expect(res.body.data).not.toBeDefined();
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -165,6 +165,9 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toHaveProperty('data.email._errors', ['Invalid email']);
@@ -188,6 +191,9 @@ describe('/auth', () => {
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -217,6 +223,9 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toHaveProperty('data.email._errors', [
@@ -243,6 +252,9 @@ describe('/auth', () => {
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -272,6 +284,9 @@ describe('/auth', () => {
 
         expect(res.body).toBeDefined();
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toHaveProperty('data.password._errors', [
@@ -298,6 +313,9 @@ describe('/auth', () => {
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -326,6 +344,9 @@ describe('/auth', () => {
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
 
         expect(res.body).toHaveProperty('error');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -430,7 +451,7 @@ describe('/auth', () => {
 
           expect(res.body).toBeDefined();
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          expect(res.body.data).not.toBeDefined();
+          expect(res.body.data).toBeUndefined();
 
           expect(res.body).toHaveProperty('error');
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -461,7 +482,7 @@ describe('/auth', () => {
 
           expect(res.body).toBeDefined();
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          expect(res.body.data).not.toBeDefined();
+          expect(res.body.data).toBeUndefined();
 
           expect(res.body).toHaveProperty('error');
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -478,7 +499,7 @@ describe('/auth', () => {
 
     describe('Signing in users', () => {
 
-      test('Succeeds with valid user details and updates lastseenAt', async () => {
+      test('Succeeds with valid credentials and updates lastseenAt', async () => {
         const user = userCredentials[0];
         const userInDb = await testDatabase.getUserByFirebaseUid(user.credentials.user.uid);
         expect(userInDb).not.toBeNull();
@@ -518,6 +539,234 @@ describe('/auth', () => {
           disabledAt: null,
         });
       });
+
+      test('Fails when request type is not login', async () => {
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'signup',
+            data: {
+              email: 'user@email.com',
+              firebaseUid: 'a-b-c',
+              firebaseIdToken: 'aBc',
+            },
+          })
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
+        expect(res.body).toHaveProperty('error');
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toHaveProperty('type._errors', [
+          'Invalid literal value, expected "login"',
+        ]);
+      });
+
+      test('Fails with no data object', async () => {
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+          })
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
+        expect(res.body).toHaveProperty('error');
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toHaveProperty('data._errors', ['Required']);
+      });
+
+      test('Fails when data is empty object', async () => {
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+            data: { },
+          })
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
+        expect(res.body).toHaveProperty('error');
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toHaveProperty('data.email._errors', ['Required']);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toHaveProperty('data.firebaseUid._errors', ['Required']);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toHaveProperty('data.firebaseIdToken._errors', ['Required']);
+      });
+
+      describe('Fails with invalid credentials', () => {
+
+        test('if email is invalid', async () => {
+          const user = userCredentials[0];
+          const res = await api
+            .post(`${baseUrl}/login`)
+            .send({
+              type: 'login',
+              data: {
+                email: `invalid.${user.userBase.email.toLowerCase()}`,
+                firebaseUid: user.credentials.user.uid,
+                firebaseIdToken: await user.credentials.user.getIdToken(),
+              },
+            })
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toEqual({
+            message: 'Invalid credentials',
+          });
+        });
+
+        test('if Firebase uid is invalid', async () => {
+          const user = userCredentials[0];
+          const res = await api
+            .post(`${baseUrl}/login`)
+            .send({
+              type: 'login',
+              data: {
+                email: user.userBase.email.toLowerCase(),
+                firebaseUid: shuffleString(user.credentials.user.uid),
+                firebaseIdToken: await user.credentials.user.getIdToken(),
+              },
+            })
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toEqual({
+            message: 'Invalid credentials',
+          });
+        });
+
+        test('if Firebase IdToken is invalid', async () => {
+          const user = userCredentials[0];
+          const firebaseIdToken = await user.credentials.user.getIdToken();
+          const res = await api
+            .post(`${baseUrl}/login`)
+            .send({
+              type: 'login',
+              data: {
+                email: user.userBase.email.toLowerCase(),
+                firebaseUid: user.credentials.user.uid,
+                firebaseIdToken: shuffleString(firebaseIdToken),
+              },
+            })
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toEqual({
+            message: 'Invalid credentials',
+          });
+        });
+
+      }); // Fails with invalid credentials
+
+
+      test('Fails if user is soft-deleted in backend DB', async () => {
+        const userBase = userUtils.userBaseObjectGenerator.next().value;
+        const credentials = await testFirebase.addNewUserEmailPassword(userBase.email, userBase.password);
+        const firebaseIdToken = await credentials.user.getIdToken();
+
+        const userInDb = await User.create({
+          email: userBase.email.toLowerCase(),
+          displayName: userBase.displayName,
+          firebaseUid: credentials.user.uid,
+        });
+        await userInDb.destroy();
+
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+            data: {
+              email: userBase.email,
+              firebaseUid: credentials.user.uid,
+              firebaseIdToken,
+            },
+          })
+          .expect(401)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
+        expect(res.body).toHaveProperty('error');
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toEqual({
+          message: 'Forbidden'
+        });
+      });
+
+      test('Fails if user is disabled in backend DB', async () => {
+        const userBase = userUtils.userBaseObjectGenerator.next().value;
+        const credentials = await testFirebase.addNewUserEmailPassword(userBase.email, userBase.password);
+        const firebaseIdToken = await credentials.user.getIdToken();
+
+        const userInDb = User.build({
+          email: userBase.email.toLowerCase(),
+          displayName: userBase.displayName,
+          firebaseUid: credentials.user.uid,
+        });
+        await userInDb.setDisabled(true); // Calls User.save()
+
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+            data: {
+              email: userBase.email,
+              firebaseUid: credentials.user.uid,
+              firebaseIdToken,
+            },
+          })
+          .expect(401)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.data).toBeUndefined();
+
+        expect(res.body).toHaveProperty('error');
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.error).toEqual({
+          message: 'Forbidden'
+        });
+      });
+
     }); // Signing in users
 
   }); // When there are users in the db

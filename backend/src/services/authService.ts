@@ -33,23 +33,15 @@ const loginUser = async (credentials: SignInArguments) => {
   const decodedIdToken = await firebase.verifyIdToken(credentials.firebaseIdToken);
 
   if (credentials.email !== decodedIdToken.email) {
-    // TODO: Remove this sanity check
-    console.error('emails dont match, decodedIdToken.email === undefined:', decodedIdToken.email === undefined);
-    console.error('decodedEmail:', decodedIdToken.email);
-    console.error('passedEmail: ', credentials.email);
-    throw new AuthError('Unable to perform login, invalid email');
+    throw new AuthError();
   }
   if (credentials.firebaseUid !== decodedIdToken.uid) {
-    // TODO: Remove this sanity check
-    console.error('firebaseUids dont match');
-    console.error('decodedUid:', decodedIdToken.uid);
-    console.error('passedUid:', credentials.firebaseUid);
-    throw new AuthError('Unable to perform login, invalid uid');
+    throw new AuthError();
   }
 
   const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
   if (!user) {
-    throw new AuthError('User not found');
+    throw new AuthError('Forbidden');
   }
 
   await user.updateLastseen();

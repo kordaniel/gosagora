@@ -89,12 +89,9 @@ export class APIRequestError extends ApplicationError {
 export class AuthError extends ApplicationError {
   kind = 'AuthError' as const;
 
-  /**
-   * @param status Default value 409 - Conflict. This response is sent when a request conflicts with the current state of the server.
-   */
   constructor(
-    public override message: string = 'Invalid authentication',
-    public status: number = 409,
+    public override message: string = 'Invalid credentials',
+    public status: number = 401,
   ) {
     super();
     Object.setPrototypeOf(this, AuthError.prototype);

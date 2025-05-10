@@ -6,3 +6,7 @@ export const generateRandomString = (
     () => srcChars.charAt(Math.floor(Math.random() * srcChars.length))
   ).join('');
 };
+
+export const shuffleString = (str: string): string => {
+  return str.split('').sort(() => Math.random() - 0.5).join('');
+};
