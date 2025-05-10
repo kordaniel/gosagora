@@ -13,32 +13,35 @@ import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../types';
 import { assertNever } from '../utils/typeguards';
 
+const variantStyle = (theme: AppTheme, variant: StyledTextProps['variant']): StyleProp<ViewStyle | ImageStyle | TextStyle> => {
+  switch (variant) {
+    case undefined:
+      return theme.styles.onPrimaryContainer;
+    case 'title':
+      return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textTitle);
+    case 'button':
+      return theme.styles.buttonText;
+    case 'error':
+      return theme.styles.onErrorContainer;
+    case 'headline':
+      return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textHeadline);
+    case 'small':
+      return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textSmall);
+    default:
+      return assertNever(variant);
+  }
+};
+
 interface StyledTextProps extends TextProps {
-  variant?: 'title' | 'button' | 'error' | 'headline';
+  variant?: 'title' | 'button' | 'error' | 'headline' | 'small';
 }
 
-const StyledText = ({ variant, ...props }: StyledTextProps) => {
+const StyledText = ({ style, variant, ...props }: StyledTextProps) => {
   const theme = useTheme<AppTheme>();
-
-  const variantStyle = (variant: StyledTextProps['variant']): StyleProp<ViewStyle | ImageStyle | TextStyle> => {
-    switch (variant) {
-      case undefined:
-        return theme.styles.onPrimaryContainer;
-      case 'title':
-        return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textTitle);
-      case 'button':
-        return theme.styles.buttonText;
-      case 'error':
-        return theme.styles.onErrorContainer;
-      case 'headline':
-        return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textHeadline);
-      default:
-        return assertNever(variant);
-    }
-  };
+  const textStyle = StyleSheet.compose(variantStyle(theme, variant), style);
 
   return (
-    <Text style={variantStyle(variant)} {...props} />
+    <Text style={textStyle} {...props} />
   );
 };
 

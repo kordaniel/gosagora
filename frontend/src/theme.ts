@@ -186,6 +186,9 @@ const lightStyle = StyleSheet.create({
   textInputError: {
     borderColor: lightTheme.colors.error,
   },
+  textSmall: {
+    ...lightTheme.fonts.bodySmall,
+  },
   textTitle: {
     ...lightTheme.fonts.titleMedium,
   },
@@ -241,6 +244,9 @@ const darkStyle = StyleSheet.create({
   },
   textInputError: {
     borderColor: darkTheme.colors.error,
+  },
+  textSmall: {
+    ...darkTheme.fonts.bodySmall,
   },
   textTitle: {
     ...darkTheme.fonts.titleMedium,
