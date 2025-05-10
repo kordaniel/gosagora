@@ -1,3 +1,11 @@
 .env*
 .build/
 
+# Firebase emulator
+.firebaserc
+firebase.json
+firebase-debug.log
+
+# Firebase configs
+backend/firebase*.json
+frontend/firebase*.json

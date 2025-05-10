@@ -28,5 +28,6 @@ export default {
   extra: {
     ENV: process.env.ENV || 'production',
     BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
+    FIREBASE_AUTH_EMULATOR_HOST: process.env.FIREBASE_AUTH_EMULATOR_HOST || undefined,
   },
 };

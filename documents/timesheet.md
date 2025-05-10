@@ -18,4 +18,22 @@
 | 2025.04.15 | 0.5 | FRONTEND: Add DeveloperView that shows app status in dev env |
 | 2025.04.16 | 2.5 | FRONTEND: Setup test framework. Unit testing works, testing components with testing-library/react-native does not. Fixed a few packages versions to be compatible with expo/react native-18.3 |
 | 2025.04.17 | 1   | FRONTEND: Fix testing framework, unit- and component testing works, add more linting rules, reconfigure project/packages to be expo compatible |
-| Total | 23 | |
+| 2025.04.19 | 3   | FRONTEND: Add formik, yup, firebase packages. Add Form component |
+| 2025.04.19 | 1   | FRONTEND: Add tests for Form Component |
+| 2025.04.20 | 4   | FRONTEND: Add SignIn, SignUp page & Button, ErrorRenderer components. Update theme, stylize Form & extend StyledText. Refactored tests to accomodate themes |
+| 2025.04.21 | 1   | BACKEND: Add sequelize, pg, firebase-admin packages, postgres container. Implement module for sequelize.
+| 2025.04.23 | 2   | FRONTEND: Refactor Authentication page: Render sign in, sign up and sign out conditionally. Use firebase email/pass auth as backend |
+| 2025.04.25 | 2   | BACKEND: Add umzug package. Configure sequelize migrations, add User model |
+| 2025.04.25 | 3   | BACKEND: Add "/auth" router with signup, signin. Work on request parsing, errorhandling and responses (zod, strict typescript typing) |
+| 2025.04.27 | 3   | Write README's, instructions, configure environments. Use different containers for backend dev and test envs with persisting storage |
+| 2025.04.27 | 2   | BACKEND: Work on auth, types, errorhandling |
+| 2025.04.27 | 1   | BACKEND: Fix npm scripts. Update README's. Switch bind->named volumes in docker compose. Add displayName field to User |
+| 2025.04.28 | 2   | BACKEND: Write instructions for Firebase Local Emulator Suite and dev/test environments. Refactor firebase setup to account for different environments |
+| 2025.04.29 | 3   | BACKEND: Configure, setup scripts, write instruction for Firebase Local Emulator. Spent too much time trying to configure FB emulator to exec npm-scripts with its command *emulators:exec "npm run.."*, with no success. So implemented a bash-script that uses npx to run tests. ts-node-dev does not work with the same setup so no bash-script for dev-env |
+| 2025.04.30 | 2   | BACKEND: Add firebase (client, for tests), faker packages. Implement first test for "/auth" route, signup success case |
+| 2025.05.03 | 1   | BACKEND: Firebase emulator configuration. Persistent, isolated storage for environments, update and add scripts and instructions |
+| 2025.05.08 | 3   | SERVICE/BACKEND: Refactor auth logic => create all users trough backend, login trough frontend. FRONTEND: SignIn/Up implemented: useAuth hook, firebase, authService. Add firebaseConfig. Configure dev/test envs to use firebase local emulator |
+| 2025.05.09 | 3   | BACKEND: Implement tests for signup, improve error handling/responses |
+| 2025.05.09 | 1   | BACKEND: Trim all /auth arguments, store user email in lowercase. Add test for successful SignIn |
+| 2025.05.09 | 1   | BACKEND: Implement SignIn tests, improve error handling/responses |
+| Total | 61 | |
