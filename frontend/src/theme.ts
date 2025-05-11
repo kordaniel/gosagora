@@ -125,6 +125,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  developerViewContainer: {
+    paddingBottom: 3,
+    paddingHorizontal: 3,
+  },
   separator: {
     height: 1,
   },
@@ -145,6 +149,10 @@ const lightStyle = StyleSheet.create({
     ...lightTheme.fonts.default,
     backgroundColor: lightTheme.colors.primary,
     color: lightTheme.colors.onPrimary,
+  },
+  developerViewContainer: {
+    ...styles.developerViewContainer,
+    backgroundColor: lightTheme.colors.backdrop,
   },
   errorContainer: {
     backgroundColor: lightTheme.colors.errorContainer,
@@ -186,6 +194,9 @@ const lightStyle = StyleSheet.create({
   textInputError: {
     borderColor: lightTheme.colors.error,
   },
+  textSmall: {
+    ...lightTheme.fonts.bodySmall,
+  },
   textTitle: {
     ...lightTheme.fonts.titleMedium,
   },
@@ -201,6 +212,10 @@ const darkStyle = StyleSheet.create({
     ...darkTheme.fonts.default,
     backgroundColor: darkTheme.colors.primary,
     color: darkTheme.colors.onPrimary,
+  },
+  developerViewContainer: {
+    ...styles.developerViewContainer,
+    backgroundColor: darkTheme.colors.backdrop,
   },
   errorContainer: {
     backgroundColor: darkTheme.colors.errorContainer,
@@ -241,6 +256,9 @@ const darkStyle = StyleSheet.create({
   },
   textInputError: {
     borderColor: darkTheme.colors.error,
+  },
+  textSmall: {
+    ...darkTheme.fonts.bodySmall,
   },
   textTitle: {
     ...darkTheme.fonts.titleMedium,
