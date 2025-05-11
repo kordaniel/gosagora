@@ -1,13 +1,14 @@
 import React, { PropsWithChildren } from 'react';
 
 import { ErrorMessage, useField } from 'formik';
-import { TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import type { TextInputProps } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
-import type { AppTheme } from '../../types';
 import ErrorRenderer from '../ErrorRenderer';
 import StyledText from '../StyledText';
-import { useTheme } from 'react-native-paper';
+
+import type { AppTheme } from '../../types';
 
 interface FieldBaseProps {
   label?: string;
@@ -17,13 +18,16 @@ interface FieldBaseProps {
 const FieldBase = ({ label, name, children }: PropsWithChildren<FieldBaseProps>) => {
   const theme = useTheme<AppTheme>();
   return (
-    <View style={theme.styles.containerFlexColumn}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={theme.styles.containerFlexColumn}
+    >
       {label && <StyledText>{label}:&nbsp;</StyledText>}
       {children}
       <ErrorMessage name={name}>
         {msg => <ErrorRenderer>{msg}</ErrorRenderer>}
       </ErrorMessage>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

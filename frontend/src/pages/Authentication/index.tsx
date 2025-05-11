@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import SignIn from './SignIn';
@@ -24,22 +24,22 @@ const Authentication = () => {
     return (
       <View style={theme.styles.primaryContainer}>
         {view === 'signIn'
-          ? <>
+          ? <ScrollView>
               <SignIn handleSignIn={handleSignIn} errorMsg={error} />
               <StyledText>Don&apos;t have an account?&nbsp;
                 <Pressable onPress={toggleView}>
                   <StyledText style={{ fontWeight: "bold" }}>Sign Up</StyledText>
                 </Pressable>
               </StyledText>
-            </>
-          : <>
+            </ScrollView>
+          : <ScrollView>
               <SignUp handleSignUp={handleSignUp} errorMsg={error} />
               <StyledText>Already have an account?&nbsp;
                 <Pressable onPress={toggleView}>
                   <StyledText style={{ fontWeight: "bold" }}>Sign In</StyledText>
                 </Pressable>
               </StyledText>
-            </>
+            </ScrollView>
         }
       </View>
     );
