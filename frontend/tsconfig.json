@@ -10,6 +10,11 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["../packages/common/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -34,6 +39,9 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
   },
+  "references": [
+    { "path": "../packages/common" }
+  ],
   "include": [
     "**/*.ts",
     "**/*.tsx"

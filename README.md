@@ -151,6 +151,8 @@ Make sure that you have these files set up correctly. See the instruction above 
 │   ├── firebaseDevConfig.ts - Required for dev env
 │   ├── firebaseTestConfig.ts - Required for test env
 │   └── .env - See frontend/.env.example for required variables
+├── packages/ - Typescript project reference(s)
+│   └── common/ - Common types for back- and frontends
 ├── .firebaserc - Contains your configured firebase projects
 ├── firebase.json - Firebase emulator config for your project. This file is generated when you run firebase init and is not used
 ├── firebase.dev.json - Firebase emulator config for dev-env

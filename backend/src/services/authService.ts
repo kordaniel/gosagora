@@ -2,8 +2,9 @@ import firebase from '../modules/firebase';
 import { User } from '../models';
 import userService from './userService';
 import { AuthError } from '../errors/applicationError';
-import type { SignInArguments, SignUpArguments } from '../types';
 import logger from '../utils/logger';
+
+import type { SignInArguments, SignUpArguments } from '@common/types/rest_api';
 
 
 const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> => {

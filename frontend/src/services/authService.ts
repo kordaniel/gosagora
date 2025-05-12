@@ -4,7 +4,7 @@ import type {
   APIAuthRequest,
   SignInArguments,
   SignUpArguments
-} from '../../../common/types/rest_api';
+} from '@common/types/rest_api';
 import type { GosaGoraUser } from '../types';
 
 const apiBasePath = '/api/v1/auth';

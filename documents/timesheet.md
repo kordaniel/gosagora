@@ -37,4 +37,5 @@
 | 2025.05.09 | 1   | BACKEND: Trim all /auth arguments, store user email in lowercase. Add test for successful SignIn |
 | 2025.05.09 | 1   | BACKEND: Implement SignIn tests, improve error handling/responses |
 | 2025.05.10 | 0.5 | FRONTEND: Fix minor issues, stylize |
-| Total | 61.5 | |
+| 2025.05.12 | 1   | Setup typescript references, add common types for back- and frontends |
+| Total | 62.5 | |
