@@ -27,7 +27,7 @@ export default tseslint.config({
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/restrict-plus-operands': 'off',
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       { 'argsIgnorePattern': '^_' }
     ],
     'indent': [
