@@ -19,6 +19,7 @@ export const sequelize = new Sequelize(db_uri, {
     idle: 45000,
     acquire: 60000,
   },
+  logging: (msg) => logger.info(msg),
 });
 
 const migrationConf: UmzugOptions<QueryInterface> = {
