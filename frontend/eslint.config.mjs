@@ -62,6 +62,21 @@ export default tseslint.config(
         'error',
         { 'argsIgnorePattern': '^_' }
       ],
+      'indent': [
+        'error',
+        2,
+        {
+          'SwitchCase': 1,
+          'offsetTernaryExpressions': true,
+        },
+      ],
+      'linebreak-style': [ 'error', 'unix' ],
+      'eqeqeq': 'error',
+      'no-trailing-spaces': 'error',
+      'object-curly-spacing': [ 'error', 'always' ],
+      'arrow-spacing': [
+        'error', { 'before': true, 'after': true },
+      ],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

@@ -46,5 +46,12 @@ export default tseslint.config({
     'arrow-spacing': [
       'error', { 'before': true, 'after': true },
     ],
+    'sort-imports': ['warn', {
+      'ignoreCase': false,
+      'ignoreDeclarationSort': false,
+      'ignoreMemberSort': false,
+      'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
+      'allowSeparatedGroups': true
+    }],
   },
 });
