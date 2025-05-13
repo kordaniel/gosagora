@@ -1,5 +1,4 @@
-import os from 'os';
-import type { NetworkInterfaceInfo } from 'os';
+import os, { type NetworkInterfaceInfo } from 'os';
 import type { CorsOptions } from 'cors';
 
 import { CorsError } from '../errors/applicationError';

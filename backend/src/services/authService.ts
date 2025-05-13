@@ -1,8 +1,8 @@
-import firebase from '../modules/firebase';
-import { User } from '../models';
-import userService from './userService';
 import { AuthError } from '../errors/applicationError';
+import { User } from '../models';
+import firebase from '../modules/firebase';
 import logger from '../utils/logger';
+import userService from './userService';
 
 import type { SignInArguments, SignUpArguments } from '@common/types/rest_api';
 

@@ -3,16 +3,16 @@ import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import {
   Auth,
   type DecodedIdToken,
-  type ListUsersResult,
-  FirebaseAuthError,
-  getAuth,
   type DeleteUsersResult,
+  FirebaseAuthError,
+  type ListUsersResult,
   type UserRecord,
+  getAuth,
 } from 'firebase-admin/auth';
 
-import logger from '../utils/logger';
 import { ServiceError } from '../errors/applicationError';
 import config from '../utils/config';
+import logger from '../utils/logger';
 
 /**********************************************
  * Documentation

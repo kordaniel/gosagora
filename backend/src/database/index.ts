@@ -1,5 +1,5 @@
 import { QueryInterface, Sequelize } from 'sequelize';
-import { Umzug, SequelizeStorage } from 'umzug';
+import { SequelizeStorage, Umzug  } from 'umzug';
 import type { UmzugOptions } from 'umzug';
 
 import configuration from '../utils/config';
