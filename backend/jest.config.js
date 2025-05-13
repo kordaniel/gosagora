@@ -6,4 +6,7 @@ module.exports = {
   transform: {
     "^.+\.tsx?$": ["ts-jest",{}],
   },
+  collectCoverage: true,
+  coverageDirectory: "<rootDir>/reports/testcoverage",
+  maxWorkers: "50%"
 };
