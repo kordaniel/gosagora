@@ -1,12 +1,17 @@
 import express, {
+  type Request,
   type Response,
-  type Request
 } from 'express';
 
 import { signinUserParser, signupUserParser } from '../utils/requestParsers';
-import authService from '../services/authService';
-import type { APIAuthRequest, SignInArguments, SignUpArguments } from '../types';
 import { User } from '../models';
+import authService from '../services/authService';
+
+import type {
+  APIAuthRequest,
+  SignInArguments,
+  SignUpArguments
+} from '@common/types/rest_api';
 
 const router = express.Router();
 

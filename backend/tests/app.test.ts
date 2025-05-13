@@ -1,5 +1,5 @@
-import supertest from 'supertest';
 import type { Express } from 'express';
+import supertest from 'supertest';
 
 import app from '../src/app';
 

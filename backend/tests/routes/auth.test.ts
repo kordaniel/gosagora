@@ -1,13 +1,13 @@
-import supertest from 'supertest';
 import type { UserCredential } from 'firebase/auth';
+import supertest from 'supertest';
 
 import testDatabase from '../testUtils/testDatabase';
 import testFirebase from '../testUtils/testFirebase';
 
-import app from '../../src/app';
-import userUtils, { type IUserBaseObject } from '../testUtils/userUtils';
 import { generateRandomString, shuffleString } from '../testUtils/testHelpers';
+import userUtils, { type IUserBaseObject } from '../testUtils/userUtils';
 import { User } from '../../src/models';
+import app from '../../src/app';
 
 const api = supertest(app);
 

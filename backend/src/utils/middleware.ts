@@ -1,14 +1,19 @@
 import type { ErrorRequestHandler, RequestHandler, Response } from 'express';
-import { ZodError } from 'zod';
-import { FirebaseAuthError } from 'firebase-admin/auth';
 import {
   BaseError as SequelizeBaseError,
   ValidationError as SequelizeValidationError
 } from 'sequelize';
+import { FirebaseAuthError } from 'firebase-admin/auth';
+import { ZodError } from 'zod';
 
-import logger from './logger';
-import { APIRequestError, ApplicationError, AuthError, type ApplicationErrorType } from '../errors/applicationError';
+import {
+  APIRequestError,
+  ApplicationError,
+  type ApplicationErrorType,
+  AuthError,
+} from '../errors/applicationError';
 import { assertNever, isNumber } from './typeguards';
+import logger from './logger';
 import { snakeToCamelCase } from './helpers';
 
 

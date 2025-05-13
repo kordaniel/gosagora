@@ -1,5 +1,5 @@
 import { QueryInterface, Sequelize } from 'sequelize';
-import { Umzug, SequelizeStorage } from 'umzug';
+import { SequelizeStorage, Umzug  } from 'umzug';
 import type { UmzugOptions } from 'umzug';
 
 import configuration from '../utils/config';
@@ -19,6 +19,7 @@ export const sequelize = new Sequelize(db_uri, {
     idle: 45000,
     acquire: 60000,
   },
+  logging: (msg) => logger.info(msg),
 });
 
 const migrationConf: UmzugOptions<QueryInterface> = {

@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-import logger from './logger';
 import type { EnvironmentType } from '../types';
 import { assertNever } from './typeguards';
+import logger from './logger';
 
 
 const EnvSchema = z.object({

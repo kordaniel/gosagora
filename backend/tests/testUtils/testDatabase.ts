@@ -1,7 +1,7 @@
-import config from '../../src/utils/config';
 import { connectToDatabase, sequelize } from '../../src/database';
 import { User } from '../../src/models';
 import { UserCreationAttributesType } from '../../src/models/user';
+import config from '../../src/utils/config';
 
 const disconnectFromDatabase = async () => {
   await sequelize.close();

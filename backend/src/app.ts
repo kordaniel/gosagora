@@ -1,10 +1,10 @@
-import express from 'express';
 import cors from 'cors';
-import corsConfig from './utils/corsConfig';
+import express from 'express';
 
 import authRouter from './routes/auth';
 
 import config from './utils/config';
+import corsConfig from './utils/corsConfig';
 import middleware from './utils/middleware';
 
 const app = express();

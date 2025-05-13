@@ -59,8 +59,23 @@ export default tseslint.config(
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/restrict-plus-operands': 'off',
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         { 'argsIgnorePattern': '^_' }
+      ],
+      'indent': [
+        'error',
+        2,
+        {
+          'SwitchCase': 1,
+          'offsetTernaryExpressions': true,
+        },
+      ],
+      'linebreak-style': [ 'error', 'unix' ],
+      'eqeqeq': 'error',
+      'no-trailing-spaces': 'error',
+      'object-curly-spacing': [ 'error', 'always' ],
+      'arrow-spacing': [
+        'error', { 'before': true, 'after': true },
       ],
       'react-refresh/only-export-components': [
         'warn',

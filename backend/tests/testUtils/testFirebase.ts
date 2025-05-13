@@ -4,17 +4,17 @@
  * to a firebase emulator instead of the live API.
  */
 
-import config from '../../src/utils/config';
-import { initializeApp } from 'firebase/app';
 import {
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
   getAuth,
-  connectAuthEmulator,
 } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
 
 import firebase, {
   connectToFirebase
 } from '../../src/modules/firebase';
+import config from '../../src/utils/config';
 
 
 if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) {

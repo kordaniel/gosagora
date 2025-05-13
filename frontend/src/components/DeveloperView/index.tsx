@@ -62,7 +62,7 @@ const DebugView = () => {
 };
 
 const DeveloperView = () => config.IS_DEVELOPMENT_ENV
-    ? <DebugView />
-    : null;
+  ? <DebugView />
+  : null;
 
 export default DeveloperView;

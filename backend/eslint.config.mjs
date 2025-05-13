@@ -27,7 +27,7 @@ export default tseslint.config({
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/restrict-plus-operands': 'off',
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       { 'argsIgnorePattern': '^_' }
     ],
     'indent': [
@@ -46,5 +46,12 @@ export default tseslint.config({
     'arrow-spacing': [
       'error', { 'before': true, 'after': true },
     ],
+    'sort-imports': ['warn', {
+      'ignoreCase': false,
+      'ignoreDeclarationSort': false,
+      'ignoreMemberSort': false,
+      'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
+      'allowSeparatedGroups': true
+    }],
   },
 });

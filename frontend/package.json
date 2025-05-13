@@ -16,7 +16,7 @@
   "jest": {
     "preset": "jest-expo",
     "collectCoverage": true,
-    "coverageDirectory": "coverage",
+    "coverageDirectory": "<rootDir>/reports/testcoverage",
     "maxWorkers": "50%",
     "testMatch": [
       "**/?(*.)+(spec|test).[tj]s?(x)"

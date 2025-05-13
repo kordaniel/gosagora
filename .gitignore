@@ -1,5 +1,10 @@
 .env*
 .build/
+packages/**/lib/
+**/*.tsbuildinfo
+
+documents/
+!documents/timesheet.md
 
 # Firebase emulator
 .firebaserc

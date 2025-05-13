@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "outDir": "./lib"
+  },
+  "include": [
+	  "types/**/*.ts"
+  ]
+}

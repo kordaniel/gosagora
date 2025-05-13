@@ -1,12 +1,12 @@
 import {
-  DataTypes,
-  Model,
-  Op,
   type Attributes,
   type CreationAttributes,
   type CreationOptional,
+  DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  Model,
+  Op,
 } from 'sequelize';
 
 import { sequelize } from '../database';
