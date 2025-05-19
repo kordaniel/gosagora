@@ -28,7 +28,7 @@ const initializeAuth = (app: FirebaseApp | undefined) => {
 
   if (config.FIREBASE_AUTH_EMULATOR_HOST) {
     try {
-      connectAuthEmulator(fbAuth, config.FIREBASE_AUTH_EMULATOR_HOST);
+      connectAuthEmulator(fbAuth, config.FIREBASE_AUTH_EMULATOR_HOST, { disableWarnings: true });
     } catch (error: unknown) {
       console.error('Error connecting to firebase auth emulator:', error);
       if (error instanceof Error) {
