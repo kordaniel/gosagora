@@ -1,9 +1,11 @@
 import React from 'react';
 
 import {
-  type NativeStackNavigationProp,
-  createNativeStackNavigator,
+  type NativeStackNavigationProp
 } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import TabBar from './TabBar';
 
 import Authentication from '../../pages/Authentication';
 import Home from '../..//pages/Home';
@@ -20,30 +22,33 @@ type RootStackParamList = {
   UserProfile: undefined;
 };
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const Navigator = () => {
-  return (
-    <RootStack.Navigator
+  return(
+    <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerStyle: { backgroundColor: "tomato" },
+        headerShown: false,
+        animation: "shift"
       }}
+      tabBar={(props) => <TabBar {...props} />}
     >
-      <RootStack.Screen
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{ title: "Home" }}
+      />
+      <Tab.Screen
         name="Authentication"
         component={Authentication}
       />
-      <RootStack.Screen
-        name="Home"
-        component={Home}
-        options={{ title: "GosaGora" }}
-      />
-      <RootStack.Screen
+      <Tab.Screen
         name="UserProfile"
         component={UserProfile}
+        options={{ title: "Profile" }}
       />
-    </RootStack.Navigator>
+    </Tab.Navigator>
   );
 };
 

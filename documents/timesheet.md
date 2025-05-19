@@ -39,4 +39,6 @@
 | 2025.05.10 | 0.5 | FRONTEND: Fix minor issues, stylize |
 | 2025.05.12 | 1   | Setup typescript references, add common types for back- and frontends |
 | 2025.05.13 | 0.5 | Configure linting, compilation, test coverage, sequelize logging |
-| Total | 63 | |
+| 2025.05.14 | 0.5 | FRONTEND: Add react-navigation |
+| 2025.05.19 | 0.5 | FRONTEND: Add react-navigation/bottom-tabs |
+| Total | 64 | |
