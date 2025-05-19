@@ -4,13 +4,13 @@ import * as Yup from 'yup';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-import Form from '../../components/Form';
-import type { FormProps } from '../../components/Form';
-import StyledText from '../../components/StyledText';
+import Form, { type FormProps } from '../Form';
+import ErrorRenderer from '../ErrorRenderer';
+import StyledText from '../StyledText';
 
 import type { AppTheme } from '../../types';
-import ErrorRenderer from '../../components/ErrorRenderer';
 import config from '../../utils/config';
+import useAuth from '../../hooks/useAuth';
 
 export type SignInValuesType = {
   email: string;
@@ -55,13 +55,9 @@ const formFields: FormProps<SignInValuesType>['formFields'] = {
   },
 };
 
-interface SignInProps {
-  handleSignIn: (username: string, password: string) => Promise<void>;
-  errorMsg: string;
-}
-
-const SignIn = ({ handleSignIn, errorMsg }: SignInProps) => {
+const SignIn = () => {
   const theme = useTheme<AppTheme>();
+  const { error, handleSignIn } = useAuth();
 
   const onSubmit = async (values: SignInValuesType) => {
     await handleSignIn(values.email, values.password);
@@ -70,7 +66,7 @@ const SignIn = ({ handleSignIn, errorMsg }: SignInProps) => {
   return (
     <View style={theme.styles.primaryContainer}>
       <StyledText variant="title">Sign In</StyledText>
-      <ErrorRenderer>{errorMsg}</ErrorRenderer>
+      <ErrorRenderer>{error}</ErrorRenderer>
       <Form<SignInValuesType>
         formFields={formFields}
         onSubmit={onSubmit}

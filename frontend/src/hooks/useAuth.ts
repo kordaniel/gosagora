@@ -14,6 +14,8 @@ const useAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
+  const isSignedIn = user !== null;
+
   useEffect(() => {
     const observer = firebase.addOnAuthChangeObserver((firebaseUser: FirebaseUser | null) => {
       if (!firebaseUser) {
@@ -76,12 +78,16 @@ const useAuth = () => {
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      await firebase.signInWithEmailAndPassword(email, password);
+      await firebase.signInWithEmailAndPassword(email.trim(), password.trim());
     } catch (error: unknown) {
       console.log('error signin:', error);
       let errorMsg = null;
       if (error instanceof FirebaseError) {
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        if (
+          error.code === 'auth/user-not-found' ||
+          error.code === 'auth/wrong-password' ||
+          error.code === 'auth/missing-password'
+        ) {
           errorMsg = 'Incorrect email or password. Please try again!';
         } else if (error.code === 'auth/network-request-failed') {
           errorMsg = 'Network error. Please try again in a moment';
@@ -102,6 +108,19 @@ const useAuth = () => {
 
   const handleSignUp = async (email: string, password: string, displayName: string) => {
     try {
+      if (email !== email.trim()) {
+        setError('Your email address can not contain any spaces. Please try again');
+        return;
+      }
+      if (displayName !== displayName.trim()) {
+        setError('Your Visible Name can not start or end with spaces. Please try again');
+        return;
+      }
+      if (password !== password.trim()) {
+        setError('Your Password can not start or end with spaces. Please try again');
+        return;
+      }
+
       await authService.signUpUser({ email, password, displayName });
       await handleSignIn(email, password);
     } catch (error: unknown) {
@@ -118,6 +137,8 @@ const useAuth = () => {
   return {
     user,
     error,
+    isSignedIn,
+    displayName: isSignedIn ? user.gosaGoraUser.displayName : '',
     loading,
     handleSignIn,
     handleSignUp,

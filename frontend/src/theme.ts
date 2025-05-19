@@ -132,6 +132,18 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
   },
+  tabBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 3,
+    paddingVertical: 3,
+  },
+  tabBarTab: {
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 5,
+  },
   textInput: {
     borderRadius: 5,
     borderWidth: StyleSheet.hairlineWidth,
@@ -175,6 +187,14 @@ const lightStyle = StyleSheet.create({
     ...styles.container,
     backgroundColor: lightTheme.colors.secondaryContainer,
     color: lightTheme.colors.onSecondaryContainer,
+  },
+  tabBarContainer: {
+    ...styles.tabBarContainer,
+    backgroundColor: lightTheme.colors.surface,
+  },
+  tabBarTab: {
+    ...styles.tabBarTab,
+    backgroundColor: lightTheme.colors.surfaceVariant,
   },
   tertiaryContainer: {
     ...styles.container,
@@ -238,6 +258,14 @@ const darkStyle = StyleSheet.create({
     ...styles.container,
     backgroundColor: darkTheme.colors.secondaryContainer,
     color: darkTheme.colors.onSecondaryContainer,
+  },
+  tabBarContainer: {
+    ...styles.tabBarContainer,
+    backgroundColor: darkTheme.colors.surface,
+  },
+  tabBarTab: {
+    ...styles.tabBarTab,
+    backgroundColor: darkTheme.colors.surfaceVariant,
   },
   tertiaryContainer: {
     ...styles.container,
