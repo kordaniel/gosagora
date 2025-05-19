@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { Button, View } from 'react-native';
+import { type GestureResponderEvent, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import Authentication from '../../components/Authentication';
+import Button from '../../components/Button';
 import StyledText from 'src/components/StyledText';
 
 import type { AppTheme } from 'src/types';
@@ -10,17 +12,23 @@ import useAuth from 'src/hooks/useAuth';
 
 const UserProfile = () => {
   const theme = useTheme<AppTheme>();
-  const { user } = useAuth();
+  const { handleSignOut, isSignedIn } = useAuth();
 
-  console.log('user:', user);
+  if (!isSignedIn) {
+    return (
+      <Authentication />
+    );
+  }
 
   return (
     <View style={theme.styles.primaryContainer}>
       <StyledText variant="headline">Profile</StyledText>
-      <Button
-        title={theme.dark ? "Toggle light theme" : "Toggle dark theme"}
-        onPress={theme.toggleScheme}
-      />
+      <Button onPress={theme.toggleScheme}>
+        {theme.dark ? "Toggle light theme" : "Toggle dark theme"}
+      </Button>
+      <Button onPress={handleSignOut as (e?: GestureResponderEvent) => void}>
+        Sign Out
+      </Button>
     </View>
   );
 };

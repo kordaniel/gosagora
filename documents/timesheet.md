@@ -41,4 +41,5 @@
 | 2025.05.13 | 0.5 | Configure linting, compilation, test coverage, sequelize logging |
 | 2025.05.14 | 0.5 | FRONTEND: Add react-navigation |
 | 2025.05.19 | 0.5 | FRONTEND: Add react-navigation/bottom-tabs |
-| Total | 64 | |
+| 2025.05.19 | 1   | FRONTEND: Move Sign In/Up/Out to profile |
+| Total | 65 | |

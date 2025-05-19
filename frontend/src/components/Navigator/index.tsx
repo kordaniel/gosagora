@@ -7,9 +7,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import TabBar from './TabBar';
 
-import Authentication from '../../pages/Authentication';
-import Home from '../..//pages/Home';
+import Home from '../../pages/Home';
 import UserProfile from '../../pages/UserProfile';
+
+import useAuth from '../../hooks/useAuth';
 
 // https://reactnavigation.org/docs/typescript/
 // The type containing the mapping must be a type alias
@@ -17,7 +18,6 @@ import UserProfile from '../../pages/UserProfile';
 // It also shouldn't extend ParamListBase (e.g. interface
 // RootStackParamList extends ParamListBase { ... }).
 type RootStackParamList = {
-  Authentication: undefined;
   Home: undefined;
   UserProfile: undefined;
 };
@@ -25,6 +25,8 @@ type RootStackParamList = {
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const Navigator = () => {
+  const { displayName, isSignedIn } = useAuth();
+
   return(
     <Tab.Navigator
       initialRouteName="Home"
@@ -40,13 +42,9 @@ const Navigator = () => {
         options={{ title: "Home" }}
       />
       <Tab.Screen
-        name="Authentication"
-        component={Authentication}
-      />
-      <Tab.Screen
         name="UserProfile"
         component={UserProfile}
-        options={{ title: "Profile" }}
+        options={{ title: isSignedIn ? displayName : "Sign In" }}
       />
     </Tab.Navigator>
   );

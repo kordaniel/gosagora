@@ -19,26 +19,15 @@ const Home = () => {
     <SafeAreaView style={theme.styles.primaryContainer}>
       <StyledText variant="headline">GosaGora</StyledText>
       <Separator />
-      <StyledText>Welcome to GosaGora!</StyledText>
+      <StyledText variant="title">Welcome to GosaGora!</StyledText>
       <Button onPress={() => navigation.navigate('UserProfile')}>
-        <StyledText variant="button">
-          Go to Profile
-        </StyledText>
-      </Button>
-      <Button onPress={() => navigation.navigate("Authentication")}>
-        <StyledText variant="button">
-          Go to Authentication
-        </StyledText>
+          Profile
       </Button>
       <Button onPress={() => navigation.push("Home")}>
-        <StyledText variant="button">
-          Go to Home
-        </StyledText>
+        Home
       </Button>
       <Button onPress={() => navigation.goBack()}>
-        <StyledText variant="button">
-          Go back
-        </StyledText>
+        Go back
       </Button>
     </SafeAreaView>
   );
