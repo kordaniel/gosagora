@@ -1,6 +1,7 @@
 .env*
 .build/
 packages/**/lib/
+packages/**/*.js
 **/*.tsbuildinfo
 
 documents/
