@@ -43,4 +43,5 @@
 | 2025.05.19 | 0.5 | FRONTEND: Add react-navigation/bottom-tabs |
 | 2025.05.19 | 1   | FRONTEND: Move Sign In/Up/Out to profile |
 | 2025.05.20 | 1   | BACKEND: Add, configure tsconfig-paths. Enables usage of common modules without first running separate tsc compilation |
-| Total | 66 | |
+| 2025.05.20 | 1   | BACKEND: Add model Race, migration |
+| Total | 67 | |
