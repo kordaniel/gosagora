@@ -35,15 +35,15 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      createdAt: {
+      created_at: {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      updatedAt: {
+      updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      deletedAt: {
+      deleted_at: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
