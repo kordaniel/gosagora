@@ -3,7 +3,7 @@ import express, {
   type Response,
 } from 'express';
 
-import { signinUserParser, signupUserParser } from '../utils/requestParsers';
+import { signinUserParser, signupUserParser } from './parsers/authParsers';
 import { User } from '../models';
 import authService from '../services/authService';
 
