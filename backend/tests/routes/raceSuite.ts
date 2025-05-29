@@ -1,26 +1,17 @@
-import supertest from 'supertest';
+import TestAgent from 'supertest/lib/agent';
 
 import { generateRandomString } from '../testUtils/testHelpers';
 import testDatabase from '../testUtils/testDatabase';
 import testFirebase from '../testUtils/testFirebase';
 import userUtils from '../testUtils/userUtils';
 
-import app from '../../src/app';
 
-const api = supertest(app);
-
-describe('/race', () => {
+export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
   const baseUrl = '/api/v1/race';
 
   beforeAll(async () => {
-    await testFirebase.connectToFirebase();
-    await testDatabase.connectToDatabase();
     await testFirebase.dropUsers();
     await testDatabase.dropUsers();
-  });
-
-  afterAll(async () => {
-    await testDatabase.disconnectFromDatabase();
   });
 
   describe('When no races exist', () => {
