@@ -44,4 +44,6 @@
 | 2025.05.19 | 1   | FRONTEND: Move Sign In/Up/Out to profile |
 | 2025.05.20 | 1   | BACKEND: Add, configure tsconfig-paths. Enables usage of common modules without first running separate tsc compilation |
 | 2025.05.20 | 1   | BACKEND: Add model Race, migration |
-| Total | 67 | |
+| 2025.05.20 | 0   | BACKEND: Bugfix migrations race table column names, move requestParsers to routes/parsers |
+| 2025.05.29 | 4   | BACKEND: Add route for race creation, initial tests that must be run sequentially with auth tests. Start work on user authorization |
+| Total | 71 | |
