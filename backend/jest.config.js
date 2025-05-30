@@ -1,3 +1,6 @@
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { compilerOptions } = require('./tsconfig.paths.json');
+
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
   preset: "ts-jest",
@@ -8,5 +11,10 @@ module.exports = {
   },
   collectCoverage: true,
   coverageDirectory: "<rootDir>/reports/testcoverage",
-  maxWorkers: "50%"
+  maxWorkers: "50%",
+  modulePaths: [compilerOptions.baseUrl],
+  moduleNameMapper: pathsToModuleNameMapper(
+    compilerOptions.paths,
+    { prefix: '<rootDir>/' }
+  ),
 };

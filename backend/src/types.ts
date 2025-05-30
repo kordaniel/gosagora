@@ -1,3 +1,6 @@
+import type { Request } from 'express';
+import { User } from './models';
+
 export type AssertEqual<T, U> = (
   <V>() => V extends T ? 1 : 2
 ) extends <V, >() => V extends U ? 1 : 2
@@ -9,3 +12,7 @@ export type EnvironmentType =
   | 'development'
   | 'test'
   | 'test-production'; // Simulate production, with test db
+
+export interface RequestUserExtended<T, U, V> extends Request<T, U, V> {
+  user?: User;
+};

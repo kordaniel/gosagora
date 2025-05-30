@@ -1,14 +1,15 @@
 import type { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
-import { APIRequestError } from '../errors/applicationError';
-import { matchingZodSchema } from './zodHelpers';
+import { APIRequestError } from '../../errors/applicationError';
+import { matchingZodSchema } from '../../utils/zodHelpers';
 
 import type {
   APIAuthRequest,
   SignInArguments,
   SignUpArguments
 } from '@common/types/rest_api';
+
 
 const SignUpUserSchema = matchingZodSchema<APIAuthRequest<'signup', SignUpArguments>>()(
   z.object({

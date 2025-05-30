@@ -42,4 +42,11 @@
 | 2025.05.14 | 0.5 | FRONTEND: Add react-navigation |
 | 2025.05.19 | 0.5 | FRONTEND: Add react-navigation/bottom-tabs |
 | 2025.05.19 | 1   | FRONTEND: Move Sign In/Up/Out to profile |
-| Total | 65 | |
+| 2025.05.20 | 1   | BACKEND: Add, configure tsconfig-paths. Enables usage of common modules without first running separate tsc compilation |
+| 2025.05.20 | 1   | BACKEND: Add model Race, migration |
+| 2025.05.20 | 0   | BACKEND: Bugfix migrations race table column names, move requestParsers to routes/parsers |
+| 2025.05.29 | 4   | BACKEND: Add route for race creation, initial tests that must be run sequentially with auth tests. Start work on user authorization |
+| 2025.05.29 | 0.5 | BACKEND: Refactor all API routes tests into one testSuite that runs child test suites in sequential order |
+| 2025.05.30 | 1.5 | BACKEND: Work on user authorization middleware. Test that user is authorized to create races |
+| 2025.05.30 | 1   | BACKEND: Implement endpoint that returns all races, tests |
+| Total | 74 | |

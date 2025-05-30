@@ -1,7 +1,13 @@
-import type { ErrorRequestHandler, RequestHandler, Response } from 'express';
+import type {
+  ErrorRequestHandler,
+  NextFunction,
+  RequestHandler,
+  Response,
+} from 'express';
 import {
   BaseError as SequelizeBaseError,
-  ValidationError as SequelizeValidationError
+  DatabaseError as SequelizeDatabaseError,
+  ValidationError as SequelizeValidationError,
 } from 'sequelize';
 import { FirebaseAuthError } from 'firebase-admin/auth';
 import { ZodError } from 'zod';
@@ -15,6 +21,11 @@ import {
 import { assertNever, isNumber } from './typeguards';
 import logger from './logger';
 import { snakeToCamelCase } from './helpers';
+
+import authService from '../services/authService';
+import userService from '../services/userService';
+
+import type { RequestUserExtended } from '../types';
 
 
 const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
@@ -52,7 +63,7 @@ const handleFirebaseAuthError = (err: FirebaseAuthError, res: Response) => {
       // Make sure the ID token comes from the same Firebase project as the service account
       // used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
       // for details on how to retrieve an ID token.
-      res.status(401).json(new AuthError().toJSONObj());
+      res.status(403).json(new AuthError().toJSONObj());
       break;
     }
     case 'auth/email-already-exists': {
@@ -111,6 +122,23 @@ const handleSequelizeError = (err: SequelizeBaseError, res: Response) => {
         },
       });
     }
+  } else if (err instanceof SequelizeDatabaseError) {
+    // TODO: Implement proper error handling, responses
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      // race.user_id not a valid user.id
+    }
+    logger.error('Sequelize database error:', err.message);
+    logger.error('Sequelize database error, name:', err.name);
+    logger.error('Sequelize database error, parameters:', err.parameters);
+    logger.error('Sequelize database error, original:', err.original);
+    logger.error('Sequelize database error, parent:', err.parent);
+    logger.error('Sequelize database error, sql:', err.sql);
+    res.status(500).json({
+      status: 500,
+      error: {
+        message: 'Something went wrong, contact lazy developer',
+      }
+    });
   } else {
     logger.error(`unhandled SequelizeBaseError, name: ${err. name}. message: ${err.message}`);
     res.status(400).json({
@@ -161,7 +189,31 @@ const unknownEndpoint: RequestHandler = (req, res) => {
   });
 };
 
+const userExtractor = async (
+  req: RequestUserExtended<unknown, unknown, unknown>,
+  _res: Response,
+  next: NextFunction
+) => {
+  const authorization = req.get('authorization');
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    throw new AuthError('Unauthorized');
+  }
+
+  const fbIdToken = authorization.slice(7);
+  const decodedIdToken = await authService.verifyIdToken(fbIdToken);
+  const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
+
+  if (user) {
+    req.user = user;
+    next();
+  } else {
+    throw new AuthError('Forbidden: invalid user', 403);
+  }
+};
+
 export default {
   errorHandler,
   unknownEndpoint,
+  userExtractor,
 };

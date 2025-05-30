@@ -1,31 +1,21 @@
+import TestAgent from 'supertest/lib/agent';
 import type { UserCredential } from 'firebase/auth';
-import supertest from 'supertest';
-
-import testDatabase from '../testUtils/testDatabase';
-import testFirebase from '../testUtils/testFirebase';
 
 import { generateRandomString, shuffleString } from '../testUtils/testHelpers';
 import userUtils, { type IUserBaseObject } from '../testUtils/userUtils';
+import testDatabase from '../testUtils/testDatabase';
+import testFirebase from '../testUtils/testFirebase';
+
 import { User } from '../../src/models';
-import app from '../../src/app';
 
-const api = supertest(app);
 
-describe('/auth', () => {
+export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
   const baseUrl = '/api/v1/auth';
-
-  beforeAll(async () => {
-    await testFirebase.connectToFirebase();
-    await testDatabase.connectToDatabase();
-  });
-
-  afterAll(async () => {
-    await testDatabase.disconnectFromDatabase();
-  });
 
   describe('When no users exist', () => {
     beforeAll(async () => {
       await testFirebase.dropUsers();
+      await testDatabase.dropRaces();
       await testDatabase.dropUsers();
     });
 
@@ -366,6 +356,7 @@ describe('/auth', () => {
 
     beforeAll(async () => {
       await testFirebase.dropUsers();
+      await testDatabase.dropRaces();
       await testDatabase.dropUsers();
 
       for (let i = 0; i < userBaseCount; i++) {
@@ -675,7 +666,7 @@ describe('/auth', () => {
                 firebaseIdToken: shuffleString(firebaseIdToken),
               },
             })
-            .expect(401)
+            .expect(403)
             .expect('Content-Type', /application\/json/);
 
           expect(res.body).toBeDefined();
@@ -715,7 +706,7 @@ describe('/auth', () => {
               firebaseIdToken,
             },
           })
-          .expect(401)
+          .expect(403)
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
@@ -726,7 +717,7 @@ describe('/auth', () => {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toEqual({
-          message: 'Forbidden'
+          message: 'Forbidden: invalid user'
         });
       });
 
@@ -752,7 +743,7 @@ describe('/auth', () => {
               firebaseIdToken,
             },
           })
-          .expect(401)
+          .expect(403)
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
@@ -763,7 +754,7 @@ describe('/auth', () => {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toEqual({
-          message: 'Forbidden'
+          message: 'Forbidden: invalid user'
         });
       });
 

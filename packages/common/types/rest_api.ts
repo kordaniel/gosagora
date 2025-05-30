@@ -1,3 +1,5 @@
+import type { RaceType } from "./race";
+
 export interface APIAuthRequest<
   REQT extends 'signup' | 'login',
   DT
@@ -28,3 +30,19 @@ export interface SignInArguments {
   // Use the ID token to securely identify the currently signed-in user on your server so you can perform server-side logic on their behalf.
   firebaseIdToken: string;
 }
+
+export interface APIRaceRequest<
+  REQT extends 'create',
+  DT
+> {
+  type: REQT;
+  data: DT;
+};
+
+export interface CreateRaceArguments {
+  name: string;
+  type: RaceType;
+  url: string | null;
+  email: string | null;
+  description: string;
+};
