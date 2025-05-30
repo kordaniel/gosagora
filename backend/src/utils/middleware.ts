@@ -23,9 +23,9 @@ import logger from './logger';
 import { snakeToCamelCase } from './helpers';
 
 import authService from '../services/authService';
-import userService from 'src/services/userService';
+import userService from '../services/userService';
 
-import type { RequestUserExtended } from 'src/types';
+import type { RequestUserExtended } from '../types';
 
 
 const handleApplicationError = (err: ApplicationErrorType, res: Response) => {

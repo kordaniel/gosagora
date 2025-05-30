@@ -4,8 +4,8 @@ import express, {
 } from 'express';
 
 import { Race } from '../models';
-import { RequestUserExtended } from 'src/types';
-import { ServiceError } from 'src/errors/applicationError';
+import type { RequestUserExtended } from '../types';
+import { ServiceError } from '../errors/applicationError';
 import middleware from '../utils/middleware';
 import { newRaceParser } from './parsers/raceParsers';
 import raceService from '../services/raceService';
