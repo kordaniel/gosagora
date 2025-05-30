@@ -15,6 +15,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
   describe('When no users exist', () => {
     beforeAll(async () => {
       await testFirebase.dropUsers();
+      await testDatabase.dropRaces();
       await testDatabase.dropUsers();
     });
 
@@ -355,6 +356,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
 
     beforeAll(async () => {
       await testFirebase.dropUsers();
+      await testDatabase.dropRaces();
       await testDatabase.dropUsers();
 
       for (let i = 0; i < userBaseCount; i++) {

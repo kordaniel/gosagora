@@ -6,8 +6,10 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   Model,
+  type NonAttribute,
 } from 'sequelize';
 
+import User from './user';
 import { sequelize } from '../database';
 
 import { RaceType } from '@common/types/race';
@@ -26,6 +28,8 @@ class Race extends Model<InferAttributes<Race>, InferCreationAttributes<Race>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: Date | null;
+
+  declare user: NonAttribute<User>;
 };
 
 Race.init({

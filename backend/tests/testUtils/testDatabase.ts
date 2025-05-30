@@ -1,5 +1,5 @@
+import { Race, User } from '../../src/models';
 import { connectToDatabase, sequelize } from '../../src/database';
-import { User, Race } from '../../src/models';
 import { UserCreationAttributesType } from '../../src/models/user';
 import config from '../../src/utils/config';
 

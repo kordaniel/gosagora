@@ -1,9 +1,12 @@
 import TestAgent from 'supertest/lib/agent';
 
 import { generateRandomString, shuffleString } from '../testUtils/testHelpers';
+import raceUtils from '../testUtils/raceUtils';
 import testDatabase from '../testUtils/testDatabase';
 import testFirebase from '../testUtils/testFirebase';
 import userUtils from '../testUtils/userUtils';
+
+import { Race, User } from '../../src/models';
 
 
 export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
@@ -18,6 +21,20 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
     beforeAll(async () => {
       await testDatabase.dropRaces();
     });
+
+    describe('Listing races', () => {
+
+      test('returns empty array', async () => {
+        const res = await api
+          .get(baseUrl)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toHaveLength(0);
+      });
+
+    }); // Listing races
 
     describe('Addition of new races', () => {
 
@@ -646,5 +663,47 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
     }); // Addition of new races
 
   }); // When no races exist
+
+  describe('When races exist', () => {
+    let racesInDb: Array<{ race: Race; user: User }> | undefined= undefined;
+
+    beforeAll(async () => {
+      await testDatabase.dropRaces();
+      racesInDb = await raceUtils.createRaces();
+    });
+
+    describe('Listing races', () => {
+
+      test('returns all races', async () => {
+        if (!racesInDb) {
+          throw new Error('Internal test error: No races in DB');
+        }
+
+        const expected = racesInDb.map(({
+          race: { id, name, type, description, createdAt, updatedAt },
+          user
+        }) => ({
+          id, name, type, description,
+          createdAt: createdAt.toISOString(),
+          updatedAt: updatedAt.toISOString(),
+          user: {
+            id: user.id,
+            displayName: user.displayName
+          }
+        }));
+
+        const res = await api
+          .get(baseUrl)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toHaveLength(expected.length);
+        expect(res.body).toEqual(expect.arrayContaining(expected));
+      });
+
+    }); // Listing races
+
+  }); // When races exist
 
 }); // '/race'
