@@ -664,7 +664,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
                 firebaseIdToken: shuffleString(firebaseIdToken),
               },
             })
-            .expect(401)
+            .expect(403)
             .expect('Content-Type', /application\/json/);
 
           expect(res.body).toBeDefined();
@@ -704,7 +704,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
               firebaseIdToken,
             },
           })
-          .expect(401)
+          .expect(403)
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
@@ -715,7 +715,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toEqual({
-          message: 'Forbidden'
+          message: 'Forbidden: invalid user'
         });
       });
 
@@ -741,7 +741,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
               firebaseIdToken,
             },
           })
-          .expect(401)
+          .expect(403)
           .expect('Content-Type', /application\/json/);
 
         expect(res.body).toBeDefined();
@@ -752,7 +752,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(res.body.error).toEqual({
-          message: 'Forbidden'
+          message: 'Forbidden: invalid user'
         });
       });
 

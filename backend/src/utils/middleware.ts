@@ -63,7 +63,7 @@ const handleFirebaseAuthError = (err: FirebaseAuthError, res: Response) => {
       // Make sure the ID token comes from the same Firebase project as the service account
       // used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
       // for details on how to retrieve an ID token.
-      res.status(401).json(new AuthError().toJSONObj());
+      res.status(403).json(new AuthError().toJSONObj());
       break;
     }
     case 'auth/email-already-exists': {
@@ -194,33 +194,21 @@ const userExtractor = async (
   _res: Response,
   next: NextFunction
 ) => {
-  // TODO: finish userExtractor logic
   const authorization = req.get('authorization');
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new Error('ACCESS DENIED'); // TODO
+    throw new AuthError('Unauthorized');
   }
 
   const fbIdToken = authorization.slice(7);
+  const decodedIdToken = await authService.verifyIdToken(fbIdToken);
+  const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
 
-  try {
-    const decodedIdToken = await authService.verifyIdToken(fbIdToken);
-    const user =  await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
-
-    console.log('decodedIdToken:', decodedIdToken);
-    console.log('user:', user?.toJSON());
-    if (user) {
-      req.user = user;
-      next();
-    }
-  } catch (error: unknown) {
-    let errorMsg = 'Token ERROR';
-    if (error instanceof Error) {
-      errorMsg += `: ${error.message}`;
-    }
-
-    console.error('token error:', errorMsg);
-    throw new Error(errorMsg);
+  if (user) {
+    req.user = user;
+    next();
+  } else {
+    throw new AuthError('Forbidden: invalid user', 403);
   }
 };
 

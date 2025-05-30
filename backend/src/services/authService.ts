@@ -44,7 +44,7 @@ const loginUser = async (credentials: SignInArguments) => {
 
   const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
   if (!user) {
-    throw new AuthError('Forbidden');
+    throw new AuthError('Forbidden: invalid user', 403);
   }
 
   await user.updateLastseen();
