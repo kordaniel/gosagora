@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    flex: 1,
   },
   containerFlexColumn: {
     flexDirection: 'column',
@@ -128,6 +127,11 @@ const styles = StyleSheet.create({
   developerViewContainer: {
     paddingBottom: 3,
     paddingHorizontal: 3,
+  },
+  safeAreaView: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: 0,
   },
   separator: {
     height: 1,
@@ -180,6 +184,11 @@ const lightStyle = StyleSheet.create({
   },
   primaryContainer: {
     ...styles.container,
+    backgroundColor: lightTheme.colors.primaryContainer,
+    color: lightTheme.colors.onPrimaryContainer,
+  },
+  safeAreaView: {
+    ...styles.safeAreaView,
     backgroundColor: lightTheme.colors.primaryContainer,
     color: lightTheme.colors.onPrimaryContainer,
   },
@@ -251,6 +260,11 @@ const darkStyle = StyleSheet.create({
   },
   primaryContainer: {
     ...styles.container,
+    backgroundColor: darkTheme.colors.primaryContainer,
+    color: darkTheme.colors.onPrimaryContainer,
+  },
+  safeAreaView: {
+    ...styles.safeAreaView,
     backgroundColor: darkTheme.colors.primaryContainer,
     color: darkTheme.colors.onPrimaryContainer,
   },

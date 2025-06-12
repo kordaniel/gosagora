@@ -49,4 +49,5 @@
 | 2025.05.29 | 0.5 | BACKEND: Refactor all API routes tests into one testSuite that runs child test suites in sequential order |
 | 2025.05.30 | 1.5 | BACKEND: Work on user authorization middleware. Test that user is authorized to create races |
 | 2025.05.30 | 1   | BACKEND: Implement endpoint that returns all races, tests |
-| Total | 74 | |
+| 2025.06.12 | 2 | FRONTEND: Conf expo metro bundler to include common packages. Refactor pages to wrap content in SafeAreaView, extend theme to support this |
+| Total | 76 | |
