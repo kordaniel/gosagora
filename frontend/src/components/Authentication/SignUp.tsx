@@ -5,6 +5,8 @@ import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Form, { type FormProps } from '../Form';
+import { FormInputType } from '../Form/enums';
+
 import ErrorRenderer from '../ErrorRenderer';
 import StyledText from '../StyledText';
 
@@ -21,11 +23,13 @@ type SignUpValuesType = {
 
 const validationSchema: Yup.Schema<SignUpValuesType> = Yup.object().shape({
   email: Yup.string()
+    .trim()
     .min(8, 'Email must be at least 8 characters long')
     .max(256, 'Email can not be longer than 256 characters')
     .email()
     .required('Email is required'),
   displayName: Yup.string()
+    .trim()
     .min(4, 'Visible name must be at least 4 characters long')
     .max(64, 'Visible name can not be longer than 64 characters')
     .required('Visible name is required'),
@@ -40,6 +44,7 @@ const validationSchema: Yup.Schema<SignUpValuesType> = Yup.object().shape({
 
 const formFields: FormProps<SignUpValuesType>['formFields'] = {
   email: {
+    inputType: FormInputType.TextField,
     label: config.IS_MOBILE ? undefined : 'Email',
     placeholder: 'your.email@address.com',
     props: {
@@ -51,6 +56,7 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
     },
   },
   displayName: {
+    inputType: FormInputType.TextField,
     label: config.IS_MOBILE ? undefined : 'Visible name',
     placeholder: 'Shown in your profile and interactions',
     props: {
@@ -61,6 +67,7 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
     }
   },
   password: {
+    inputType: FormInputType.TextField,
     label: config.IS_MOBILE ? undefined : 'Password',
     placeholder: 'Password',
     props: {
@@ -73,6 +80,7 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
     },
   },
   passwordConfirmation: {
+    inputType: FormInputType.TextField,
     label: config.IS_MOBILE ? undefined : 'Confirm password',
     placeholder: 'Confirm password',
     props: {

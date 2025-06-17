@@ -3,13 +3,23 @@ import React from 'react';
 import * as Yup from 'yup';
 import { fireEvent, renderWithProvidersWrapped, screen, waitFor } from '../../gosagora-testing-library/react-native';
 
-import Form from '../../../src/components/Form';
+import Form, { type FormProps } from '../../../src/components/Form';
+import { FormInputType } from '../../../src/components/Form/enums';
 
 type FormValuesType = {
   username: string;
   password: string;
   email: string;
+  pickerSelection: string;
 };
+
+const pickerOptions = [
+  { label: 'Opt 0', value: 'opt_0' },
+  { label: 'Opt 1', value: 'opt_1' },
+  { label: 'Opt 2', value: 'opt_2' },
+  { label: 'Opt 3', value: 'opt_3' },
+  { label: 'Opt 4', value: 'opt_4' },
+];
 
 describe('Form component', () => {
   const validationSchema: Yup.Schema<FormValuesType> = Yup.object().shape({
@@ -24,14 +34,19 @@ describe('Form component', () => {
     email: Yup.string()
       .email('Email must be a valid email')
       .required('Email is required!'),
+    pickerSelection: Yup.string()
+      .oneOf(pickerOptions.map(o => o.value), 'Invalid pickerSelection')
+      .required('PickerSelection is required!'),
   });
 
-  const formFields = {
+  const formFields: FormProps<FormValuesType>['formFields'] = {
     username: {
+      inputType: FormInputType.TextField,
       label: 'Username',
       placeholder: 'Username',
     },
     password: {
+      inputType: FormInputType.TextField,
       label: 'Password',
       placeholder: 'Password',
       props: {
@@ -40,8 +55,15 @@ describe('Form component', () => {
       },
     },
     email: {
+      inputType: FormInputType.TextField,
       label: 'Email',
       placeholder: 'Email',
+    },
+    pickerSelection: {
+      inputType: FormInputType.SelectDropdown,
+      label: 'PickerSelection',
+      placeholder: 'Select an option',
+      options: pickerOptions,
     },
   };
 
@@ -61,6 +83,45 @@ describe('Form component', () => {
     expect(screen.getByPlaceholderText('Email')).toBeTruthy();
     expect(screen.getByText('Submit Form')).toBeTruthy();
   }); // Renders all textfields and submit button with label passed as props
+
+
+  it('Does not render any of the options passed to SelectDropdown picker before press event', () => {
+    const onSubmit = jest.fn();
+
+    renderWithProvidersWrapped(<Form
+      formFields={formFields}
+      onSubmit={onSubmit}
+      submitLabel='Submit Form'
+      validationSchema={validationSchema}
+    />);
+
+    expect(screen.getByPlaceholderText('Select an option')).toBeTruthy();
+
+    pickerOptions.forEach(opt => {
+      expect(screen.queryByText(opt.label)).toBeNull();
+    });
+  }); // Does not render any of the options passed to SelectDropdown picker before press event
+
+
+  it('Renders all options passed to SelectDropdown picker after press event', () => {
+    const onSubmit = jest.fn();
+
+    renderWithProvidersWrapped(<Form
+      formFields={formFields}
+      onSubmit={onSubmit}
+      submitLabel='Submit Form'
+      validationSchema={validationSchema}
+    />);
+
+    expect(screen.getByPlaceholderText('Select an option')).toBeTruthy();
+
+    fireEvent.press(screen.getByPlaceholderText('Select an option'));
+
+    pickerOptions.forEach(opt => {
+      expect(screen.getByText(opt.label)).toBeTruthy();
+      expect(screen.queryByText(opt.value)).toBeNull();
+    });
+  }); // Renders all options passed to SelectDropdown picker
 
 
   it('Renders obfuscated textfield with secureTextEntry in props', async () => {
@@ -98,6 +159,7 @@ describe('Form component', () => {
     await waitFor(() => expect(screen.getByText('Username is required!')).toBeTruthy());
     await waitFor(() => expect(screen.getByText('Password is required!')).toBeTruthy());
     await waitFor(() => expect(screen.getByText('Email is required!')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('PickerSelection is required!')).toBeTruthy());
   }); // Displays validation errors for unchanged fields on submit
 
 
@@ -147,6 +209,7 @@ describe('Form component', () => {
     const username = 'GosaGoraUser';
     const password = 'TopsecreT';
     const email = 'gosagorauser.tester@test.gosagora.com';
+    const pickerSelection = pickerOptions[2];
     const submitLabel = 'Submit to complete SignIn';
     const onSubmit = jest.fn();
 
@@ -160,13 +223,17 @@ describe('Form component', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Username'), username);
     fireEvent.changeText(screen.getByPlaceholderText('Password'), password);
     fireEvent.changeText(screen.getByPlaceholderText('Email'), email);
+
+    fireEvent.press(screen.getByPlaceholderText('Select an option'));
+    fireEvent.press(screen.getByText(pickerSelection.label));
+
     fireEvent.press(screen.getByText(submitLabel));
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(onSubmit.mock.calls[0][0]).toEqual({
-        username, password, email
+        username, password, email, pickerSelection: pickerSelection.value
       });
     });
   });
@@ -174,6 +241,7 @@ describe('Form component', () => {
 
   it('Does not submit form when validations fail', async () => {
     const submitLabel = 'Submit to complete SignIn';
+    const pickerSelection = pickerOptions[2];
     const onSubmit = jest.fn();
 
     renderWithProvidersWrapped(<Form
@@ -185,6 +253,10 @@ describe('Form component', () => {
 
     fireEvent.changeText(screen.getByPlaceholderText('Username'), 'short');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'pass');
+
+    fireEvent.press(screen.getByPlaceholderText('Select an option'));
+    fireEvent.press(screen.getByText(pickerSelection.label));
+
     fireEvent.press(screen.getByText(submitLabel));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(0));
