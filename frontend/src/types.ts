@@ -2,6 +2,10 @@ import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 import type { User as FirebaseUser } from 'firebase/auth';
 import type { MD3Theme } from 'react-native-paper';
 
+export type NonNullableFields<T> = {
+  [K in keyof T]: Exclude<T[K], null>;
+};
+
 export interface AppTheme extends MD3Theme {
   // TODO: Refactor string => union with actual defined keys (primaryContainer, secondaryContainer, ...)
   styles: Record<string, ViewStyle | ImageStyle | TextStyle>;
