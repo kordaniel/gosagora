@@ -74,13 +74,13 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(Date.parse(updatedAt)).not.toBeNaN();
 
           expect(bodyRest).toStrictEqual({
-            userId: user.user.id,
             name: raceData.name,
             type: raceData.type,
-            url: raceData.url,
-            email: raceData.email,
             description: raceData.description,
-            deletedAt: null
+            user: {
+              id: user.user.id,
+              displayName: user.user.displayName,
+            }
           });
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount + 1);
         });
@@ -119,13 +119,13 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(Date.parse(updatedAt)).not.toBeNaN();
 
           expect(bodyRest).toStrictEqual({
-            userId: user.user.id,
             name: raceData.name,
             type: raceData.type,
-            url: null,
-            email: raceData.email,
             description: raceData.description,
-            deletedAt: null
+            user: {
+              id: user.user.id,
+              displayName: user.user.displayName,
+            }
           });
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount + 1);
         });
@@ -164,13 +164,13 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(Date.parse(updatedAt)).not.toBeNaN();
 
           expect(bodyRest).toStrictEqual({
-            userId: user.user.id,
             name: raceData.name,
             type: raceData.type,
-            url: raceData.url,
-            email: null,
             description: raceData.description,
-            deletedAt: null
+            user: {
+              id: user.user.id,
+              displayName: user.user.displayName,
+            }
           });
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount + 1);
         });

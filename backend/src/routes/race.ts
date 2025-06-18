@@ -3,7 +3,6 @@ import express, {
   type Response,
 } from 'express';
 
-import { Race } from '../models';
 import type { RequestUserExtended } from '../types';
 import { ServiceError } from '../errors/applicationError';
 import middleware from '../utils/middleware';
@@ -20,7 +19,7 @@ const router = express.Router();
 
 router.post('/', [middleware.userExtractor, newRaceParser], async (
   req: RequestUserExtended<unknown, unknown, APIRaceRequest<'create', CreateRaceArguments>>,
-  res: Response<Race>
+  res: Response<RaceListing>
 ) => {
   //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
   //           not set => req.user is always defined here if this function is run
