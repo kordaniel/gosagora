@@ -8,6 +8,7 @@ import axios, { AxiosError } from 'axios';
 
 import { HttpError } from '../errors/applicationError';
 import appConfig from '../utils/config';
+import firebase from './firebase';
 
 // https://axios-http.com/docs/intro
 // https://github.com/axios/axios
@@ -31,7 +32,7 @@ const axiosConfig: AxiosRequestConfig = {
 
 const axiosInstance: AxiosInstance = axios.create(axiosConfig);
 
-const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
   // TODO:
   //  - Set Headers Here
   //  - Check Authentication Here
@@ -40,7 +41,12 @@ const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConf
     return config;
   }
 
+  const currentUserIdToken = await firebase.getCurrentUserIdToken();
   const { method, url } = config;
+
+  if (currentUserIdToken !== null) {
+    config.headers.Authorization = `Bearer ${currentUserIdToken}`;
+  }
 
   if (!config.silent) {
     console.log(`[API] ${method?.toLocaleUpperCase()} ${url} | Request`);
@@ -173,7 +179,7 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
   return Promise.reject(error);
 };
 
-axiosInstance.interceptors.request.use(onRequest, onErrorResponse, { synchronous: true });
+axiosInstance.interceptors.request.use(onRequest, onErrorResponse);
 axiosInstance.interceptors.response.use(onResponse, onErrorResponse);
 
 export default axiosInstance;

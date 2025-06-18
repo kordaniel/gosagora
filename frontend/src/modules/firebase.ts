@@ -69,9 +69,19 @@ const addOnAuthChangeObserver = (observer: NextOrObserver<User>): Unsubscribe =>
   return onAuthStateChanged(firebaseAuth, observer);
 };
 
+const getCurrentUserIdToken = async (): Promise<string | null> => {
+  const currentUser = firebaseAuth.currentUser;
+
+  if (!currentUser) {
+    return null;
+  }
+
+  return await currentUser.getIdToken();
+};
 
 export default {
   addOnAuthChangeObserver,
+  getCurrentUserIdToken,
   signInWithEmailAndPassword,
   signOut,
 };
