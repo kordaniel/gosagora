@@ -51,4 +51,5 @@
 | 2025.05.30 | 1   | BACKEND: Implement endpoint that returns all races, tests |
 | 2025.06.12 | 2   | FRONTEND: Conf expo metro bundler to include common packages. Refactor pages to wrap content in SafeAreaView, extend theme to support this |
 | 2025.06.17 | 2   | FRONTEND: Extend Form component with a Selection Picker |
-| Total | 78 | |
+| 2025.06.18 | 4   | FRONTEND: Extend axiosInstance to include IdToken in header, handle 401 responses. Add AuthError (class that) extends ApplicationError, remove TemporaryUnionFillerError. Add Races page with required functionality to fetch, list and post new races |
+| Total | 82 | |
