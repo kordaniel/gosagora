@@ -6,7 +6,10 @@ import type {
 } from 'axios';
 import axios, { AxiosError } from 'axios';
 
-import { HttpError } from '../errors/applicationError';
+import {
+  AuthError,
+  HttpError
+} from '../errors/applicationError';
 import appConfig from '../utils/config';
 import firebase from './firebase';
 
@@ -132,12 +135,14 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
     // The request was made and the server responded with a status code that falls out of the range of 2xx
     // NOTE: error.response is of type AxiosResponse
     switch (error.response.status) {
-      /*
       case 401: {
         // "Login required"
         // Delete token & Go To Login Page if required.
-        break;
+        // TODO: Relay backend error 401 message to UI
+        //    => error.response.data.error = { message: string }
+        throw new AuthError(`${error.response.statusText}: Please Sign In to perform this action`);
       }
+      /*
       case 403: {
         // "Permission denied"
         // Delete token & Go To Login Page if required.
