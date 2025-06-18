@@ -8,7 +8,7 @@ import { CreateRaceArguments } from '@common/types/rest_api';
 import { RaceListing } from '@common/types/race';
 
 const useRace = () => {
-  const [races, setRaces] = useState<RaceListing[] | null>(null);
+  const [races, setRaces] = useState<RaceListing[]>([]);
   const [racesError, setRacesError] = useState<string>('');
   const [racesLoading, setRacesLoading] = useState<boolean>(false);
   const [submitNewRaceError, setSubmitNewRaceError] = useState<string>('');
@@ -38,13 +38,14 @@ const useRace = () => {
   const submitNewRace = async (raceDetails: NonNullableFields<CreateRaceArguments>) => {
     setSubmitNewRaceLoading(true);
     try {
-      await raceService.create({
+      const newRace = await raceService.create({
         name: raceDetails.name.trim(),
         type: raceDetails.type,
         url: raceDetails.url ? raceDetails.url.trim() : null,
         email: raceDetails.email ? raceDetails.email.trim() : null,
         description: raceDetails.description.trim(),
       });
+      setRaces([...races, newRace]);
       setSubmitNewRaceError('');
     } catch (err: unknown) {
       if (err instanceof ApplicationError) {

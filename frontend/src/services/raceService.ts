@@ -14,10 +14,9 @@ const create = async (raceDetails: CreateRaceArguments) => {
     data: raceDetails
   };
 
-  const { data } = await axiosInstance.post<unknown>(
+  const { data } = await axiosInstance.post<RaceListing>(
     `${apiBasePath}`, postData
   );
-
   return data;
 };
 
