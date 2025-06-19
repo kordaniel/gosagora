@@ -19,7 +19,8 @@
     "testdb:clear": "docker compose -f docker-compose.test.yml -p gosagora-postgres-test down --volumes",
     "test:leavedb": "npm run testdb:start && cross-env NODE_ENV=test jest",
     "test": "npm run test:leavedb; npm run testdb:stop",
-    "migration:dev:down": "npm run devdb:start && cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/database/rollbackMigrations.ts; npm run devdb:stop"
+    "migration:dev:down": "npm run devdb:start && cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/database/rollbackMigrations.ts; npm run devdb:stop",
+    "migration:test:down": "npm run testdb:start && cross-env NODE_ENV=test ts-node-dev -r tsconfig-paths/register src/database/rollbackMigrations.ts; npm run testdb:stop"
   },
   "repository": {
     "type": "git",

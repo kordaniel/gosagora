@@ -12,7 +12,7 @@ const api = supertest(app);
 describe('API routes', () => {
   beforeAll(async () => {
     await testFirebase.connectToFirebase();
-    await testDatabase.connectToDatabase();
+    await testDatabase.connectToDatabase(console.info);
   });
 
   afterAll(async () => {

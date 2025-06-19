@@ -36,36 +36,42 @@ const migrationConf: UmzugOptions<QueryInterface> = {
   },
 };
 
-const runMigrations = async () => {
+const runMigrations = async (
+  loggerFn: (...data: unknown[]) => void
+) => {
   const migrator = new Umzug(migrationConf);
   const migrations = await migrator.up();
-  logger.info('All SQL migrations are up to date', {
+  loggerFn('All SQL migrations are up to date', {
     files: migrations.map(mig => mig.name),
   });
 };
 
-export const rollbackDbMigrations = async () => {
+export const rollbackDbMigrations = async (
+  loggerFn: (...data: unknown[]) => void
+) => {
   await sequelize.authenticate();
-  logger.info(`Connection to SQL DB at ${stripCredentialsFromDBUri(db_uri)} has been established successfully`);
-  logger.info('Attempting SQL rollback');
+  loggerFn(`Connection to SQL DB at ${stripCredentialsFromDBUri(db_uri)} has been established successfully`);
+  loggerFn('Attempting SQL rollback');
   const migrator = new Umzug(migrationConf);
   const migrations = await migrator.down();
-  logger.info('Rolled back SQL migrations', {
+  loggerFn('Rolled back SQL migrations', {
     files: migrations.map(mig => mig.name),
   });
 };
 
-export const connectToDatabase = async () => {
+export const connectToDatabase = async (
+  loggerFn: (...data: unknown[]) => void = logger.info
+) => {
   try {
     await sequelize.authenticate();
-    await runMigrations();
-    logger.info(`Connection to SQL DB at ${stripCredentialsFromDBUri(db_uri)} has been established successfully`);
+    await runMigrations(loggerFn);
+    loggerFn(`Connection to SQL DB at ${stripCredentialsFromDBUri(db_uri)} has been established successfully`);
   } catch (error: unknown) {
     let errorMsg = 'Error connecting to Postgres DB';
     if (error instanceof Error) {
       errorMsg += `: ${error.message}`;
     }
-    logger.error(errorMsg);
+    logger.errorAllEnvs(errorMsg);
     process.exit(69); // EX_UNAVAILABLE: service unavailable
   }
 };

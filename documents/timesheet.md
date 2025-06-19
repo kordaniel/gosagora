@@ -53,4 +53,5 @@
 | 2025.06.17 | 2   | FRONTEND: Extend Form component with a Selection Picker |
 | 2025.06.18 | 4   | FRONTEND: Extend axiosInstance to include IdToken in header, handle 401 responses. Add AuthError (class that) extends ApplicationError, remove TemporaryUnionFillerError. Add Races page with required functionality to fetch, list and post new races |
 | 2025.06.18 | 0.5 | BACKEND: Refactor races API to return RaceListing instead of full Race after creating new |
-| Total | 82.5 | |
+| 2025.06.19 | 0.5 | BACKEND: Add DB migration:down for test env. Extend logger module. Configure DB module, rollback logging. Close db-connection after rollbacking |
+| Total | 83 | |
