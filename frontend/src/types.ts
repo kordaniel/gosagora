@@ -8,6 +8,8 @@ export type NonNullableFields<T> = {
   [K in keyof T]: Exclude<T[K], null>;
 };
 
+export type WithRequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
 export interface AppTheme extends MD3Theme {
   // TODO: Refactor string => union with actual defined keys (primaryContainer, secondaryContainer, ...)
   styles: Record<string, ViewStyle | ImageStyle | TextStyle>;

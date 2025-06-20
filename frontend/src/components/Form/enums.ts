@@ -1,4 +1,5 @@
 export enum FormInputType {
-  TextField,
+  InputDatePicker,
   SelectDropdown,
+  TextField,
 }

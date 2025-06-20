@@ -14,32 +14,41 @@ import {
 import { useTheme } from 'react-native-paper';
 
 import Button from '../Button';
+import InputDatePicker, { type DatePickerInputProps } from './InputDatePicker';
 import SelectDropdown from './SelectDropdown';
 import TextField from './TextField';
 
-import type { AppTheme } from '../../types';
+import type { AppTheme, WithRequiredFields } from '../../types';
 import { FormInputType } from './enums';
 
 import { assertNever } from '../../utils/typeguards';
 
 interface FormFieldBase {
   label?: string;
-  placeholder: string;
 }
 
-interface FormFieldTextField extends FormFieldBase {
-  inputType: FormInputType.TextField;
-  props?: TextInputProps;
+interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'label'> {
+  inputType: FormInputType.InputDatePicker;
+  initialValue: Date | undefined;
+  props?: DatePickerInputProps;
 }
 
 interface FormFieldSelectDropdown extends FormFieldBase {
   inputType: FormInputType.SelectDropdown;
+  placeholder: string;
   options: Array<{ label: string; value: string; }>;
 }
 
+interface FormFieldTextField extends FormFieldBase {
+  inputType: FormInputType.TextField;
+  placeholder: string;
+  props?: TextInputProps;
+}
+
 type FormField =
-  | FormFieldTextField
-  | FormFieldSelectDropdown;
+  | FormFieldInputDatePicker
+  | FormFieldSelectDropdown
+  | FormFieldTextField;
 
 interface FormFields {
   [key:string]: FormField;
@@ -52,11 +61,11 @@ export interface FormProps<T> {
   validationSchema: Yup.Schema<T>;
 }
 
-type FormikStringValues = {
-  [P in keyof FormikValues]: string;
+type FormikValuesType = {
+  [P in keyof FormikValues]: string | Date;
 };
 
-const Form = <FormValuesType extends FormikStringValues, >({
+const Form = <FormValuesType extends FormikValuesType, >({
   formFields,
   onSubmit,
   submitLabel,
@@ -80,7 +89,13 @@ const Form = <FormValuesType extends FormikStringValues, >({
   const initialValues: FormValuesType = Object
     .entries(formFields)
     .reduce((acc, field) => {
-      Object.assign(acc, { [field[0]]: '' });
+      switch (field[1].inputType) {
+        case FormInputType.InputDatePicker:
+          Object.assign(acc, { [field[0]]: field[1].initialValue });
+          break;
+        default:
+          Object.assign(acc, { [field[0]]: '' });
+      }
       return acc;
     }, {}) as FormValuesType;
 
@@ -110,6 +125,13 @@ const Form = <FormValuesType extends FormikStringValues, >({
                     label={val.label}
                     placeholder={val.placeholder}
                     options={val.options}
+                  />;
+                case FormInputType.InputDatePicker:
+                  return <InputDatePicker
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    datePickerInputProps={val.props}
                   />;
                 default:
                   return assertNever(val);
