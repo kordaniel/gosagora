@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { en, registerTranslation } from 'react-native-paper-dates';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,6 +10,11 @@ import DeveloperView from 'src/components/DeveloperView';
 import Navigator from 'src/components/Navigator';
 
 import useAppTheme from './src/hooks/useAppTheme';
+
+// react-native-paper-dates setup
+// NOTE: 'main' must be registered when translations are registered => don't run from index.ts
+// https://web-ridge.github.io/react-native-paper-dates/docs/intro#register-translation
+registerTranslation('en', en);
 
 const App = () => {
   const theme = useAppTheme();
