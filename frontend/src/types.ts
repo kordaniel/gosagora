@@ -33,6 +33,11 @@ export interface User {
   gosaGoraUser: GosaGoraUser;
 }
 
+export interface DateRange {
+  startDate: Date;
+  endDate: Date;
+}
+
 export const RaceTypeOptions = Object
   .entries(RaceType)
   .reduce<Array<{ label: string; value: string; }>>((acc, val) => {
