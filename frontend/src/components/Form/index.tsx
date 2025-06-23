@@ -13,15 +13,23 @@ import {
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-import Button from '../Button';
 import InputDatePicker, { type DatePickerInputProps } from './InputDatePicker';
+import RangeDatePicker, { type DatePickerModalProps } from './RangeDatePicker';
+import Button from '../Button';
 import SelectDropdown from './SelectDropdown';
 import TextField from './TextField';
 
-import type { AppTheme, WithRequiredFields } from '../../types';
+import type {
+  AppTheme,
+  DateRange,
+  WithRequiredFields,
+} from '../../types';
+import {
+  assertNever,
+  isDateRange,
+} from '../../utils/typeguards';
 import { FormInputType } from './enums';
 
-import { assertNever } from '../../utils/typeguards';
 
 interface FormFieldBase {
   label?: string;
@@ -31,6 +39,12 @@ interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'la
   inputType: FormInputType.InputDatePicker;
   initialValue: Date | undefined;
   props?: DatePickerInputProps;
+}
+
+interface FormFieldRangeDatePicker extends FormFieldBase {
+  inputType: FormInputType.RangeDatePicker;
+  initialValue?: DateRange;
+  props?: DatePickerModalProps;
 }
 
 interface FormFieldSelectDropdown extends FormFieldBase {
@@ -47,6 +61,7 @@ interface FormFieldTextField extends FormFieldBase {
 
 type FormField =
   | FormFieldInputDatePicker
+  | FormFieldRangeDatePicker
   | FormFieldSelectDropdown
   | FormFieldTextField;
 
@@ -62,7 +77,7 @@ export interface FormProps<T> {
 }
 
 type FormikValuesType = {
-  [P in keyof FormikValues]: string | Date;
+  [P in keyof FormikValues]: string | Date | Partial<DateRange>;
 };
 
 const Form = <FormValuesType extends FormikValuesType, >({
@@ -75,7 +90,8 @@ const Form = <FormValuesType extends FormikValuesType, >({
 
   const style = [
     theme.styles.containerFlexColumn,
-    theme.styles.primaryContainer
+    theme.styles.primaryContainer,
+    theme.styles.stretchContainer,
   ];
 
   const handleOnSubmit = async (
@@ -92,6 +108,13 @@ const Form = <FormValuesType extends FormikValuesType, >({
       switch (field[1].inputType) {
         case FormInputType.InputDatePicker:
           Object.assign(acc, { [field[0]]: field[1].initialValue });
+          break;
+        case FormInputType.RangeDatePicker:
+          if (isDateRange(field[1].initialValue)) {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: { startDate: undefined, endDate: undefined } });
+          }
           break;
         default:
           Object.assign(acc, { [field[0]]: '' });
@@ -132,6 +155,13 @@ const Form = <FormValuesType extends FormikValuesType, >({
                     name={field}
                     label={val.label}
                     datePickerInputProps={val.props}
+                  />;
+                case FormInputType.RangeDatePicker:
+                  return <RangeDatePicker
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    datePickerModalProps={val.props}
                   />;
                 default:
                   return assertNever(val);

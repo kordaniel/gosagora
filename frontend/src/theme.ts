@@ -136,6 +136,9 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
   },
+  stretchContainer: {
+    alignItems: 'stretch',
+  },
   tabBarContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

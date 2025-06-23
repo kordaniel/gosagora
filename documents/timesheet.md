@@ -55,4 +55,5 @@
 | 2025.06.18 | 0.5 | BACKEND: Refactor races API to return RaceListing instead of full Race after creating new |
 | 2025.06.19 | 0.5 | BACKEND: Add DB migration:down for test env. Extend logger module. Configure DB module, rollback logging. Close db-connection after rollbacking |
 | 2025.06.20 | 2   | FRONTEND: Add WithRequiredFields utility type. Extend Form with Date Picker |
-| Total | 85 | |
+| 2025.06.23 | 2   | FRONTEND: Add Form DateRange picker, dateTools module, extend formik ErrorRenderer component, supporting code |
+| Total | 87 | |
