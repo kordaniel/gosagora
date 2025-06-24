@@ -6,7 +6,7 @@ import { useField } from 'formik';
 
 import FieldBase, { type FieldBaseProps } from './FieldBase';
 
-import { AppTheme } from 'src/types';
+import type { AppTheme } from '../../types';
 
 interface SelectDropdownProps extends FieldBaseProps {
   placeholder: string;
