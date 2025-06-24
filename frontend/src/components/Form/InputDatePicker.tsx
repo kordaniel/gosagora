@@ -12,12 +12,13 @@ export interface DatePickerInputProps {
   hasError?: boolean;
   hideValidationErros?: boolean;
   inputEnabled?: boolean;
+  saveLabel?: string;
   startWeekOnMonday?: boolean;
   validRange?: {
     startDate?: Date;
     endDate?: Date;
     disabledDates?: Date[];
-  },
+  };
 }
 
 interface InputDatePickerProps extends WithRequiredFields<FieldBaseProps, 'label'> {
