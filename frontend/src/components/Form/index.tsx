@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import Checkbox, { type RNPCheckboxProps } from './Checkbox';
 import InputDatePicker, { type DatePickerInputProps } from './InputDatePicker';
 import RangeDatePicker, { type DatePickerModalProps } from './RangeDatePicker';
 import Button from '../Button';
@@ -33,6 +34,13 @@ import { FormInputType } from './enums';
 
 interface FormFieldBase {
   label?: string;
+}
+
+interface FormFieldCheckbox extends FormFieldBase {
+  inputType: FormInputType.Checkbox
+  initialValue?: boolean;
+  checkboxText: string;
+  props?: RNPCheckboxProps;
 }
 
 interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'label'> {
@@ -60,6 +68,7 @@ interface FormFieldTextField extends FormFieldBase {
 }
 
 type FormField =
+  | FormFieldCheckbox
   | FormFieldInputDatePicker
   | FormFieldRangeDatePicker
   | FormFieldSelectDropdown
@@ -77,7 +86,7 @@ export interface FormProps<T> {
 }
 
 type FormikValuesType = {
-  [P in keyof FormikValues]: string | Date | Partial<DateRange>;
+  [P in keyof FormikValues]: string | Date | Partial<DateRange> | boolean;
 };
 
 const Form = <FormValuesType extends FormikValuesType, >({
@@ -106,6 +115,13 @@ const Form = <FormValuesType extends FormikValuesType, >({
     .entries(formFields)
     .reduce((acc, field) => {
       switch (field[1].inputType) {
+        case FormInputType.Checkbox:
+          if (('initialValue' in field[1]) && typeof field[1].initialValue === 'boolean') {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: false });
+          }
+          break;
         case FormInputType.InputDatePicker:
           Object.assign(acc, { [field[0]]: field[1].initialValue });
           break;
@@ -133,6 +149,14 @@ const Form = <FormValuesType extends FormikValuesType, >({
           <View style={style}>
             {Object.entries(formFields).map(([field, val]) => {
               switch (val.inputType) {
+                case FormInputType.Checkbox:
+                  return <Checkbox
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    checkboxProps={val.props}
+                    checkboxText={val.checkboxText}
+                  />;
                 case FormInputType.TextField:
                   return <TextField
                     key={field}

@@ -56,4 +56,5 @@
 | 2025.06.19 | 0.5 | BACKEND: Add DB migration:down for test env. Extend logger module. Configure DB module, rollback logging. Close db-connection after rollbacking |
 | 2025.06.20 | 2   | FRONTEND: Add WithRequiredFields utility type. Extend Form with Date Picker |
 | 2025.06.23 | 2   | FRONTEND: Add Form DateRange picker, dateTools module, extend formik ErrorRenderer component, supporting code |
-| Total | 87 | |
+| 2025.06.24 | 1   | FRONTEND: Add Form Checkbox component, minor fixes to other Form Components |
+| Total | 88 | |
