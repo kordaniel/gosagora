@@ -30,15 +30,20 @@ export interface DatePickerModalProps {
 interface DateRangeSelectorProps {
   dateRange: Partial<DateRange>;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  datePickerModalOpenerLabel?: string;
 }
 
-const DateRangeSelector = ({ dateRange, setIsVisible }: DateRangeSelectorProps) => {
+const DateRangeSelector = ({
+  dateRange,
+  setIsVisible,
+  datePickerModalOpenerLabel
+}: DateRangeSelectorProps) => {
   const theme = useTheme<AppTheme>();
 
   return (
     <View style={theme.styles.containerFlexRow}>
       {dateRange.startDate === undefined || dateRange.endDate === undefined
-        ? <Button onPress={() => setIsVisible(true)}>Select dates</Button>
+        ? <Button onPress={() => setIsVisible(true)}>{datePickerModalOpenerLabel ? datePickerModalOpenerLabel : "Select dates"}</Button>
         : <>
             <View style={theme.styles.containerFlexColumn}>
               <StyledText style={{ padding: 8, }}>From:</StyledText>
@@ -56,12 +61,14 @@ const DateRangeSelector = ({ dateRange, setIsVisible }: DateRangeSelectorProps) 
 
 interface RangeDatePickerProps extends FieldBaseProps {
   datePickerModalProps?: DatePickerModalProps;
+  datePickerModalOpenerLabel?: string;
 }
 
 const RangeDatePicker = ({
   name,
   label,
-  datePickerModalProps
+  datePickerModalProps,
+  datePickerModalOpenerLabel
 }: RangeDatePickerProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_field, meta, helpers] = useField<Partial<DateRange>>(name);
@@ -82,7 +89,11 @@ const RangeDatePicker = ({
       label={label}
       name={name}
     >
-      <DateRangeSelector dateRange={meta.value} setIsVisible={setIsVisible} />
+      <DateRangeSelector
+        dateRange={meta.value}
+        setIsVisible={setIsVisible}
+        datePickerModalOpenerLabel={datePickerModalOpenerLabel}
+      />
       <DatePickerModal
         locale="en"
         label={label}

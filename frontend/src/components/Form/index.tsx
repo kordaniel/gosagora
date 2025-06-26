@@ -52,6 +52,7 @@ interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'la
 interface FormFieldRangeDatePicker extends FormFieldBase {
   inputType: FormInputType.RangeDatePicker;
   initialValue?: DateRange;
+  datePickerModalOpenerLabel?: string;
   props?: DatePickerModalProps;
 }
 
@@ -185,6 +186,7 @@ const Form = <FormValuesType extends FormikValuesType, >({
                     key={field}
                     name={field}
                     label={val.label}
+                    datePickerModalOpenerLabel={val.datePickerModalOpenerLabel}
                     datePickerModalProps={val.props}
                   />;
                 default:
