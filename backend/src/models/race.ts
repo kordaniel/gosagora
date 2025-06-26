@@ -20,11 +20,16 @@ export type RaceCreationAttributesType = CreationAttributes<Race>;
 class Race extends Model<InferAttributes<Race>, InferCreationAttributes<Race>> {
   declare id: CreationOptional<number>;
   declare userId: number | null;
+  declare public: CreationOptional<boolean>;
   declare name: string;
   declare type: RaceType;
   declare url: string | null;
   declare email: string | null;
   declare description: string;
+  declare dateFrom: Date;
+  declare dateTo: Date;
+  declare registrationOpenDate: Date;
+  declare registrationCloseDate: Date;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: Date | null;
@@ -43,6 +48,11 @@ Race.init({
     allowNull: true, // allow null values so the user can be deleted while keeping the races, requires SET NULL onDelete
     references: { model: 'user', key: 'id' },
     onDelete: 'SET NULL',
+  },
+  public: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
   },
   name: {
     type: DataTypes.TEXT,
@@ -74,6 +84,34 @@ Race.init({
     allowNull: false,
     validate: {
       len: [4, 2000],
+    },
+  },
+  dateFrom: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    validate: {
+      isDate: true,
+    },
+  },
+  dateTo: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    validate: {
+      isDate: true,
+    },
+  },
+  registrationOpenDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    validate: {
+      isDate: true,
+    },
+  },
+  registrationCloseDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    validate: {
+      isDate: true,
     },
   },
   createdAt: {

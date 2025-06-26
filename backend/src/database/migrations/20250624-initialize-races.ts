@@ -16,6 +16,11 @@ module.exports = {
         references: { model: 'users', key: 'id' },
         onDelete: 'SET NULL',
       },
+      public: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
       name: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -33,6 +38,22 @@ module.exports = {
       },
       description: {
         type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      date_from: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+      },
+      date_to: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+      },
+      registration_open_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      registration_close_date: {
+        type: DataTypes.DATE,
         allowNull: false,
       },
       created_at: {

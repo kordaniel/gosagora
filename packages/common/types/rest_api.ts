@@ -42,7 +42,12 @@ export interface APIRaceRequest<
 export interface CreateRaceArguments {
   name: string;
   type: RaceType;
+  public?: boolean;
   url: string | null;
   email: string | null;
   description: string;
+  dateFrom: string;
+  dateTo: string;
+  registrationOpenDate: string;
+  registrationCloseDate: string;
 };

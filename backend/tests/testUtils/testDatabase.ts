@@ -62,6 +62,10 @@ const getUserByFirebaseUid = async (firebaseUid: string) => {
   });
 };
 
+const getRaceByPk = async (id: number) => {
+  return await Race.findByPk(id);
+};
+
 export default {
   connectToDatabase,
   disconnectFromDatabase,
@@ -73,4 +77,5 @@ export default {
   userCount,
   raceCount,
   getUserByFirebaseUid,
+  getRaceByPk,
 };

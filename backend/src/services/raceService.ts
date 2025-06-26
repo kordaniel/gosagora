@@ -1,6 +1,6 @@
 import { Race, User } from '../models';
+import { NewRaceAttributes } from '..//types';
 
-import type { CreateRaceArguments } from '@common/types/rest_api';
 import type { RaceListing } from '@common/types/race';
 
 const raceListingQueryOpts = {
@@ -20,7 +20,7 @@ const toRaceListing = ({ id, name, type, description, createdAt, updatedAt, user
 
 const createNewRace = async (
   userId: User['id'],
-  newRaceArguments: CreateRaceArguments
+  newRaceArguments: NewRaceAttributes
 ): Promise<RaceListing> => {
   const race = await Race.create({
     userId,
