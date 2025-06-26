@@ -1,11 +1,23 @@
+import { rollbackDbMigrations, sequelize } from './index';
 import logger from '../utils/logger';
-import { rollbackDbMigrations } from './index';
 
-logger.info('Rolling back SQL migrations');
+logger.infoAllEnvs('Rolling back SQL migrations');
 
-rollbackDbMigrations()
+rollbackDbMigrations(logger.infoAllEnvs)
   .then(_ => {
-    logger.info('All done, exiting');
+    sequelize.close()
+      .then(_ => {
+        logger.infoAllEnvs('All done, exiting');
+      })
+      .catch((error: unknown) => {
+        let errorMsg = 'Error closing sequelize DB connection';
+        if (error instanceof Error) {
+          errorMsg += `: ${error.message}`;
+        } else {
+          errorMsg += `: ${JSON.stringify(error)}`;
+        }
+        logger.errorAllEnvs(errorMsg);
+      });
   })
   .catch(error => {
     let errorMsg = 'Error rolling back SQL migrations';
@@ -14,5 +26,5 @@ rollbackDbMigrations()
     } else {
       errorMsg += `: ${JSON.stringify(error)}`;
     }
-    logger.error(errorMsg);
+    logger.errorAllEnvs(errorMsg);
   });

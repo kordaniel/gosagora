@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker';
 
+import testDatabase from './testDatabase';
+import testFirebase from './testFirebase';
+
 // https://fakerjs.dev/
 // Reproducible results
 // If you want consistent results, you can set your own seed:
@@ -54,7 +57,20 @@ void
 
 const userBaseObjectGenerator = generateUserBaseObj();
 
+const createSignedInUser = async () => {
+  const userBase = userBaseObjectGenerator.next().value;
+  const credentials = await testFirebase.addNewUserEmailPassword(userBase.email, userBase.password);
+  const user = await testDatabase.insertUser({
+    email: userBase.email.toLowerCase(),
+    displayName: userBase.displayName,
+    firebaseUid: credentials.user.uid,
+  });
+
+  return { user, credentials };
+};
+
 export default {
   //userBaseObjects,
-  userBaseObjectGenerator
+  userBaseObjectGenerator,
+  createSignedInUser,
 };

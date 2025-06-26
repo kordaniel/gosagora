@@ -6,8 +6,12 @@ import type {
 } from 'axios';
 import axios, { AxiosError } from 'axios';
 
-import { HttpError } from '../errors/applicationError';
+import {
+  AuthError,
+  HttpError
+} from '../errors/applicationError';
 import appConfig from '../utils/config';
+import firebase from './firebase';
 
 // https://axios-http.com/docs/intro
 // https://github.com/axios/axios
@@ -31,7 +35,7 @@ const axiosConfig: AxiosRequestConfig = {
 
 const axiosInstance: AxiosInstance = axios.create(axiosConfig);
 
-const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
   // TODO:
   //  - Set Headers Here
   //  - Check Authentication Here
@@ -40,7 +44,12 @@ const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConf
     return config;
   }
 
+  const currentUserIdToken = await firebase.getCurrentUserIdToken();
   const { method, url } = config;
+
+  if (currentUserIdToken !== null) {
+    config.headers.Authorization = `Bearer ${currentUserIdToken}`;
+  }
 
   if (!config.silent) {
     console.log(`[API] ${method?.toLocaleUpperCase()} ${url} | Request`);
@@ -126,12 +135,14 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
     // The request was made and the server responded with a status code that falls out of the range of 2xx
     // NOTE: error.response is of type AxiosResponse
     switch (error.response.status) {
-      /*
       case 401: {
         // "Login required"
         // Delete token & Go To Login Page if required.
-        break;
+        // TODO: Relay backend error 401 message to UI
+        //    => error.response.data.error = { message: string }
+        throw new AuthError(`${error.response.statusText}: Please Sign In to perform this action`);
       }
+      /*
       case 403: {
         // "Permission denied"
         // Delete token & Go To Login Page if required.
@@ -173,7 +184,7 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
   return Promise.reject(error);
 };
 
-axiosInstance.interceptors.request.use(onRequest, onErrorResponse, { synchronous: true });
+axiosInstance.interceptors.request.use(onRequest, onErrorResponse);
 axiosInstance.interceptors.response.use(onResponse, onErrorResponse);
 
 export default axiosInstance;

@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBar from './TabBar';
 
 import Home from '../../pages/Home';
+import Races from '../../pages/Races';
 import UserProfile from '../../pages/UserProfile';
 
 import useAuth from '../../hooks/useAuth';
@@ -19,6 +20,7 @@ import useAuth from '../../hooks/useAuth';
 // RootStackParamList extends ParamListBase { ... }).
 type RootStackParamList = {
   Home: undefined;
+  Races: undefined;
   UserProfile: undefined;
 };
 
@@ -40,6 +42,11 @@ const Navigator = () => {
         name="Home"
         component={Home}
         options={{ title: "Home" }}
+      />
+      <Tab.Screen
+        name="Races"
+        component={Races}
+        options={{ title: "Races" }}
       />
       <Tab.Screen
         name="UserProfile"

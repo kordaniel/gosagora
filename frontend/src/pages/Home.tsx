@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 
@@ -16,19 +17,21 @@ const Home = () => {
   const navigation = useNavigation<NavigationProps>();
 
   return (
-    <SafeAreaView style={theme.styles.primaryContainer}>
-      <StyledText variant="headline">GosaGora</StyledText>
-      <Separator />
-      <StyledText variant="title">Welcome to GosaGora!</StyledText>
-      <Button onPress={() => navigation.navigate('UserProfile')}>
-          Profile
-      </Button>
-      <Button onPress={() => navigation.push("Home")}>
-        Home
-      </Button>
-      <Button onPress={() => navigation.goBack()}>
-        Go back
-      </Button>
+    <SafeAreaView style={theme.styles.safeAreaView}>
+      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
+        <StyledText variant="headline">GosaGora</StyledText>
+        <Separator />
+        <StyledText variant="title">Welcome to GosaGora!</StyledText>
+        <Button onPress={() => navigation.navigate('UserProfile')}>
+            Profile
+        </Button>
+        <Button onPress={() => navigation.push("Home")}>
+          Home
+        </Button>
+        <Button onPress={() => navigation.goBack()}>
+          Go back
+        </Button>
+      </ScrollView>
     </SafeAreaView>
   );
 };

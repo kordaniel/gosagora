@@ -1,5 +1,5 @@
+import { Race, User } from '../../src/models';
 import { connectToDatabase, sequelize } from '../../src/database';
-import { User } from '../../src/models';
 import { UserCreationAttributesType } from '../../src/models/user';
 import config from '../../src/utils/config';
 
@@ -30,6 +30,16 @@ const dropUsers = async () => {
   });
 };
 
+const dropRaces = async () => {
+  if (!config.IS_TEST_ENV) {
+    throw new Error('Attempted to truncate users table outside test environment');
+  }
+  await Race.destroy({
+    where: {},
+    force: true,
+  });
+};
+
 const insertUser = async (attributes: UserCreationAttributesType) => {
   return await User.create(attributes);
 };
@@ -42,10 +52,18 @@ const userCount = async () => {
   return await User.count({});
 };
 
+const raceCount = async () => {
+  return await Race.count({});
+};
+
 const getUserByFirebaseUid = async (firebaseUid: string) => {
   return await User.findOne({
     where: { firebaseUid }
   });
+};
+
+const getRaceByPk = async (id: number) => {
+  return await Race.findByPk(id);
 };
 
 export default {
@@ -53,8 +71,11 @@ export default {
   disconnectFromDatabase,
   dropDb,
   dropUsers,
+  dropRaces,
   insertUser,
   insertUsers,
   userCount,
+  raceCount,
   getUserByFirebaseUid,
+  getRaceByPk,
 };

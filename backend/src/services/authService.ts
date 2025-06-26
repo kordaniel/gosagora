@@ -1,3 +1,5 @@
+import type { DecodedIdToken } from 'firebase-admin/auth';
+
 import { AuthError } from '../errors/applicationError';
 import { User } from '../models';
 import firebase from '../modules/firebase';
@@ -31,7 +33,7 @@ const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> =
 };
 
 const loginUser = async (credentials: SignInArguments) => {
-  const decodedIdToken = await firebase.verifyIdToken(credentials.firebaseIdToken);
+  const decodedIdToken = await verifyIdToken(credentials.firebaseIdToken);
 
   if (credentials.email !== decodedIdToken.email) {
     throw new AuthError();
@@ -42,15 +44,20 @@ const loginUser = async (credentials: SignInArguments) => {
 
   const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
   if (!user) {
-    throw new AuthError('Forbidden');
+    throw new AuthError('Forbidden: invalid user', 403);
   }
 
   await user.updateLastseen();
   return user;
 };
 
+const verifyIdToken = async (firebaseIdToken: string): Promise<DecodedIdToken> => {
+  return await firebase.verifyIdToken(firebaseIdToken);
+};
+
 
 export default {
   createNewUser,
   loginUser,
+  verifyIdToken,
 };

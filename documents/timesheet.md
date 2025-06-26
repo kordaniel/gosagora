@@ -42,4 +42,21 @@
 | 2025.05.14 | 0.5 | FRONTEND: Add react-navigation |
 | 2025.05.19 | 0.5 | FRONTEND: Add react-navigation/bottom-tabs |
 | 2025.05.19 | 1   | FRONTEND: Move Sign In/Up/Out to profile |
-| Total | 65 | |
+| 2025.05.20 | 1   | BACKEND: Add, configure tsconfig-paths. Enables usage of common modules without first running separate tsc compilation |
+| 2025.05.20 | 1   | BACKEND: Add model Race, migration |
+| 2025.05.20 | 0   | BACKEND: Bugfix migrations race table column names, move requestParsers to routes/parsers |
+| 2025.05.29 | 4   | BACKEND: Add route for race creation, initial tests that must be run sequentially with auth tests. Start work on user authorization |
+| 2025.05.29 | 0.5 | BACKEND: Refactor all API routes tests into one testSuite that runs child test suites in sequential order |
+| 2025.05.30 | 1.5 | BACKEND: Work on user authorization middleware. Test that user is authorized to create races |
+| 2025.05.30 | 1   | BACKEND: Implement endpoint that returns all races, tests |
+| 2025.06.12 | 2   | FRONTEND: Conf expo metro bundler to include common packages. Refactor pages to wrap content in SafeAreaView, extend theme to support this |
+| 2025.06.17 | 2   | FRONTEND: Extend Form component with a Selection Picker |
+| 2025.06.18 | 4   | FRONTEND: Extend axiosInstance to include IdToken in header, handle 401 responses. Add AuthError (class that) extends ApplicationError, remove TemporaryUnionFillerError. Add Races page with required functionality to fetch, list and post new races |
+| 2025.06.18 | 0.5 | BACKEND: Refactor races API to return RaceListing instead of full Race after creating new |
+| 2025.06.19 | 0.5 | BACKEND: Add DB migration:down for test env. Extend logger module. Configure DB module, rollback logging. Close db-connection after rollbacking |
+| 2025.06.20 | 2   | FRONTEND: Add WithRequiredFields utility type. Extend Form with Date Picker |
+| 2025.06.23 | 2   | FRONTEND: Add Form DateRange picker, dateTools module, extend formik ErrorRenderer component, supporting code |
+| 2025.06.24 | 1   | FRONTEND: Add Form Checkbox component, minor fixes to other Form Components |
+| 2025.06.26 | 4   | BACKEND: Extend race model/tests with public, dateFrom/To, registrationDateFrom/To fields. Add dateTools module.
+| 2025.06.26 | 1   | FRONTEND: Extend Races creation with dates |
+| Total | 93 | |

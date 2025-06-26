@@ -1,23 +1,82 @@
 import React from 'react';
 
 import * as Yup from 'yup';
-import type { FormikHelpers, FormikValues } from 'formik';
-import type { GestureResponderEvent, TextInputProps } from 'react-native';
-import { Formik } from 'formik';
-import { View } from 'react-native';
+import {
+  Formik,
+  type FormikHelpers,
+  type FormikValues
+} from 'formik';
+import {
+  type GestureResponderEvent,
+  type TextInputProps,
+  View
+} from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import Checkbox, { type RNPCheckboxProps } from './Checkbox';
+import InputDatePicker, { type DatePickerInputProps } from './InputDatePicker';
+import RangeDatePicker, { type DatePickerModalProps } from './RangeDatePicker';
 import Button from '../Button';
+import SelectDropdown from './SelectDropdown';
 import TextField from './TextField';
 
-import type { AppTheme } from '../../types';
+import type {
+  AppTheme,
+  DateRange,
+  WithRequiredFields,
+} from '../../types';
+import {
+  assertNever,
+  isDateRange,
+} from '../../utils/typeguards';
+import { FormInputType } from './enums';
+
+
+interface FormFieldBase {
+  label?: string;
+}
+
+interface FormFieldCheckbox extends FormFieldBase {
+  inputType: FormInputType.Checkbox
+  initialValue?: boolean;
+  checkboxText: string;
+  props?: RNPCheckboxProps;
+}
+
+interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'label'> {
+  inputType: FormInputType.InputDatePicker;
+  initialValue: Date | undefined;
+  props?: DatePickerInputProps;
+}
+
+interface FormFieldRangeDatePicker extends FormFieldBase {
+  inputType: FormInputType.RangeDatePicker;
+  initialValue?: DateRange;
+  datePickerModalOpenerLabel?: string;
+  props?: DatePickerModalProps;
+}
+
+interface FormFieldSelectDropdown extends FormFieldBase {
+  inputType: FormInputType.SelectDropdown;
+  placeholder: string;
+  options: Array<{ label: string; value: string; }>;
+}
+
+interface FormFieldTextField extends FormFieldBase {
+  inputType: FormInputType.TextField;
+  placeholder: string;
+  props?: TextInputProps;
+}
+
+type FormField =
+  | FormFieldCheckbox
+  | FormFieldInputDatePicker
+  | FormFieldRangeDatePicker
+  | FormFieldSelectDropdown
+  | FormFieldTextField;
 
 interface FormFields {
-  [key:string]: {
-    label?: string;
-    placeholder: string;
-    props?: TextInputProps;
-  };
+  [key:string]: FormField;
 }
 
 export interface FormProps<T> {
@@ -27,17 +86,23 @@ export interface FormProps<T> {
   validationSchema: Yup.Schema<T>;
 }
 
-type FormikStringValues = {
-  [P in keyof FormikValues]: string;
+type FormikValuesType = {
+  [P in keyof FormikValues]: string | Date | Partial<DateRange> | boolean;
 };
 
-const Form = <FormValuesType extends FormikStringValues, >({
+const Form = <FormValuesType extends FormikValuesType, >({
   formFields,
   onSubmit,
   submitLabel,
   validationSchema
 }: FormProps<FormValuesType>) => {
   const theme = useTheme<AppTheme>();
+
+  const style = [
+    theme.styles.containerFlexColumn,
+    theme.styles.primaryContainer,
+    theme.styles.stretchContainer,
+  ];
 
   const handleOnSubmit = async (
     values: FormValuesType,
@@ -50,7 +115,27 @@ const Form = <FormValuesType extends FormikStringValues, >({
   const initialValues: FormValuesType = Object
     .entries(formFields)
     .reduce((acc, field) => {
-      Object.assign(acc, { [field[0]]: '' });
+      switch (field[1].inputType) {
+        case FormInputType.Checkbox:
+          if (('initialValue' in field[1]) && typeof field[1].initialValue === 'boolean') {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: false });
+          }
+          break;
+        case FormInputType.InputDatePicker:
+          Object.assign(acc, { [field[0]]: field[1].initialValue });
+          break;
+        case FormInputType.RangeDatePicker:
+          if (isDateRange(field[1].initialValue)) {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: { startDate: undefined, endDate: undefined } });
+          }
+          break;
+        default:
+          Object.assign(acc, { [field[0]]: '' });
+      }
       return acc;
     }, {}) as FormValuesType;
 
@@ -62,16 +147,52 @@ const Form = <FormValuesType extends FormikStringValues, >({
     >
       {({ handleSubmit, isValid, isSubmitting }) => {
         return (
-          <View style={theme.styles.containerFlexColumn}>
-            {Object.entries(formFields).map(([field, val]) => (
-              <TextField
-                key={field}
-                name={field}
-                label={val.label}
-                placeholder={val.placeholder}
-                textInputProps={val.props}
-              />
-            ))}
+          <View style={style}>
+            {Object.entries(formFields).map(([field, val]) => {
+              switch (val.inputType) {
+                case FormInputType.Checkbox:
+                  return <Checkbox
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    checkboxProps={val.props}
+                    checkboxText={val.checkboxText}
+                  />;
+                case FormInputType.TextField:
+                  return <TextField
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    placeholder={val.placeholder}
+                    textInputProps={val.props}
+                  />;
+                case FormInputType.SelectDropdown:
+                  return <SelectDropdown
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    placeholder={val.placeholder}
+                    options={val.options}
+                  />;
+                case FormInputType.InputDatePicker:
+                  return <InputDatePicker
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    datePickerInputProps={val.props}
+                  />;
+                case FormInputType.RangeDatePicker:
+                  return <RangeDatePicker
+                    key={field}
+                    name={field}
+                    label={val.label}
+                    datePickerModalOpenerLabel={val.datePickerModalOpenerLabel}
+                    datePickerModalProps={val.props}
+                  />;
+                default:
+                  return assertNever(val);
+              }
+            })}
             {/* 2025-04-19: onPress handleSubmit cb type must be casted: https://github.com/jaredpalmer/formik/issues/3643 */}
             <Button
               ctxLoading={isSubmitting}
