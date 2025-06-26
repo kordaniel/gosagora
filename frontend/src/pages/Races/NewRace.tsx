@@ -8,24 +8,25 @@ import Form, { type FormProps } from '../../components/Form';
 import { FormInputType } from '../../components/Form/enums';
 
 import ErrorRenderer from '../../components/ErrorRenderer';
-import StyledText from 'src/components/StyledText';
+import StyledText from '../../components/StyledText';
 
 import {
   type AppTheme,
-  type NonNullableFields,
   RaceTypeOptions,
 } from 'src/types';
+import {
+  getDateOffsetDaysFromNow,
+  getYearLastDateYearsFromNow,
+} from '../../utils/dateTools';
+import { type NewRaceValuesType } from '../../hooks/useRace';
 import config from '../../utils/config';
 
-import { type CreateRaceArguments } from '@common/types/rest_api';
 import { RaceType } from '@common/types/race';
-
-type NewRaceValuesType = NonNullableFields<CreateRaceArguments>;
 
 const validationSchema: Yup.Schema<NewRaceValuesType> = Yup.object().shape({
   name: Yup.string()
     .trim()
-    .min(4, 'Name must be at least 4 characters long')
+    .min(4, 'Race name must be at least 4 characters long')
     .max(128, 'Race name can not be longer than 256 characters')
     .required('Race name is required'),
   type: Yup.mixed<RaceType>()
@@ -55,7 +56,7 @@ const validationSchema: Yup.Schema<NewRaceValuesType> = Yup.object().shape({
         return true;
       },
     )
-    .url()
+    .url('Please enter a valid URL that starts with http(s)://')
     .default(''),
   email: Yup.string()
     .trim()
@@ -81,8 +82,22 @@ const validationSchema: Yup.Schema<NewRaceValuesType> = Yup.object().shape({
         return true;
       }
     )
-    .email()
+    .email('Please enter a valid email address')
     .default(''),
+  startEndDateRange: Yup.object().shape({
+    startDate: Yup.date()
+      .required('Race starting date is required'),
+    endDate: Yup.date()
+      .min(Yup.ref('startDate'), 'Race ending date can not be earlier than start date')
+      .required('Race ending date is required'),
+  }),
+  registrationStartEndDateRange: Yup.object().shape({
+    startDate: Yup.date()
+      .required('Registration starting date is required'),
+    endDate: Yup.date()
+      .min(Yup.ref('startDate'), 'Registration ending date can not be earlier than registration opening date')
+      .required('Registration ending date is required'),
+  }),
   description: Yup.string()
     .trim()
     .min(4, 'Description must be at least 4 characters long')
@@ -99,7 +114,7 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
       autoCapitalize: 'none',
       autoComplete: 'off',
       autoCorrect: false,
-      autoFocus: true,
+      autoFocus: config.IS_MOBILE ? false : true,
       inputMode: 'text',
     },
   },
@@ -111,7 +126,7 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
   },
   url: {
     inputType: FormInputType.TextField,
-    label: config.IS_MOBILE ? undefined : 'Web',
+    label: 'Web address',
     placeholder: 'https://optional.com/',
     props: {
       autoCapitalize: 'none',
@@ -123,7 +138,7 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
   },
   email: {
     inputType: FormInputType.TextField,
-    label: config.IS_MOBILE ? undefined : 'Email',
+    label: 'Email address',
     placeholder: 'optional@email.com',
     props: {
       autoCapitalize: 'none',
@@ -131,6 +146,32 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
       autoCorrect: false,
       autoFocus: false,
       inputMode: 'email',
+    },
+  },
+  startEndDateRange: {
+    inputType: FormInputType.RangeDatePicker,
+    label: 'Race start and end dates',
+    datePickerModalOpenerLabel: 'Select timespan for race',
+    props: {
+      endYear: new Date().getFullYear() + 1,
+      startYear: new Date().getFullYear(),
+      validRange: {
+        startDate: getDateOffsetDaysFromNow(-1),
+        endDate: getYearLastDateYearsFromNow(1),
+      },
+    },
+  },
+  registrationStartEndDateRange: {
+    inputType: FormInputType.RangeDatePicker,
+    label: 'Registration start and end dates',
+    datePickerModalOpenerLabel: 'Select timespan for registration',
+    props: {
+      endYear: new Date().getFullYear() + 1,
+      startYear: new Date().getFullYear(),
+      validRange: {
+        startDate: getDateOffsetDaysFromNow(-1),
+        endDate: getYearLastDateYearsFromNow(1),
+      },
     },
   },
   description: {
@@ -143,6 +184,9 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
       autoCorrect: true,
       autoFocus: false,
       inputMode: 'text',
+      multiline: true,
+      numberOfLines: 3,
+      textAlignVertical: 'top',
     },
   },
 };

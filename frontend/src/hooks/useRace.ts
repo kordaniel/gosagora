@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import type { DateRange, NonNullableFields } from '../types';
 import { ApplicationError } from '../errors/applicationError';
-import type { NonNullableFields } from '../types';
 import raceService from '../services/raceService';
 
-import { CreateRaceArguments } from '@common/types/rest_api';
-import { RaceListing } from '@common/types/race';
+import type { CreateRaceArguments } from '@common/types/rest_api';
+import type { RaceListing } from '@common/types/race';
+
+export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
+  'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
+>> & {
+  startEndDateRange: DateRange;
+  registrationStartEndDateRange: DateRange;
+};
 
 const useRace = () => {
   const [races, setRaces] = useState<RaceListing[]>([]);
@@ -35,7 +42,8 @@ const useRace = () => {
     void fetchRaces();
   }, [fetchRaces]);
 
-  const submitNewRace = async (raceDetails: NonNullableFields<CreateRaceArguments>) => {
+  const submitNewRace = async (raceDetails: NewRaceValuesType) => {
+    console.log('raceDetails:', raceDetails);
     setSubmitNewRaceLoading(true);
     try {
       const newRace = await raceService.create({
@@ -43,6 +51,10 @@ const useRace = () => {
         type: raceDetails.type,
         url: raceDetails.url ? raceDetails.url.trim() : null,
         email: raceDetails.email ? raceDetails.email.trim() : null,
+        dateFrom: raceDetails.startEndDateRange.startDate.toISOString(),
+        dateTo: raceDetails.startEndDateRange.endDate.toISOString(),
+        registrationOpenDate: raceDetails.registrationStartEndDateRange.startDate.toISOString(),
+        registrationCloseDate: raceDetails.registrationStartEndDateRange.endDate.toISOString(),
         description: raceDetails.description.trim(),
       });
       setRaces([...races, newRace]);

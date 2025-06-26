@@ -57,4 +57,6 @@
 | 2025.06.20 | 2   | FRONTEND: Add WithRequiredFields utility type. Extend Form with Date Picker |
 | 2025.06.23 | 2   | FRONTEND: Add Form DateRange picker, dateTools module, extend formik ErrorRenderer component, supporting code |
 | 2025.06.24 | 1   | FRONTEND: Add Form Checkbox component, minor fixes to other Form Components |
-| Total | 88 | |
+| 2025.06.26 | 4   | BACKEND: Extend race model/tests with public, dateFrom/To, registrationDateFrom/To fields. Add dateTools module.
+| 2025.06.26 | 1   | FRONTEND: Extend Races creation with dates |
+| Total | 93 | |
