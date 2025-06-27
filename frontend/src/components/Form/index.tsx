@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import * as Yup from 'yup';
 import {
   Formik,
   type FormikHelpers,
-  type FormikValues
+  type FormikProps,
+  type FormikValues,
 } from 'formik';
 import {
   type GestureResponderEvent,
@@ -81,9 +82,10 @@ interface FormFields {
 
 export interface FormProps<T> {
   formFields: FormFields;
-  onSubmit: (values: T) => Promise<void>;
+  onSubmit: (values: T) => Promise<void | boolean>;
   submitLabel: string;
   validationSchema: Yup.Schema<T>;
+  clearFieldsAfterSubmit?: boolean;
 }
 
 type FormikValuesType = {
@@ -94,9 +96,11 @@ const Form = <FormValuesType extends FormikValuesType, >({
   formFields,
   onSubmit,
   submitLabel,
-  validationSchema
+  validationSchema,
+  clearFieldsAfterSubmit = true
 }: FormProps<FormValuesType>) => {
   const theme = useTheme<AppTheme>();
+  const formikRef = useRef<FormikProps<FormValuesType>>(null);
 
   const style = [
     theme.styles.containerFlexColumn,
@@ -108,7 +112,10 @@ const Form = <FormValuesType extends FormikValuesType, >({
     values: FormValuesType,
     { setSubmitting }: FormikHelpers<FormValuesType>
   ) => {
-    await onSubmit(values);
+    const submitResult = await onSubmit(values);
+    if (formikRef.current && clearFieldsAfterSubmit && (submitResult ?? true)) {
+      formikRef.current.resetForm();
+    }
     setSubmitting(false);
   };
 
@@ -142,6 +149,7 @@ const Form = <FormValuesType extends FormikValuesType, >({
   return (
     <Formik
       initialValues={initialValues}
+      innerRef={formikRef}
       onSubmit={handleOnSubmit}
       validationSchema={validationSchema}
     >

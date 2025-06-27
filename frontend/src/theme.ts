@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
   borderContainer: {
     borderRadius: 5,
     borderWidth: StyleSheet.hairlineWidth,
+    margin: 3,
+    padding: 3,
   },
   button: {
     alignItems: 'center',
@@ -119,6 +121,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+    padding: 3,
   },
   containerFlexColumn: {
     flexDirection: 'column',
@@ -178,7 +181,10 @@ const lightStyle = StyleSheet.create({
     backgroundColor: lightTheme.colors.backdrop,
   },
   errorContainer: {
+    ...styles.container,
+    ...styles.borderContainer,
     backgroundColor: lightTheme.colors.errorContainer,
+    borderColor: lightTheme.colors.onErrorContainer,
     color: lightTheme.colors.onErrorContainer,
   },
   onErrorContainer: {
@@ -254,7 +260,10 @@ const darkStyle = StyleSheet.create({
     backgroundColor: darkTheme.colors.backdrop,
   },
   errorContainer: {
+    ...styles.container,
+    ...styles.borderContainer,
     backgroundColor: darkTheme.colors.errorContainer,
+    borderColor: darkTheme.colors.onErrorContainer,
     color: darkTheme.colors.onErrorContainer,
   },
   onErrorContainer: {

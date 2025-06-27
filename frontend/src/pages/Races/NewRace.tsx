@@ -7,7 +7,6 @@ import { useTheme } from 'react-native-paper';
 import Form, { type FormProps } from '../../components/Form';
 import { FormInputType } from '../../components/Form/enums';
 
-import Button from '../../components/Button';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
@@ -207,16 +206,17 @@ const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
     );
   }
 
-  const onSubmit = async (raceDetails: NewRaceValuesType) => {
-    await races.submitNewRace(raceDetails);
-    //TODO: Implement:
-    //jumpTo('racesList'); // after race has been created
+  const onSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
+    const raceCreated = await races.submitNewRace(raceDetails);
+    if (raceCreated) {
+      jumpTo('racesList');
+    }
+    return raceCreated;
   };
 
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">New race</StyledText>
-      <Button onPress={() => jumpTo('racesList')}>Compiler silencer button to be deleted</Button>
       <ErrorRenderer>{races.submitNewRaceError}</ErrorRenderer>
       <Form<NewRaceValuesType>
         formFields={formFields}
