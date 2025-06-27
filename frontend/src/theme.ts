@@ -98,6 +98,10 @@ const darkTheme: MD3Theme = {
 };
 
 const styles = StyleSheet.create({
+  borderContainer: {
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
   button: {
     alignItems: 'center',
     borderRadius: 5,
