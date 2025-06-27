@@ -42,8 +42,7 @@ const useRace = () => {
     void fetchRaces();
   }, [fetchRaces]);
 
-  const submitNewRace = async (raceDetails: NewRaceValuesType) => {
-    console.log('raceDetails:', raceDetails);
+  const submitNewRace = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
     setSubmitNewRaceLoading(true);
     try {
       const newRace = await raceService.create({
@@ -59,6 +58,8 @@ const useRace = () => {
       });
       setRaces([...races, newRace]);
       setSubmitNewRaceError('');
+      setSubmitNewRaceLoading(false);
+      return true;
     } catch (err: unknown) {
       if (err instanceof ApplicationError) {
         setSubmitNewRaceError(err.message);
@@ -66,8 +67,9 @@ const useRace = () => {
         setSubmitNewRaceError('Unknown error. Please try again.');
         console.error('unhandled POST err:', err);
       }
+      setSubmitNewRaceLoading(false);
+      return false;
     }
-    setSubmitNewRaceLoading(false);
   };
 
   return {

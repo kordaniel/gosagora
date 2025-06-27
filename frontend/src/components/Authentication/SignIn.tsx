@@ -78,6 +78,7 @@ const SignIn = () => {
         onSubmit={onSubmit}
         submitLabel="Sign In"
         validationSchema={validationSchema}
+        clearFieldsAfterSubmit={false}
       />
     </View>
   );
