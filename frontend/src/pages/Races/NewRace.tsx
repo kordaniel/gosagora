@@ -1,25 +1,28 @@
 import React from 'react';
 
 import * as Yup from 'yup';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Form, { type FormProps } from '../../components/Form';
 import { FormInputType } from '../../components/Form/enums';
 
+import Button from '../../components/Button';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
 import {
   type AppTheme,
   RaceTypeOptions,
-} from 'src/types';
+} from '../../types';
 import {
   getDateOffsetDaysFromNow,
   getYearLastDateYearsFromNow,
 } from '../../utils/dateTools';
 import { type NewRaceValuesType } from '../../hooks/useRace';
+import { type SceneMapRouteProps } from './index';
 import config from '../../utils/config';
+import { useRaceContext } from '../../hooks/useRaceContext';
 
 import { RaceType } from '@common/types/race';
 
@@ -191,27 +194,38 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
   },
 };
 
-interface NewRaceProps {
-  error: string;
-  loading: boolean;
-  handleSubmit: (raceDetails: NewRaceValuesType) => Promise<void>;
-}
-
-const NewRace = ({ error, loading, handleSubmit }: NewRaceProps) => {
+const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   const theme = useTheme<AppTheme>();
+  const races = useRaceContext();
+
+  if (!races) {
+    return (
+      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
+        <StyledText variant="headline">New race</StyledText>
+        <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />
+      </ScrollView>
+    );
+  }
+
+  const onSubmit = async (raceDetails: NewRaceValuesType) => {
+    await races.submitNewRace(raceDetails);
+    //TODO: Implement:
+    //jumpTo('racesList'); // after race has been created
+  };
 
   return (
-    <View style={theme.styles.primaryContainer}>
+    <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">New race</StyledText>
-      <ErrorRenderer>{error}</ErrorRenderer>
+      <Button onPress={() => jumpTo('racesList')}>Compiler silencer button to be deleted</Button>
+      <ErrorRenderer>{races.submitNewRaceError}</ErrorRenderer>
       <Form<NewRaceValuesType>
         formFields={formFields}
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         submitLabel="Create new race"
         validationSchema={validationSchema}
       />
-      {loading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
-    </View>
+      {races.submitNewRaceLoading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
+    </ScrollView>
   );
 };
 

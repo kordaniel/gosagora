@@ -1,51 +1,82 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { FlatList, ScrollView } from 'react-native';
+import {
+  type NavigationState,
+  type Route,
+  SceneMap,
+  type SceneRendererProps,
+  TabBar,
+  type TabDescriptor,
+  TabView,
+} from 'react-native-tab-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
+import { useWindowDimensions } from 'react-native';
 
-import EmptyFlatList from '../../components/FlatListComponents/EmptyFlatList';
-import ErrorRenderer from '../../components/ErrorRenderer';
 import NewRace from './NewRace';
-import RaceListing from './RaceListing';
-import StyledText from '../../components/StyledText';
+import RacesView from './RacesView';
 
-import { AppTheme } from 'src/types';
-import useRace from 'src/hooks/useRace';
+import { AppTheme } from '../../types';
+import { RaceContextProvider } from '../../context/RaceContext';
 
+// react-navigation-tab-view documentation: https://reactnavigation.org/docs/tab-view/
+
+export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: Route; };
+
+const routes: Route[] = [
+  { key: 'newRace', title: 'New Race' },
+  { key: 'racesList', title: 'Races' },
+];
+
+// NOTE: Do not pass inline functions to SceneMap!
+//       If additional props are required, use a custom renderScene function
+//       and also memoize the rendered components!
+const renderScene = SceneMap({
+  newRace: NewRace,
+  racesList: RacesView,
+});
+
+const createRenderTabBar = (theme: AppTheme) =>
+  // NOTE: Returned function should be a named function (eslint), helps debugging tools
+  function renderTabBar(props: SceneRendererProps & {
+    navigationState: NavigationState<Route>;
+    options: Record<string, TabDescriptor<Route>> | undefined;
+  }) {
+    return (
+      <TabBar
+        indicatorStyle={{ backgroundColor: theme.colors.primary }}
+        activeColor={theme.colors.primary}
+        inactiveColor={theme.colors.onPrimary}
+        style={{ backgroundColor: theme.colors.inversePrimary }}
+        scrollEnabled={false}
+        {...props}
+      />
+    );
+  };
 
 const Races = () => {
   const theme = useTheme<AppTheme>();
-  const {
-    races,
-    racesError,
-    racesLoading,
-    //racesRefetch,
-    submitNewRace,
-    submitNewRaceError,
-    submitNewRaceLoading
-  } = useRace();
+  const [tabViewIndex, setTabViewIndex] = useState<number>(1);
+  const layout = useWindowDimensions();
 
   return (
     <SafeAreaView style={theme.styles.safeAreaView}>
-      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
-        <StyledText variant="headline">Races</StyledText>
-        <NewRace
-          handleSubmit={submitNewRace}
-          loading={submitNewRaceLoading}
-          error={submitNewRaceError}
+      <RaceContextProvider>
+        <TabView
+          animationEnabled={true}
+          initialLayout={{
+            height: 0,
+            width: layout.width
+          }}
+          lazy={({ route }) => route.key === 'newRace' }
+          navigationState={{ index: tabViewIndex, routes }}
+          onIndexChange={setTabViewIndex}
+          renderScene={renderScene}
+          renderTabBar={createRenderTabBar(theme)}
+          swipeEnabled={true}
+          tabBarPosition="top"
         />
-        <ErrorRenderer>{racesError}</ErrorRenderer>
-        <FlatList
-          data={races}
-          renderItem={({ item }) => <RaceListing race={item} />}
-          keyExtractor={item => item.id.toString()}
-          ListEmptyComponent={<EmptyFlatList
-            message="No races"
-            loading={racesLoading}
-          />}
-        />
-      </ScrollView>
+      </RaceContextProvider>
     </SafeAreaView>
   );
 };

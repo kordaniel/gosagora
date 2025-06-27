@@ -59,4 +59,5 @@
 | 2025.06.24 | 1   | FRONTEND: Add Form Checkbox component, minor fixes to other Form Components |
 | 2025.06.26 | 4   | BACKEND: Extend race model/tests with public, dateFrom/To, registrationDateFrom/To fields. Add dateTools module.
 | 2025.06.26 | 1   | FRONTEND: Extend Races creation with dates |
-| Total | 93 | |
+| 2025.06.27 | 3   | FRONTEND: Add react-native-tab-view, RaceContext. Use tab-view for Races listing/creation. Stylize Races view |
+| Total | 96 | |
