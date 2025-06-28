@@ -17,7 +17,6 @@ import NewRace from './NewRace';
 import RacesView from './RacesView';
 
 import { AppTheme } from '../../types';
-import { RaceContextProvider } from '../../context/RaceContext';
 
 // react-navigation-tab-view documentation: https://reactnavigation.org/docs/tab-view/
 
@@ -61,22 +60,20 @@ const Races = () => {
 
   return (
     <SafeAreaView style={theme.styles.safeAreaView}>
-      <RaceContextProvider>
-        <TabView
-          animationEnabled={true}
-          initialLayout={{
-            height: 0,
-            width: layout.width
-          }}
-          lazy={({ route }) => route.key === 'newRace' }
-          navigationState={{ index: tabViewIndex, routes }}
-          onIndexChange={setTabViewIndex}
-          renderScene={renderScene}
-          renderTabBar={createRenderTabBar(theme)}
-          swipeEnabled={true}
-          tabBarPosition="top"
-        />
-      </RaceContextProvider>
+      <TabView
+        animationEnabled={true}
+        initialLayout={{
+          height: 0,
+          width: layout.width
+        }}
+        lazy={({ route }) => route.key === 'newRace' }
+        navigationState={{ index: tabViewIndex, routes }}
+        onIndexChange={setTabViewIndex}
+        renderScene={renderScene}
+        renderTabBar={createRenderTabBar(theme)}
+        swipeEnabled={true}
+        tabBarPosition="top"
+      />
     </SafeAreaView>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -7,8 +7,9 @@ import EmptyFlatList from '../../components/FlatListComponents/EmptyFlatList';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
+import { SelectRaces, initializeRaces } from '../../store/slices/raceSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { AppTheme } from '../../types';
-import { useRaceContext } from '../../hooks/useRaceContext';
 
 import { RaceListing } from '@common/types/race';
 
@@ -45,17 +46,27 @@ const RacesHeader = ({ racesError }: RacesHeaderProps) => {
 };
 
 const RacesView = () => {
-  const races = useRaceContext();
+  const dispatch = useAppDispatch();
+  const {
+    races,
+    racesLoading,
+    racesLoadingError
+  } = useAppSelector(SelectRaces);
+
+  useEffect(() => {
+    void dispatch(initializeRaces());
+  }, [dispatch]);
+
   return (
     <FlatList
-      data={races ? races.races : []}
+      data={races}
       renderItem={({ item }) => <RaceView race={item} />}
       keyExtractor={item => item.id.toString()}
       ListEmptyComponent={<EmptyFlatList
         message="No races.."
-        loading={races ? races.racesLoading : true}
+        loading={racesLoading}
       />}
-      ListHeaderComponent={<RacesHeader racesError={races?.racesError ?? null}/>}
+      ListHeaderComponent={<RacesHeader racesError={racesLoadingError}/>}
       stickyHeaderIndices={[0]}
     />
   );

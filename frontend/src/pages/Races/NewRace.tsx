@@ -15,13 +15,17 @@ import {
   RaceTypeOptions,
 } from '../../types';
 import {
+  type NewRaceValuesType,
+  SelectSubmittingNewRace,
+  submitNewRace,
+} from '../../store/slices/raceSlice';
+import {
   getDateOffsetDaysFromNow,
   getYearLastDateYearsFromNow,
 } from '../../utils/dateTools';
-import { type NewRaceValuesType } from '../../hooks/useRace';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { type SceneMapRouteProps } from './index';
 import config from '../../utils/config';
-import { useRaceContext } from '../../hooks/useRaceContext';
 
 import { RaceType } from '@common/types/race';
 
@@ -194,20 +198,15 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
 };
 
 const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
-  const races = useRaceContext();
-
-  if (!races) {
-    return (
-      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
-        <StyledText variant="headline">New race</StyledText>
-        <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />
-      </ScrollView>
-    );
-  }
+  const {
+    setSubmittingNewRaceLoading,
+    submittingNewRaceError,
+  } = useAppSelector(SelectSubmittingNewRace);
 
   const onSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
-    const raceCreated = await races.submitNewRace(raceDetails);
+    const raceCreated = await dispatch(submitNewRace(raceDetails));
     if (raceCreated) {
       jumpTo('racesList');
     }
@@ -217,14 +216,14 @@ const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">New race</StyledText>
-      <ErrorRenderer>{races.submitNewRaceError}</ErrorRenderer>
+      <ErrorRenderer>{submittingNewRaceError}</ErrorRenderer>
       <Form<NewRaceValuesType>
         formFields={formFields}
         onSubmit={onSubmit}
         submitLabel="Create new race"
         validationSchema={validationSchema}
       />
-      {races.submitNewRaceLoading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
+      {setSubmittingNewRaceLoading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
     </ScrollView>
   );
 };
