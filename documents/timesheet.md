@@ -60,7 +60,8 @@
 | 2025.06.26 | 4   | BACKEND: Extend race model/tests with public, dateFrom/To, registrationDateFrom/To fields. Add dateTools module.
 | 2025.06.26 | 1   | FRONTEND: Extend Races creation with dates |
 | 2025.06.27 | 3   | FRONTEND: Add react-native-tab-view, RaceContext. Use tab-view for Races listing/creation. Stylize Races view |
-| 2025.06.27 | 0.5 | FRONTEND: Refactor RgitacesView to return FlatList, stylize containers |
+| 2025.06.27 | 0.5 | FRONTEND: Refactor RacesView to return FlatList, stylize containers |
 | 2025.06.27 | 1   | FRONTEND: Implement Form clearing after submit. Use in SignIn/Up & RaceCreation |
 | 2026.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
-| Total | 101 | |
+| 2026.06.29 | 3 | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
+| Total | 104 | |

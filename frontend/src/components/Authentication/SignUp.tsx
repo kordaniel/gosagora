@@ -10,9 +10,13 @@ import { FormInputType } from '../Form/enums';
 import ErrorRenderer from '../ErrorRenderer';
 import StyledText from '../StyledText';
 
-import { AppTheme } from '../../types';
+import {
+  SelectAuth,
+  authSliceHandleSignUp,
+} from '../../store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { type AppTheme } from '../../types';
 import config from '../../utils/config';
-import useAuth from '../../hooks/useAuth';
 
 type SignUpValuesType = {
   email: string;
@@ -95,11 +99,12 @@ const formFields: FormProps<SignUpValuesType>['formFields'] = {
 };
 
 const SignUp = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
-  const { error, handleSignUp } = useAuth();
+  const { error } = useAppSelector(SelectAuth);
 
   const onSubmit = async (values: SignUpValuesType) => {
-    await handleSignUp(values.email, values.password, values.displayName);
+    await dispatch(authSliceHandleSignUp(values.email, values.password, values.displayName));
   };
 
   return (

@@ -11,7 +11,8 @@ import Home from '../../pages/Home';
 import Races from '../../pages/Races';
 import UserProfile from '../../pages/UserProfile';
 
-import useAuth from '../../hooks/useAuth';
+import { SelectAuth } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../store/hooks';
 
 // https://reactnavigation.org/docs/typescript/
 // The type containing the mapping must be a type alias
@@ -27,7 +28,7 @@ type RootStackParamList = {
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const Navigator = () => {
-  const { displayName, isSignedIn } = useAuth();
+  const { user, isAuthenticated } = useAppSelector(SelectAuth);
 
   return(
     <Tab.Navigator
@@ -51,7 +52,7 @@ const Navigator = () => {
       <Tab.Screen
         name="UserProfile"
         component={UserProfile}
-        options={{ title: isSignedIn ? displayName : "Sign In" }}
+        options={{ title: isAuthenticated ? user?.displayName : "Sign In" }}
       />
     </Tab.Navigator>
   );
