@@ -7,18 +7,20 @@ import { useTheme } from 'react-native-paper';
 import Authentication from '../../components/Authentication';
 import SignedInView from './SignedInView';
 
-import type { AppTheme } from 'src/types';
-import useAuth from 'src/hooks/useAuth';
+import { type AppTheme } from '../../types';
+import { SelectAuth } from '../../store/slices/authSlice';
+import firebase from '../../modules/firebase';
+import { useAppSelector } from '../../store/hooks';
 
 const UserProfile = () => {
   const theme = useTheme<AppTheme>();
-  const { handleSignOut, isSignedIn } = useAuth();
+  const { isAuthenticated } = useAppSelector(SelectAuth);
 
   return (
     <SafeAreaView style={theme.styles.safeAreaView}>
       <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
-        {isSignedIn
-          ? <SignedInView handleSignOut={handleSignOut} />
+        {isAuthenticated
+          ? <SignedInView handleSignOut={firebase.signOut} />
           : <Authentication />
         }
       </ScrollView>

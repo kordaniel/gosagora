@@ -10,9 +10,13 @@ import { FormInputType } from '../Form/enums';
 import ErrorRenderer from '../ErrorRenderer';
 import StyledText from '../StyledText';
 
-import type { AppTheme } from '../../types';
+import {
+  SelectAuth,
+  authSliceHandleSignIn,
+} from '../../store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { type AppTheme } from '../../types';
 import config from '../../utils/config';
-import useAuth from '../../hooks/useAuth';
 
 export type SignInValuesType = {
   email: string;
@@ -62,11 +66,12 @@ const formFields: FormProps<SignInValuesType>['formFields'] = {
 };
 
 const SignIn = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
-  const { error, handleSignIn } = useAuth();
+  const { error } = useAppSelector(SelectAuth);
 
   const onSubmit = async (values: SignInValuesType) => {
-    await handleSignIn(values.email, values.password);
+    await dispatch(authSliceHandleSignIn(values.email, values.password));
   };
 
   return (

@@ -1,6 +1,7 @@
 type ApplicationErrorKind =
   | 'AuthError'
-  | 'HttpError';
+  | 'HttpError'
+  | 'ServerConflictError';
 
 export abstract class ApplicationError extends Error {
   abstract readonly kind: ApplicationErrorKind;
@@ -31,7 +32,18 @@ export class HttpError extends ApplicationError {
   }
 }
 
+export class ServerConflictError extends ApplicationError {
+  kind = 'ServerConflictError' as const;
+  constructor(
+    public override message: string,
+  ) {
+    super();
+    Object.setPrototypeOf(this, ServerConflictError.prototype);
+  }
+}
+
 export type ApplicationErrorType =
   | ApplicationError
   | AuthError
-  | HttpError;
+  | HttpError
+  | ServerConflictError;
