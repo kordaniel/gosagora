@@ -8,7 +8,8 @@ import axios, { AxiosError } from 'axios';
 
 import {
   AuthError,
-  HttpError
+  HttpError,
+  ServerConflictError,
 } from '../errors/applicationError';
 import appConfig from '../utils/config';
 import firebase from './firebase';
@@ -152,6 +153,10 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
       case 404: {
         // TODO: Relay backend error 404 message to UI.
         throw new HttpError('Sorry, we couldn\'t find what you were looking for. Please try again');
+      }
+      case 409: {
+        // TODO: Relay backend error 409 message to UI
+        throw new ServerConflictError(`${error.response.statusText}: Sorry, some of the fields are already in use`);
       }
       /*
       case 500: {
