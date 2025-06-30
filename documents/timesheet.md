@@ -63,5 +63,6 @@
 | 2025.06.27 | 0.5 | FRONTEND: Refactor RacesView to return FlatList, stylize containers |
 | 2025.06.27 | 1   | FRONTEND: Implement Form clearing after submit. Use in SignIn/Up & RaceCreation |
 | 2026.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
-| 2026.06.29 | 3 | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
-| Total | 104 | |
+| 2026.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
+| 2026.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
+| Total | 105 | |
