@@ -38,9 +38,6 @@ const ServiceStatus = () => {
 };
 
 const DebugView = () => {
-  if (!config.IS_PRODUCTION_ENV && !config.FIREBASE_AUTH_EMULATOR_HOST) {
-    throw new Error('Invalid configuration. App is running outside production env and no firebase emulator connection configured');
-  }
   const theme = useTheme<AppTheme>();
 
   const getEnvStr = () => {
