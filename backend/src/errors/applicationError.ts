@@ -2,6 +2,7 @@ type ApplicationErrorKind =
   | 'APIRequestError'
   | 'AuthError'
   | 'CorsError'
+  | 'NotFoundError'
   | 'ServiceError';
 
 interface IApplicationErrorJSON {
@@ -98,6 +99,18 @@ export class AuthError extends ApplicationError {
   }
 };
 
+export class NotFoundError extends ApplicationError {
+  kind = 'NotFoundError' as const;
+
+  constructor(
+    public override message: string = 'Not found: the requested resource was not found',
+    public status: number = 404,
+  ) {
+    super();
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+};
+
 export class ServiceError extends ApplicationError {
   kind = 'ServiceError' as const;
 
@@ -115,4 +128,5 @@ export type ApplicationErrorType =
   | APIRequestError
   | AuthError
   | CorsError
+  | NotFoundError
   | ServiceError;

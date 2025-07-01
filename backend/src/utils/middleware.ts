@@ -43,6 +43,10 @@ const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
       res.status(err.status).json(err.toJSONObj());
       break;
     }
+    case 'NotFoundError': {
+      res.status(err.status).json(err.toJSONObj());
+      break;
+    }
     case 'ServiceError': {
       logger.info(err.toLogString());
       res.status(err.status).json(err.toJSONObj());
