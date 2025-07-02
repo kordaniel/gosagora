@@ -65,4 +65,6 @@
 | 2026.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
 | 2026.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
 | 2026.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
-| Total | 105 | |
+| 2026.07.02 | 0   | BACKEND: Add NotFoundError class, npm script tsc --noEmit |
+| 2026.07.02 | 2   | PACKAGES: Configure packages/common tsconfig to emit declarations only, better importing of types in back-/frontend. Attempted to configure the project so typing works for imported types from packages/common in backend/tests, without success |
+| Total | 107 | |
