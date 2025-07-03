@@ -1,4 +1,5 @@
 type ApplicationErrorKind =
+  | 'APIResponseError'
   | 'AuthError'
   | 'HttpError'
   | 'ServerConflictError';
@@ -9,6 +10,16 @@ export abstract class ApplicationError extends Error {
   constructor() {
     super();
     Object.setPrototypeOf(this, ApplicationError.prototype);
+  }
+}
+
+export class APIResponseError extends ApplicationError {
+  kind = 'APIResponseError' as const;
+  constructor(
+    public override message: string = 'An unexpected error occured. Please try again, or contact our support team if the issue persists',
+  ) {
+    super();
+    Object.setPrototypeOf(this, APIResponseError.prototype);
   }
 }
 
@@ -44,6 +55,7 @@ export class ServerConflictError extends ApplicationError {
 
 export type ApplicationErrorType =
   | ApplicationError
+  | APIResponseError
   | AuthError
   | HttpError
   | ServerConflictError;
