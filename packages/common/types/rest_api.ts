@@ -51,3 +51,21 @@ export interface CreateRaceArguments {
   registrationOpenDate: string;
   registrationCloseDate: string;
 };
+
+export interface RaceData {
+  id: number;
+  public: boolean;
+  name: string;
+  type: RaceType;
+  url: string | null;
+  email: string | null;
+  description: string;
+  dateFrom: string;
+  dateTo: string;
+  registrationOpenDate: string;
+  registrationCloseDate: string;
+  user: {
+    id: number;
+    displayName: string;
+  }
+};

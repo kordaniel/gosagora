@@ -3,13 +3,13 @@ import express, {
   type Response,
 } from 'express';
 
+import { APIRequestError, ServiceError } from '../errors/applicationError';
 import type { NewRaceAttributes, RequestUserExtended } from '../types';
-import { ServiceError } from '../errors/applicationError';
 import middleware from '../utils/middleware';
 import { newRaceParser } from './parsers/raceParsers';
 import raceService from '../services/raceService';
 
-import type { APIRaceRequest } from '@common/types/rest_api';
+import type { APIRaceRequest, RaceData } from '@common/types/rest_api';
 import type { RaceListing } from '@common/types/race';
 
 const router = express.Router();
@@ -34,6 +34,16 @@ router.post('/', [middleware.userExtractor, newRaceParser], async (
 router.get('/', async (_req: Request, res: Response<RaceListing[]>) => {
   const races = await raceService.getAll();
   res.json(races);
+});
+
+router.get('/:id', async (req: Request, res: Response<RaceData>) => {
+  const raceId = parseInt(req.params.id, 10);
+  if (isNaN(raceId) || raceId === 0) {
+    throw new APIRequestError(); // TODO: Add message
+  }
+
+  const race = await raceService.getOne(raceId);
+  res.json(race);
 });
 
 export default router;
