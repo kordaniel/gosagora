@@ -17,6 +17,7 @@ import {
 import {
   type NewRaceValuesType,
   SelectSubmittingNewRace,
+  fetchRace,
   submitNewRace,
 } from '../../store/slices/raceSlice';
 import {
@@ -206,11 +207,14 @@ const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   } = useAppSelector(SelectSubmittingNewRace);
 
   const onSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
-    const raceCreated = await dispatch(submitNewRace(raceDetails));
-    if (raceCreated) {
-      jumpTo('racesList');
+    const createdRaceId = await dispatch(submitNewRace(raceDetails));
+    if (createdRaceId === null) {
+      return false;
     }
-    return raceCreated;
+
+    void dispatch(fetchRace(createdRaceId));
+    jumpTo('raceView');
+    return true;
   };
 
   return (

@@ -2,9 +2,12 @@ import axiosInstance from '../modules/axiosInstance';
 
 import type {
   APIRaceRequest,
-  CreateRaceArguments
+  CreateRaceArguments,
 } from '@common/types/rest_api';
-import type { RaceListing } from '@common/types/race';
+import type {
+  RaceDetails,
+  RaceListing,
+} from '@common/types/race';
 
 const apiBasePath = '/api/v1/race';
 
@@ -25,7 +28,13 @@ const getAll = async () => {
   return data;
 };
 
+const getOne = async (raceId: string) => {
+  const { data } = await axiosInstance.get<RaceDetails>(`${apiBasePath}/${raceId}`);
+  return data;
+};
+
 export default {
   create,
   getAll,
+  getOne,
 };

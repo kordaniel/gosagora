@@ -62,9 +62,11 @@
 | 2025.06.27 | 3   | FRONTEND: Add react-native-tab-view, RaceContext. Use tab-view for Races listing/creation. Stylize Races view |
 | 2025.06.27 | 0.5 | FRONTEND: Refactor RacesView to return FlatList, stylize containers |
 | 2025.06.27 | 1   | FRONTEND: Implement Form clearing after submit. Use in SignIn/Up & RaceCreation |
-| 2026.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
-| 2026.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
-| 2026.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
-| 2026.07.02 | 0   | BACKEND: Add NotFoundError class, npm script tsc --noEmit |
-| 2026.07.02 | 2   | PACKAGES: Configure packages/common tsconfig to emit declarations only, better importing of types in back-/frontend. Attempted to configure the project so typing works for imported types from packages/common in backend/tests, without success |
-| Total | 107 | |
+| 2025.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
+| 2025.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
+| 2025.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
+| 2025.07.02 | 0   | BACKEND: Add NotFoundError class, npm script tsc --noEmit |
+| 2025.07.02 | 2   | PACKAGES: Configure packages/common tsconfig to emit declarations only, better importing of types in back-/frontend. Attempted to configure the project so typing works for imported types from packages/common in backend/tests, without success |
+| 2025.07.03 | 1   | BACKEND: Add API endpoint to fetch race data by id |
+| 2025.07.03 | 2   | FRONTEND: Add a view with required supporting logic to show a specific race |
+| Total | 110 | |
