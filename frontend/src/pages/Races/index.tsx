@@ -69,7 +69,7 @@ const Races = () => {
           height: 0,
           width: layout.width
         }}
-        lazy={({ route }) => route.key === 'newRace' }
+        lazy={({ route }) => route.key === 'newRace' || route.key === 'raceView' }
         navigationState={{ index: tabViewIndex, routes }}
         onIndexChange={setTabViewIndex}
         renderScene={renderScene}

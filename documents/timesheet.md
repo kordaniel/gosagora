@@ -69,4 +69,8 @@
 | 2025.07.02 | 2   | PACKAGES: Configure packages/common tsconfig to emit declarations only, better importing of types in back-/frontend. Attempted to configure the project so typing works for imported types from packages/common in backend/tests, without success |
 | 2025.07.03 | 1   | BACKEND: Add API endpoint to fetch race data by id |
 | 2025.07.03 | 2   | FRONTEND: Add a view with required supporting logic to show a specific race |
-| Total | 110 | |
+| 2025.07.04 | 1.5 | FRONTEND: Add "models" directory that holds helper functions related to backend models, implement diff helpers. Add API response validator |
+| 2025.07.04 | 1   | FRONTEND: Validate fetch race response, refactor raceSlice to store race data |
+| 2025.07.04 | 0.5 | FRONTEND: Add Link, LoadingOrErrorRenderer components |
+| 2025.07.05 | 2   | FRONTEND: Stylize RaceView, extend theme |
+| Total | 115 | |
