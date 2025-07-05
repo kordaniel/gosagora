@@ -1,10 +1,24 @@
+import {
+  type DateRange,
+  type NonNullableFields,
+} from '../types';
 import { createReverseEnumMap } from '../utils/helpers';
 
+import {
+  type CreateRaceArguments,
+  type RaceData,
+} from '@common/types/rest_api';
 import {
   RaceDetails,
   RaceType,
 } from '@common/types/race';
-import { RaceData } from '@common/types/rest_api';
+
+export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
+  'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
+>> & {
+  startEndDateRange: DateRange;
+  registrationStartEndDateRange: DateRange;
+};
 
 export const RaceTypeLabelValueOptions = Object
   .entries(RaceType)
