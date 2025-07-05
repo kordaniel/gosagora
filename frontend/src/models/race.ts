@@ -1,6 +1,10 @@
 import { createReverseEnumMap } from '../utils/helpers';
 
-import { RaceType } from '@common/types/race';
+import {
+  RaceDetails,
+  RaceType,
+} from '@common/types/race';
+import { RaceData } from '@common/types/rest_api';
 
 export const RaceTypeLabelValueOptions = Object
   .entries(RaceType)
@@ -9,3 +13,13 @@ export const RaceTypeLabelValueOptions = Object
   }, []);
 
 export const RaceTypeReverseMap = createReverseEnumMap(RaceType);
+
+export const toRaceDetails = (race: RaceData): RaceDetails => {
+  return {
+    ...race,
+    dateFrom: new Date(race.dateFrom),
+    dateTo: new Date(race.dateTo),
+    registrationOpenDate: new Date(race.registrationOpenDate),
+    registrationCloseDate: new Date(race.registrationCloseDate),
+  };
+};

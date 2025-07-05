@@ -6,12 +6,15 @@ import {
 import type { AppAsyncThunk, RootState } from '../index';
 import type { DateRange, NonNullableFields } from '../../types';
 import raceService from '../../services/raceService';
+import { toRaceDetails } from '../../models/race';
 
 import type {
-  RaceDetails,
-  RaceListing
+  CreateRaceArguments,
+  RaceData,
+} from '@common/types/rest_api';
+import {
+  RaceListing,
 } from '@common/types/race';
-import type { CreateRaceArguments } from '@common/types/rest_api';
 
 export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
   'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
@@ -21,7 +24,7 @@ export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
 };
 
 interface RaceSliceRace {
-  selectedRace: RaceDetails | null;
+  selectedRace: RaceData | null;
   loading: boolean;
   error: string | null;
 }
@@ -107,7 +110,10 @@ export const SelectSubmittingNewRace = (state: RootState) => ({
   submittingNewRaceError: state.race.submittingNewRaceError,
 });
 
-export const SelectRace = (state: RootState) => state.race.race;
+export const SelectRace = (state: RootState) => ({
+  ...state.race.race,
+  selectedRace: state.race.race.selectedRace ? toRaceDetails(state.race.race.selectedRace) : null,
+});
 
 export const initializeRaces = (): AppAsyncThunk => {
   return async (dispatch) => {

@@ -1,11 +1,14 @@
+
 import axiosInstance from '../modules/axiosInstance';
+import { raceSchema } from '../schemas/race';
+import { validateResponse } from './validators';
 
 import type {
   APIRaceRequest,
   CreateRaceArguments,
+  RaceData,
 } from '@common/types/rest_api';
 import type {
-  RaceDetails,
   RaceListing,
 } from '@common/types/race';
 
@@ -28,9 +31,13 @@ const getAll = async () => {
   return data;
 };
 
-const getOne = async (raceId: string) => {
-  const { data } = await axiosInstance.get<RaceDetails>(`${apiBasePath}/${raceId}`);
-  return data;
+const getOne = async (raceId: string): Promise<RaceData> => {
+  const { data } = await axiosInstance.get<RaceData>(`${apiBasePath}/${raceId}`);
+  return await validateResponse<RaceData>(
+    data,
+    raceSchema,
+    'We encountered a problem loading this race for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 export default {
