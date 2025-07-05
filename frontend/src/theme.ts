@@ -158,15 +158,44 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     padding: 5,
   },
+  table: {
+    alignItems: 'stretch',
+    flexDirection: 'column',
+    gap: 3,
+    justifyContent: 'center',
+  },
+  tableCellData: {
+    justifyContent: 'center',
+    padding: 3,
+  },
+  tableColumn: {
+    flexDirection: 'column',
+  },
+  tableRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 3,
+    justifyContent: 'space-between',
+  },
   textInput: {
     borderRadius: 5,
     borderWidth: StyleSheet.hairlineWidth,
     padding: 8,
   },
+  textLink: {
+    color: '#1e90ff',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
 });
 
 const lightStyle = StyleSheet.create({
   ...styles,
+  borderContainer: {
+    ...styles.borderContainer,
+    borderColor: lightTheme.colors.outline,
+  },
   button: {
     ...styles.button,
     borderColor: lightTheme.colors.onPrimary,
@@ -218,6 +247,16 @@ const lightStyle = StyleSheet.create({
     ...styles.tabBarTab,
     backgroundColor: lightTheme.colors.surfaceVariant,
   },
+  tableColumn: {
+    ...styles.borderContainer,
+    ...styles.tableColumn,
+    borderColor: lightTheme.colors.outline,
+  },
+  tableRow: {
+    ...styles.borderContainer,
+    ...styles.tableRow,
+    borderColor: lightTheme.colors.outline,
+  },
   tertiaryContainer: {
     ...styles.container,
     backgroundColor: lightTheme.colors.tertiaryContainer,
@@ -246,6 +285,10 @@ const lightStyle = StyleSheet.create({
 
 const darkStyle = StyleSheet.create({
   ...styles,
+  borderContainer: {
+    ...styles.borderContainer,
+    borderColor: darkTheme.colors.outline,
+  },
   button: {
     ...styles.button,
     borderColor: darkTheme.colors.onPrimary,
@@ -296,6 +339,16 @@ const darkStyle = StyleSheet.create({
   tabBarTab: {
     ...styles.tabBarTab,
     backgroundColor: darkTheme.colors.surfaceVariant,
+  },
+  tableColumn: {
+    ...styles.borderContainer,
+    ...styles.tableColumn,
+    borderColor: darkTheme.colors.outline,
+  },
+  tableRow: {
+    ...styles.borderContainer,
+    ...styles.tableRow,
+    borderColor: darkTheme.colors.outline,
   },
   tertiaryContainer: {
     ...styles.container,

@@ -6,9 +6,15 @@ import {
 import type { AppAsyncThunk, RootState } from '../index';
 import type { DateRange, NonNullableFields } from '../../types';
 import raceService from '../../services/raceService';
+import { toRaceDetails } from '../../models/race';
 
-import type { CreateRaceArguments } from '@common/types/rest_api';
-import type { RaceListing } from '@common/types/race';
+import type {
+  CreateRaceArguments,
+  RaceData,
+} from '@common/types/rest_api';
+import {
+  RaceListing,
+} from '@common/types/race';
 
 export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
   'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
@@ -17,12 +23,19 @@ export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
   registrationStartEndDateRange: DateRange;
 };
 
+interface RaceSliceRace {
+  selectedRace: RaceData | null;
+  loading: boolean;
+  error: string | null;
+}
+
 export interface RaceState {
   races: RaceListing[];
   racesLoading: boolean;
   racesLoadingError: string | null;
   submittingNewRaceLoading: boolean;
   submittingNewRaceError: string | null;
+  race: RaceSliceRace;
 }
 
 const initialState: RaceState = {
@@ -31,6 +44,11 @@ const initialState: RaceState = {
   racesLoadingError: null,
   submittingNewRaceLoading: false,
   submittingNewRaceError: null,
+  race: {
+    selectedRace: null,
+    loading: false,
+    error: null,
+  },
 };
 
 export const raceSlice = createSlice({
@@ -56,7 +74,17 @@ export const raceSlice = createSlice({
     },
     setSubmittingNewRaceError: (state, action: PayloadAction<string | null>) => {
       state.submittingNewRaceError = action.payload;
-    }
+    },
+    setRace: (state, action: PayloadAction<RaceSliceRace>) => {
+      state.race = action.payload;
+    },
+    setRaceFetching: (state) => {
+      state.race = {
+        selectedRace: null,
+        loading: true,
+        error: null,
+      };
+    },
   }
 });
 
@@ -67,6 +95,8 @@ const {
   setRacesLoadingError,
   setSubmittingNewRaceLoading,
   setSubmittingNewRaceError,
+  setRace,
+  setRaceFetching,
 } = raceSlice.actions;
 
 export const SelectRaces = (state: RootState) => ({
@@ -78,6 +108,11 @@ export const SelectRaces = (state: RootState) => ({
 export const SelectSubmittingNewRace = (state: RootState) => ({
   setSubmittingNewRaceLoading: state.race.submittingNewRaceLoading,
   submittingNewRaceError: state.race.submittingNewRaceError,
+});
+
+export const SelectRace = (state: RootState) => ({
+  ...state.race.race,
+  selectedRace: state.race.race.selectedRace ? toRaceDetails(state.race.race.selectedRace) : null,
 });
 
 export const initializeRaces = (): AppAsyncThunk => {
@@ -100,7 +135,7 @@ export const initializeRaces = (): AppAsyncThunk => {
   };
 };
 
-export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<boolean> => {
+export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<number | null> => {
   return async (dispatch) => {
     dispatch(setSubmittingNewRaceLoading(true));
 
@@ -119,7 +154,7 @@ export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<boolean>
       dispatch(appendNewSubmittedRace(newRace));
       dispatch(setSubmittingNewRaceLoading(false));
 
-      return true;
+      return newRace.id;
     } catch (error: unknown) {
       if (error instanceof Error) {
         dispatch(setSubmittingNewRaceError(error.message));
@@ -129,9 +164,36 @@ export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<boolean>
       }
       dispatch(setSubmittingNewRaceLoading(false));
 
-      return false;
+      return null;
     }
   };
+};
+
+export const fetchRace = (raceId: number): AppAsyncThunk => {
+  return async (dispatch, getState) => {
+    if (getState().race.race.selectedRace?.id === raceId) {
+      return;
+    }
+    dispatch(setRaceFetching());
+
+    try {
+      const raceData = await raceService.getOne(raceId.toString());
+      dispatch(setRace({
+        selectedRace: raceData,
+        loading: false,
+        error: null
+      }));
+    } catch (error: unknown) {
+      const errMsg: string = error instanceof Error ? error.message : `${error}`;
+      console.error('Fetching races:', errMsg);
+      dispatch(setRace({
+        selectedRace: null,
+        loading: false,
+        error: errMsg,
+      }));
+    }
+  };
+
 };
 
 export default raceSlice.reducer;

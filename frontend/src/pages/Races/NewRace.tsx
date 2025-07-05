@@ -11,12 +11,9 @@ import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
 import {
-  type AppTheme,
-  RaceTypeOptions,
-} from '../../types';
-import {
   type NewRaceValuesType,
   SelectSubmittingNewRace,
+  fetchRace,
   submitNewRace,
 } from '../../store/slices/raceSlice';
 import {
@@ -24,6 +21,8 @@ import {
   getYearLastDateYearsFromNow,
 } from '../../utils/dateTools';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { type AppTheme, } from '../../types';
+import { RaceTypeLabelValueOptions } from '../../models/race';
 import { type SceneMapRouteProps } from './index';
 import config from '../../utils/config';
 
@@ -128,7 +127,7 @@ const formFields: FormProps<NewRaceValuesType>['formFields'] = {
     inputType: FormInputType.SelectDropdown,
     label: config.IS_MOBILE ? undefined : 'Race type',
     placeholder: 'Select race type',
-    options: RaceTypeOptions,
+    options: RaceTypeLabelValueOptions,
   },
   url: {
     inputType: FormInputType.TextField,
@@ -206,11 +205,14 @@ const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   } = useAppSelector(SelectSubmittingNewRace);
 
   const onSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
-    const raceCreated = await dispatch(submitNewRace(raceDetails));
-    if (raceCreated) {
-      jumpTo('racesList');
+    const createdRaceId = await dispatch(submitNewRace(raceDetails));
+    if (createdRaceId === null) {
+      return false;
     }
-    return raceCreated;
+
+    void dispatch(fetchRace(createdRaceId));
+    jumpTo('raceView');
+    return true;
   };
 
   return (
