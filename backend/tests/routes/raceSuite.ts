@@ -1,6 +1,11 @@
 import TestAgent from 'supertest/lib/agent';
+import { type UserCredential } from 'firebase/auth';
 
-import { generateRandomString, shuffleString } from '../testUtils/testHelpers';
+import {
+  generateRandomInteger,
+  generateRandomString,
+  shuffleString,
+} from '../testUtils/testHelpers';
 import raceUtils from '../testUtils/raceUtils';
 import testDatabase from '../testUtils/testDatabase';
 import testFirebase from '../testUtils/testFirebase';
@@ -1005,7 +1010,11 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
   }); // When no races exist
 
   describe('When races exist', () => {
-    let racesInDb: Array<{ race: Race; user: User }> | undefined= undefined;
+    let racesInDb: Array<{
+      race: Race;
+      user: User;
+      userCredentials: UserCredential;
+    }> | undefined = undefined;
 
     beforeAll(async () => {
       await testDatabase.dropRaces();
@@ -1043,6 +1052,133 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
       });
 
     }); // Listing races
+
+    describe('Deleting races', () => {
+      let raceToBeDeleted: {
+        race: Race;
+        user: User;
+        userCredentials: UserCredential;
+      } | undefined = undefined;
+
+      beforeEach(async () => {
+        raceToBeDeleted = await raceUtils.createRace();
+      });
+
+      test('Responds with status 204 when authorized user attempts to delete a non existing race', async () => {
+        if (!raceToBeDeleted) {
+          throw new Error('Internal test error: No races in DB');
+        }
+
+        const idToken = await raceToBeDeleted.userCredentials.user.getIdToken();
+        let nonExistingRaceId: number = generateRandomInteger();
+        while ((await testDatabase.getRaceByPk(nonExistingRaceId)) !== null) {
+          nonExistingRaceId = generateRandomInteger();
+        }
+
+        const initialRaceCount = await testDatabase.raceCount();
+
+        const res = await api
+          .delete(`${baseUrl}/${nonExistingRaceId}`)
+          .set('Authorization', `Bearer ${idToken}`)
+          .expect(204);
+
+        expect(res.body).toStrictEqual({});
+        expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
+      });
+
+      describe('Succeeeds', () => {
+
+        test('when authorized user deletes her own race', async () => {
+          if (!raceToBeDeleted) {
+            throw new Error('Internal test error: No races in DB');
+          }
+
+          const idToken = await raceToBeDeleted.userCredentials.user.getIdToken();
+          const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
+          const initialRaceCount = await testDatabase.raceCount();
+
+          expect(raceInDbInitial?.deletedAt).toBeNull();
+
+          const res = await api
+            .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(204);
+
+          expect(res.body).toStrictEqual({});
+
+          const raceInDbFinal = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, false);
+          expect(raceInDbFinal?.deletedAt).not.toBeNull();
+          expect(await testDatabase.raceCount()).toEqual(initialRaceCount - 1);
+        });
+
+      }); // Succeeds
+
+      describe('Fails', () => {
+
+        test('without authorization', async () => {
+          if (!raceToBeDeleted) {
+            throw new Error('Internal test error: No races in DB');
+          }
+
+          const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
+          const initialRaceCount = await testDatabase.raceCount();
+
+          expect(raceInDbInitial?.deletedAt).toBeNull();
+
+          const res = await api
+            .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toHaveProperty('message', 'Unauthorized');
+
+          const raceInDbFinal = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, false);
+          expect(raceInDbFinal?.deletedAt).toBeNull();
+          expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
+        });
+
+        test('when authorized user does not own the race', async () => {
+          if (!raceToBeDeleted) {
+            throw new Error('Internal test error: No races in DB');
+          }
+
+          const user = await userUtils.createSignedInUser();
+          const idToken = await user.credentials.user.getIdToken();
+          const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
+          const initialRaceCount = await testDatabase.raceCount();
+
+          expect(raceInDbInitial?.deletedAt).toBeNull();
+
+          const res = await api
+            .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(403);
+
+          expect(res.body).toBeDefined();
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toHaveProperty('message',
+            'Forbidden: You dont have the required credentials to delete this race'
+          );
+
+          const raceInDbFinal = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, false);
+          expect(raceInDbFinal?.deletedAt).toBeNull();
+          expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
+        });
+
+      }); // Fails
+
+    }); // Deleting races
 
   }); // When races exist
 

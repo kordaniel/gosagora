@@ -1,8 +1,11 @@
 import { type FindOptions } from 'sequelize';
 
+import {
+  NotFoundError,
+  PermissionForbiddenError,
+} from '../errors/applicationError';
 import { Race, User } from '../models';
-import { NewRaceAttributes } from '../types';
-import { NotFoundError } from '../errors/applicationError';
+import { type NewRaceAttributes } from '../types';
 
 import type { RaceData } from '@common/types/rest_api';
 import type { RaceListing } from '@common/types/race';
@@ -71,6 +74,22 @@ const createNewRace = async (
   return toRaceListing(race);
 };
 
+const deleteOne = async (
+  userId: User['id'],
+  raceId: number
+): Promise<void> => {
+  const race = await Race.findByPk(raceId);
+
+  if (!race) {
+    return;
+  }
+  if (race.userId !== userId) {
+    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to delete this race');
+  }
+
+  await race.destroy();
+};
+
 const getAll = async (): Promise<RaceListing[]> => {
   const races = await Race.findAll(raceListingQueryOpts);
   return races.map(toRaceListing);
@@ -88,6 +107,7 @@ const getOne = async (id: number): Promise<RaceData> => {
 
 export default {
   createNewRace,
+  deleteOne,
   getAll,
   getOne,
 };

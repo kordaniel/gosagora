@@ -73,4 +73,10 @@
 | 2025.07.04 | 1   | FRONTEND: Validate fetch race response, refactor raceSlice to store race data |
 | 2025.07.04 | 0.5 | FRONTEND: Add Link, LoadingOrErrorRenderer components |
 | 2025.07.05 | 2   | FRONTEND: Stylize RaceView, extend theme |
-| Total | 115 | |
+| 2025.07.05 | 0   | FRONTEND: Extend Form to support optional initialValue for every inputType |
+| 2025.07.05 | 1   | FRONTEND: Refactor NewRace formFields and validationSchema |
+| 2025.07.06 | 0.5 | BACKEND: Include express default type params for interface RequestUserExtended |
+| 2025.07.06 | 0   | BACKEND: Add PermissionForbiddenError |
+| 2025.07.06 | 2.5 | BACKEND: Add API endpoint for deleting race by id, tests |
+
+| Total | 119 | |

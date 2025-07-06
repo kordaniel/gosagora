@@ -43,7 +43,23 @@ router.get('/:id', async (req: Request, res: Response<RaceData>) => {
   }
 
   const race = await raceService.getOne(raceId);
+
   res.json(race);
+});
+
+router.delete('/:id', middleware.userExtractor, async (
+  req: RequestUserExtended,
+  res: Response
+) => {
+  //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
+  //           not set => req.user is always defined here if this function is run
+  if (req.user) {
+    const raceId = parseInt(req.params.id, 10);
+    await raceService.deleteOne(req.user.id, raceId);
+    res.status(204).end();
+  } else {
+    throw new ServiceError(); // TODO: remove when typing is fixed
+  }
 });
 
 export default router;
