@@ -3,6 +3,7 @@ type ApplicationErrorKind =
   | 'AuthError'
   | 'CorsError'
   | 'NotFoundError'
+  | 'PermissionForbiddenError'
   | 'ServiceError';
 
 interface IApplicationErrorJSON {
@@ -99,6 +100,18 @@ export class AuthError extends ApplicationError {
   }
 };
 
+export class PermissionForbiddenError extends ApplicationError {
+  kind = 'PermissionForbiddenError' as const;
+
+  constructor(
+    public override message: string = 'Forbidden: insufficient rights to perform the requested action',
+    public status: number = 403,
+  ) {
+    super();
+    Object.setPrototypeOf(this, PermissionForbiddenError.prototype);
+  }
+};
+
 export class NotFoundError extends ApplicationError {
   kind = 'NotFoundError' as const;
 
@@ -129,4 +142,5 @@ export type ApplicationErrorType =
   | AuthError
   | CorsError
   | NotFoundError
+  | PermissionForbiddenError
   | ServiceError;
