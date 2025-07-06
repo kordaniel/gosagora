@@ -51,10 +51,14 @@ router.delete('/:id', middleware.userExtractor, async (
   req: RequestUserExtended,
   res: Response
 ) => {
+  const raceId = parseInt(req.params.id, 10);
+  if (isNaN(raceId) || raceId === 0) {
+    throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
+  }
+
   //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
   //           not set => req.user is always defined here if this function is run
   if (req.user) {
-    const raceId = parseInt(req.params.id, 10);
     await raceService.deleteOne(req.user.id, raceId);
     res.status(204).end();
   } else {

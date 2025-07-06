@@ -1176,6 +1176,33 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
         });
 
+        test('when id is not an integer', async () => {
+          if (!raceToBeDeleted) {
+            throw new Error('Internal test error: No races in DB');
+          }
+
+          const raceId = generateRandomString(4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
+          const idToken = await raceToBeDeleted.userCredentials.user.getIdToken();
+          const initialRaceCount = await testDatabase.raceCount();
+
+          const res = await api
+            .delete(`${baseUrl}/${raceId}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(400);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toHaveProperty('message',
+            `Invalid ID for race: '${raceId}'`
+          );
+
+          expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
+        });
+
       }); // Fails
 
     }); // Deleting races
