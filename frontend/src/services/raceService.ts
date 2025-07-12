@@ -26,6 +26,10 @@ const create = async (raceDetails: CreateRaceArguments): Promise<RaceListing> =>
   return data;
 };
 
+const deleteOne = async (raceId: string): Promise<void> => {
+  await axiosInstance.delete(`${apiBasePath}/${raceId}`);
+};
+
 const getAll = async () => {
   const { data } = await axiosInstance.get<RaceListing[]>(apiBasePath);
   return data;
@@ -62,6 +66,7 @@ const updateOne = async (
 
 export default {
   create,
+  deleteOne,
   getAll,
   getOne,
   updateOne,

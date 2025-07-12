@@ -18,8 +18,13 @@ import {
   createRaceFormFields,
   newRaceValidationSchema
 } from '../../schemas/race';
+import {
+  deleteRace,
+  submitPatchRace,
+} from '../../store/slices/raceSlice';
 import { type AppTheme } from '../../types';
-import { submitPatchRace } from '../../store/slices/raceSlice';
+import { type SceneMapRouteProps } from './index';
+import { askConfirmation } from '../../helpers/askConfirmation';
 import { useAppDispatch } from '../../store/hooks';
 import useRace from '../../hooks/useRace';
 
@@ -27,9 +32,10 @@ import { type RaceDetails } from '@common/types/race';
 
 interface RaceEditorProps {
   race: RaceDetails;
+  jumpTo: SceneMapRouteProps['jumpTo'];
 }
 
-const RaceEditor = ({ race }: RaceEditorProps) => {
+const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
   const dispatch = useAppDispatch();
 
   const formFields: FormProps<NewRaceValuesType>['formFields'] = createRaceFormFields({
@@ -47,8 +53,23 @@ const RaceEditor = ({ race }: RaceEditorProps) => {
     await dispatch(submitPatchRace(race.id, raceDetails));
   };
 
-  const handleDeletion = () => {
-    console.log('del race:', race.id);
+  const handleDeleteCb = (shouldBeDeleted: boolean) => {
+    if (shouldBeDeleted) {
+      dispatch(deleteRace(race.id))
+        .then(wasDeleted => {
+          if (wasDeleted) {
+            jumpTo('racesList');
+          }
+        })
+        .catch(err => console.error('error deleting race:', err));
+    }
+  };
+
+  const onDeletePress = () => {
+    askConfirmation(
+      `Are you sure you want to delete the race '${race.name}' for everyone?`,
+      handleDeleteCb
+    );
   };
 
   return (
@@ -64,13 +85,13 @@ const RaceEditor = ({ race }: RaceEditorProps) => {
           submitLabel="Update race"
           validationSchema={newRaceValidationSchema}
         />
-        <Button disabled onPress={handleDeletion}>Delete race</Button>
+        <Button onPress={onDeletePress}>Delete race</Button>
       </View>
     </Modal>
   );
 };
 
-const RaceView = () => {
+const RaceView = ({ jumpTo }: SceneMapRouteProps) => {
   const theme = useTheme<AppTheme>();
   const { selectedRace, loading, error, isSignedUsersRace } = useRace();
 
@@ -100,7 +121,7 @@ const RaceView = () => {
       <StyledText variant="headline">{selectedRace.name}</StyledText>
       {isSignedUsersRace && <>
         <StyledText variant="title">You are the organizer of this race!</StyledText>
-        <RaceEditor race={selectedRace} />
+        <RaceEditor race={selectedRace} jumpTo={jumpTo} />
       </>}
       <View style={theme.styles.table}>
         <View style={theme.styles.tableColumn}>

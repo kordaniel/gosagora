@@ -89,6 +89,12 @@ export const raceSlice = createSlice({
           : action.payload.raceListing
       );
     },
+    removeRace: (state, action: PayloadAction<{ raceId: number }>) => {
+      if (action.payload.raceId === state.race.selectedRace?.id) {
+        state.race.selectedRace = null;
+      }
+      state.races = state.races.filter(race => race.id !== action.payload.raceId);
+    },
   }
 });
 
@@ -102,6 +108,7 @@ const {
   setRace,
   setRaceFetching,
   patchSelectedRace,
+  removeRace,
 } = raceSlice.actions;
 
 export const SelectRaces = (state: RootState) => ({
@@ -213,7 +220,21 @@ export const fetchRace = (raceId: number): AppAsyncThunk => {
       }));
     }
   };
+};
 
+export const deleteRace = (raceId: number): AppAsyncThunk<boolean> => {
+  return async (dispatch) => {
+    try {
+      await raceService.deleteOne(raceId.toString());
+      dispatch(removeRace({ raceId }));
+      return true;
+    } catch (error: unknown) {
+      // TODO: Handle error
+      const errMsg: string = error instanceof Error ? error.message : `${error}`;
+      console.error('Deleting race:', errMsg);
+      return false;
+    }
+  };
 };
 
 export default raceSlice.reducer;

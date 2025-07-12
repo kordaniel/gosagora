@@ -80,4 +80,5 @@
 | 2025.07.06 | 2.5 | BACKEND: Add API endpoint for deleting race by id, tests |
 | 2025.07.11 | 1   | FRONTEND: define test env to config, add Modal component |
 | 2025.07.11 | 4   | FRONTEND: Add useRace hook and implement a race details editor. Refactor race related helpers. Stylize |
-| Total | 124 | |
+| 2025.07.12 | 2   | FRONTEND: Add PermissionForbiddenError, confirmation dialog, deletion of selected race |
+| Total | 126 | |
