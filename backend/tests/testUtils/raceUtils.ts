@@ -1,3 +1,5 @@
+import { type UserCredential } from 'firebase/auth';
+
 import { getTimeSpanInMsec } from './testHelpers';
 import userUtils from './userUtils';
 
@@ -42,7 +44,7 @@ const getRaceCreationArgumentsObject = (): CreateRaceArguments => {
   };
 };
 
-const createRaces = async (): Promise<Array<{ user: User; race: Race }>> => {
+const createRaces = async (): Promise<Array<{ user: User; race: Race, userCredentials: UserCredential }>> => {
   const users = await Promise.all([
     userUtils.createSignedInUser(),
     userUtils.createSignedInUser()
@@ -80,11 +82,26 @@ const createRaces = async (): Promise<Array<{ user: User; race: Race }>> => {
 
   return races.map((race, i) => ({
     race,
-    user: users[i < 2 ? 0 : 1].user
+    user: users[i < 2 ? 0 : 1].user,
+    userCredentials: users[i < 2 ? 0 : 1].credentials,
   }));
+};
+
+const createRace = async (): Promise<{ user: User; race: Race, userCredentials: UserCredential }> => {
+  const user = await userUtils.createSignedInUser();
+  const race = await Race.create({
+    userId: user.user.id,
+    ...getRaceCreationAttributesObject()
+  });
+  return {
+    user: user.user,
+    userCredentials: user.credentials,
+    race,
+  };
 };
 
 export default {
   getRaceCreationArgumentsObject,
+  createRace,
   createRaces,
 };

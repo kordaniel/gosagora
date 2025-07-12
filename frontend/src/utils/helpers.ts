@@ -1,3 +1,9 @@
+export const createReverseEnumMap = <T extends Record<string, string>>(enumObj: T) => {
+  return Object.fromEntries(
+    Object.entries(enumObj).map(([k, v]) => [v, k])
+  ) as { [K in T[keyof T]]: keyof T };
+};
+
 /**
  * Pause execution for ms amount of time before continuing. This function is
  * primarily intended to be used during development, for mimicing latency.

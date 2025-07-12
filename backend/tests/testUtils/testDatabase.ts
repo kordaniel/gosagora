@@ -62,8 +62,8 @@ const getUserByFirebaseUid = async (firebaseUid: string) => {
   });
 };
 
-const getRaceByPk = async (id: number) => {
-  return await Race.findByPk(id);
+const getRaceByPk = async (id: number, paranoid: boolean = true) => {
+  return await Race.findByPk(id, { paranoid });
 };
 
 export default {
