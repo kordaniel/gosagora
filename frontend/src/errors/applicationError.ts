@@ -2,6 +2,7 @@ type ApplicationErrorKind =
   | 'APIResponseError'
   | 'AuthError'
   | 'HttpError'
+  | 'PermissionForbiddenError'
   | 'ServerConflictError';
 
 export abstract class ApplicationError extends Error {
@@ -43,6 +44,16 @@ export class HttpError extends ApplicationError {
   }
 }
 
+export class PermissionForbiddenError extends ApplicationError {
+  kind = 'PermissionForbiddenError' as const;
+  constructor(
+    public override message: string = 'Sorry, you\'re not authorized to perform this action',
+  ) {
+    super();
+    Object.setPrototypeOf(this, PermissionForbiddenError.prototype);
+  }
+}
+
 export class ServerConflictError extends ApplicationError {
   kind = 'ServerConflictError' as const;
   constructor(
@@ -58,4 +69,5 @@ export type ApplicationErrorType =
   | APIResponseError
   | AuthError
   | HttpError
+  | PermissionForbiddenError
   | ServerConflictError;
