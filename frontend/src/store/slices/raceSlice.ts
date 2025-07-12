@@ -4,24 +4,20 @@ import {
 } from '@reduxjs/toolkit';
 
 import type { AppAsyncThunk, RootState } from '../index';
-import type { DateRange, NonNullableFields } from '../../types';
+import {
+  type NewRaceValuesType,
+  toRaceDetails
+} from '../../models/race';
 import raceService from '../../services/raceService';
-import { toRaceDetails } from '../../models/race';
+import { raceValuesToRaceArguments } from '../../schemas/race';
 
-import type {
-  CreateRaceArguments,
-  RaceData,
+import {
+  type RaceData,
+  type RacePatchResponseData,
 } from '@common/types/rest_api';
 import {
-  RaceListing,
+  type RaceListing
 } from '@common/types/race';
-
-export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
-  'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
->> & {
-  startEndDateRange: DateRange;
-  registrationStartEndDateRange: DateRange;
-};
 
 interface RaceSliceRace {
   selectedRace: RaceData | null;
@@ -85,6 +81,14 @@ export const raceSlice = createSlice({
         error: null,
       };
     },
+    patchSelectedRace: (state, action: PayloadAction<RacePatchResponseData>) => {
+      state.race.selectedRace = action.payload.raceData;
+      state.races = state.races.map(race =>
+        race.id !== action.payload.raceListing.id
+          ? race
+          : action.payload.raceListing
+      );
+    },
   }
 });
 
@@ -97,6 +101,7 @@ const {
   setSubmittingNewRaceError,
   setRace,
   setRaceFetching,
+  patchSelectedRace,
 } = raceSlice.actions;
 
 export const SelectRaces = (state: RootState) => ({
@@ -138,19 +143,8 @@ export const initializeRaces = (): AppAsyncThunk => {
 export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<number | null> => {
   return async (dispatch) => {
     dispatch(setSubmittingNewRaceLoading(true));
-
     try {
-      const newRace = await raceService.create({
-        name: values.name.trim(),
-        type: values.type,
-        url: values.url ? values.url.trim() : null,
-        email: values.email ? values.email.trim() : null,
-        dateFrom: values.startEndDateRange.startDate.toISOString(),
-        dateTo: values.startEndDateRange.endDate.toISOString(),
-        registrationOpenDate: values.registrationStartEndDateRange.startDate.toISOString(),
-        registrationCloseDate: values.registrationStartEndDateRange.endDate.toISOString(),
-        description: values.description.trim(),
-      });
+      const newRace = await raceService.create(raceValuesToRaceArguments(values));
       dispatch(appendNewSubmittedRace(newRace));
       dispatch(setSubmittingNewRaceLoading(false));
 
@@ -165,6 +159,32 @@ export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<number |
       dispatch(setSubmittingNewRaceLoading(false));
 
       return null;
+    }
+  };
+};
+
+export const submitPatchRace = (raceId: number, values: NewRaceValuesType): AppAsyncThunk => {
+  return async (dispatch, getState) => {
+    const stateRace = getState().race.race;
+    if (!stateRace.selectedRace || stateRace.selectedRace.id !== raceId) {
+      // TODO: Handle
+      return;
+    }
+
+    const changedFields = raceValuesToRaceArguments(values, stateRace.selectedRace);
+    if (!changedFields) {
+      return;
+    }
+
+    try {
+      console.log('updating values:', values);
+      console.log('updating fields:', changedFields);
+      const updatedRace = await raceService.updateOne(raceId.toString(), changedFields);
+      console.log('updatedRace:', updatedRace);
+      dispatch(patchSelectedRace(updatedRace));
+    } catch (error: unknown) {
+      // TODO: Handle and render error
+      console.error('updating race:', error);// instanceof Error ? error.message : error);
     }
   };
 };

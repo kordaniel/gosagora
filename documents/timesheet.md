@@ -78,5 +78,6 @@
 | 2025.07.06 | 0.5 | BACKEND: Include express default type params for interface RequestUserExtended |
 | 2025.07.06 | 0   | BACKEND: Add PermissionForbiddenError |
 | 2025.07.06 | 2.5 | BACKEND: Add API endpoint for deleting race by id, tests |
-
-| Total | 119 | |
+| 2025.07.11 | 1   | FRONTEND: define test env to config, add Modal component |
+| 2025.07.11 | 4   | FRONTEND: Add useRace hook and implement a race details editor. Refactor race related helpers. Stylize |
+| Total | 124 | |

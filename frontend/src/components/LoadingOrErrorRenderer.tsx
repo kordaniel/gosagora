@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import ErrorRenderer from './ErrorRenderer';
 import StyledText from './StyledText';
 
 import { type AppTheme } from '../types';
-import { ActivityIndicator, View } from 'react-native';
 
 interface LoadingOrErrorRendererProps {
   error?: string | null;

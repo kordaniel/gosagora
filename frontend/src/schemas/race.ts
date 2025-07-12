@@ -13,7 +13,10 @@ import { FormInputType } from '../components/Form/enums';
 import { type FormProps } from '../components/Form';
 import config from '../utils/config';
 
-import { RaceData } from '@common/types/rest_api';
+import {
+  type CreateRaceArguments,
+  type RaceData,
+} from '@common/types/rest_api';
 import { RaceType } from '@common/types/race';
 
 export const raceSchema: Yup.Schema<RaceData> = Yup.object().shape({
@@ -130,14 +133,41 @@ export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object
     .required('A description is required'),
 });
 
+export const patchRaceSchema: Yup.Schema = Yup.object().shape({
+  // TODO: Add correct type argument to: Yup.Schema<RacePatchResponseData>
+  //       when the type RaceListing Data has been defined with dates as strings
+  raceData: raceSchema,
+  raceListing: Yup.object().shape({
+    id: Yup.number()
+      .required(),
+    name: Yup.string()
+      .required(),
+    type: Yup.mixed<RaceType>()
+      .oneOf(Object.values(RaceType))
+      .required(),
+    description: Yup.string()
+      .required(),
+    createdAt: Yup.string()
+      .required(),
+    updatedAt: Yup.string()
+      .required(),
+    user: Yup.object().shape({
+      id: Yup.number()
+        .required(),
+      displayName: Yup.string()
+        .required(),
+    })
+  })
+});
+
 interface RaceFormFieldsInitialValues {
-  name?: string;
-  type?: RaceType;
-  url?: string;
-  email?: string;
-  startEndDateRange?: DateRange;
-  registrationStartEndDateRange?: DateRange;
-  description?: string;
+  name: string;
+  type: RaceType;
+  url: string;
+  email: string;
+  startEndDateRange: DateRange;
+  registrationStartEndDateRange: DateRange;
+  description: string;
 }
 
 export const createRaceFormFields = (
@@ -234,3 +264,47 @@ export const createRaceFormFields = (
     },
   },
 });
+
+export function raceValuesToRaceArguments(newValues: NewRaceValuesType): CreateRaceArguments;
+export function raceValuesToRaceArguments(newValues: NewRaceValuesType, oldValues: RaceData ): Partial<CreateRaceArguments> | null;
+export function raceValuesToRaceArguments(
+  newValues: NewRaceValuesType,
+  oldValues?: RaceData
+): CreateRaceArguments | Partial<CreateRaceArguments> | null {
+  const cmpEmptyNullStrVals = (newVal: string, oldVal: string | null) => {
+    const parsed = newVal ? newVal.trim() : null;
+    return parsed === oldVal;
+  };
+
+  const extractDates = (
+    newDates: Pick<NewRaceValuesType, 'startEndDateRange' | 'registrationStartEndDateRange'>,
+    oldDates?: Pick<RaceData, 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'>
+  ): Pick<RaceData, 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'>  | Record<string, never> => {
+    if (oldDates &&
+      newDates.startEndDateRange.startDate.toISOString() === oldDates.dateFrom &&
+      newDates.startEndDateRange.endDate.toISOString() === oldDates.dateTo &&
+      newDates.registrationStartEndDateRange.startDate.toISOString() === oldDates.registrationOpenDate &&
+      newDates.registrationStartEndDateRange.endDate.toISOString() === oldDates.registrationCloseDate
+    ) {
+      return {};
+    }
+
+    return {
+      dateFrom: newDates.startEndDateRange.startDate.toISOString(),
+      dateTo: newDates.startEndDateRange.endDate.toISOString(),
+      registrationOpenDate: newDates.registrationStartEndDateRange.startDate.toISOString(),
+      registrationCloseDate: newDates.registrationStartEndDateRange.endDate.toISOString(),
+    };
+  };
+
+  const values = {
+    ...((!oldValues || newValues.name.trim() !== oldValues.name) && { name: newValues.name.trim() }),
+    ...((!oldValues || newValues.type !== oldValues.type) && { type: newValues.type }),
+    ...((!oldValues || !cmpEmptyNullStrVals(newValues.url, oldValues.url)) && { url: newValues.url ? newValues.url.trim() : null }),
+    ...((!oldValues || !cmpEmptyNullStrVals(newValues.email, oldValues.email)) && { email: newValues.email ? newValues.email.trim() : null }),
+    ...((!oldValues || newValues.description.trim() !== oldValues.description) && { description: newValues.description.trim() }),
+    ...extractDates(newValues, oldValues)
+  };
+
+  return Object.keys(values).length === 0 ? null : values;
+}

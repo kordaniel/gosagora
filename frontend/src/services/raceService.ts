@@ -1,12 +1,12 @@
-
+import { patchRaceSchema, raceSchema } from '../schemas/race';
 import axiosInstance from '../modules/axiosInstance';
-import { raceSchema } from '../schemas/race';
 import { validateResponse } from './validators';
 
 import type {
   APIRaceRequest,
   CreateRaceArguments,
   RaceData,
+  RacePatchResponseData,
 } from '@common/types/rest_api';
 import type {
   RaceListing,
@@ -14,7 +14,7 @@ import type {
 
 const apiBasePath = '/api/v1/race';
 
-const create = async (raceDetails: CreateRaceArguments) => {
+const create = async (raceDetails: CreateRaceArguments): Promise<RaceListing> => {
   const postData: APIRaceRequest<'create', CreateRaceArguments> = {
     type: 'create',
     data: raceDetails
@@ -40,8 +40,29 @@ const getOne = async (raceId: string): Promise<RaceData> => {
   );
 };
 
+const updateOne = async (
+  raceId: string,
+  raceDetails: Partial<CreateRaceArguments>
+): Promise<RacePatchResponseData> => {
+  const patchData: APIRaceRequest<'update', Partial<CreateRaceArguments>> = {
+    type: 'update',
+    data: raceDetails
+  };
+
+  const { data } = await axiosInstance.patch<RacePatchResponseData>(
+    `${apiBasePath}/${raceId}`, patchData
+  );
+
+  return await validateResponse<RacePatchResponseData>(
+    data,
+    patchRaceSchema,
+    'We encountered a problem updating this race for you. Please try again, or contact our support team if the problem persists'
+  );
+};
+
 export default {
   create,
   getAll,
   getOne,
+  updateOne,
 };

@@ -3,18 +3,76 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import Form, { type FormProps } from '../../components/Form';
+import Button from '../../components/Button';
 import Link from '../../components/Link';
 import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
+import Modal from '../../components/Modal';
 import StyledText from '../../components/StyledText';
 
+import {
+  type NewRaceValuesType,
+  RaceTypeReverseMap,
+} from '../../models/race';
+import {
+  createRaceFormFields,
+  newRaceValidationSchema
+} from '../../schemas/race';
 import { type AppTheme } from '../../types';
-import { RaceTypeReverseMap } from '../../models/race';
-import { SelectRace } from '../../store/slices/raceSlice';
-import { useAppSelector } from '../../store/hooks';
+import { submitPatchRace } from '../../store/slices/raceSlice';
+import { useAppDispatch } from '../../store/hooks';
+import useRace from '../../hooks/useRace';
+
+import { type RaceDetails } from '@common/types/race';
+
+interface RaceEditorProps {
+  race: RaceDetails;
+}
+
+const RaceEditor = ({ race }: RaceEditorProps) => {
+  const dispatch = useAppDispatch();
+
+  const formFields: FormProps<NewRaceValuesType>['formFields'] = createRaceFormFields({
+    name: race.name,
+    type: race.type,
+    url: race.url ?? '',
+    email: race.email ?? '',
+    startEndDateRange: { startDate: new Date(race.dateFrom), endDate: new Date(race.dateTo) },
+    registrationStartEndDateRange: { startDate: new Date(race.registrationOpenDate), endDate: new Date(race.registrationCloseDate) },
+    description: race.description,
+  });
+
+  const handleUpdateSubmit = async (raceDetails: NewRaceValuesType): Promise<void> => {
+    console.log('submitting:', raceDetails);
+    await dispatch(submitPatchRace(race.id, raceDetails));
+  };
+
+  const handleDeletion = () => {
+    console.log('del race:', race.id);
+  };
+
+  return (
+    <Modal
+      title={`Editing race "${race.name}"`}
+      closeButtonLabel="Cancel"
+      openButtonLabel="Edit race details"
+    >
+      <View>
+        <Form<NewRaceValuesType>
+          formFields={formFields}
+          onSubmit={handleUpdateSubmit}
+          submitLabel="Update race"
+          validationSchema={newRaceValidationSchema}
+        />
+        <Button disabled onPress={handleDeletion}>Delete race</Button>
+      </View>
+    </Modal>
+  );
+};
 
 const RaceView = () => {
   const theme = useTheme<AppTheme>();
-  const { selectedRace, loading, error } = useAppSelector(SelectRace);
+  const { selectedRace, loading, error, isSignedUsersRace } = useRace();
 
   if (loading || error) {
     return (
@@ -40,6 +98,10 @@ const RaceView = () => {
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">{selectedRace.name}</StyledText>
+      {isSignedUsersRace && <>
+        <StyledText variant="title">You are the organizer of this race!</StyledText>
+        <RaceEditor race={selectedRace} />
+      </>}
       <View style={theme.styles.table}>
         <View style={theme.styles.tableColumn}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Description</StyledText>

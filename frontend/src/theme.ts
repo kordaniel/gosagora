@@ -135,6 +135,14 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
     paddingHorizontal: 3,
   },
+  modalContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  modalContentContainer: {
+    margin: 8,
+  },
   safeAreaView: {
     flex: 1,
     flexDirection: 'column',
@@ -215,6 +223,18 @@ const lightStyle = StyleSheet.create({
     backgroundColor: lightTheme.colors.errorContainer,
     borderColor: lightTheme.colors.onErrorContainer,
     color: lightTheme.colors.onErrorContainer,
+  },
+  modalContainer: {
+    ...styles.modalContainer,
+    backgroundColor: lightTheme.colors.elevation.level1,
+  },
+  modalContentContainer: {
+    ...styles.container,
+    ...styles.containerFlexColumn,
+    ...styles.borderContainer,
+    ...styles.modalContentContainer,
+    backgroundColor: lightTheme.colors.elevation.level2,
+    borderColor: lightTheme.colors.outline,
   },
   onErrorContainer: {
     ...lightTheme.fonts.default,
@@ -308,6 +328,18 @@ const darkStyle = StyleSheet.create({
     backgroundColor: darkTheme.colors.errorContainer,
     borderColor: darkTheme.colors.onErrorContainer,
     color: darkTheme.colors.onErrorContainer,
+  },
+  modalContainer: {
+    ...styles.modalContainer,
+    backgroundColor: darkTheme.colors.elevation.level1,
+  },
+  modalContentContainer: {
+    ...styles.container,
+    ...styles.containerFlexColumn,
+    ...styles.borderContainer,
+    ...styles.modalContentContainer,
+    backgroundColor: darkTheme.colors.elevation.level2,
+    borderColor: darkTheme.colors.outline,
   },
   onErrorContainer: {
     ...darkTheme.fonts.default,
