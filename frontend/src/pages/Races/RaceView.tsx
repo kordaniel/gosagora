@@ -48,13 +48,12 @@ const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
     description: race.description,
   });
 
-  const handleUpdateSubmit = async (raceDetails: NewRaceValuesType): Promise<void> => {
-    console.log('submitting:', raceDetails);
+  const handleUpdateSubmit = async (raceDetails: NewRaceValuesType) => {
     await dispatch(submitPatchRace(race.id, raceDetails));
   };
 
-  const handleDeleteCb = (shouldBeDeleted: boolean) => {
-    if (shouldBeDeleted) {
+  const handleDeleteCb = (deletionConfirmation: boolean) => {
+    if (deletionConfirmation) {
       dispatch(deleteRace(race.id))
         .then(wasDeleted => {
           if (wasDeleted) {
@@ -75,11 +74,13 @@ const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
   return (
     <Modal
       title={`Editing race "${race.name}"`}
-      closeButtonLabel="Cancel"
-      openButtonLabel="Edit race details"
+      closeButtonLabel="Close editor"
+      openButtonLabel="Open race editor"
     >
       <View>
         <Form<NewRaceValuesType>
+          clearFieldsAfterSubmit={true}
+          enableReinitialize={true}
           formFields={formFields}
           onSubmit={handleUpdateSubmit}
           submitLabel="Update race"
@@ -100,7 +101,8 @@ const RaceView = ({ jumpTo }: SceneMapRouteProps) => {
       <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
         <LoadingOrErrorRenderer
           loading={loading}
-          loadingMessage="Just a moment, we are loading the race for you" error={error}
+          loadingMessage="Just a moment, we are loading the race for you"
+          error={error}
         />
       </ScrollView>
     );
