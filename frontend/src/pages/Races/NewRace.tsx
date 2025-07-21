@@ -8,7 +8,7 @@ import Form from '../../components/Form';
 import StyledText from '../../components/StyledText';
 
 import {
-  SelectSubmittingNewRace,
+  SelectSubmitNewRace,
   fetchRace,
   submitNewRace,
 } from '../../store/slices/raceSlice';
@@ -25,10 +25,7 @@ import { type SceneMapRouteProps } from './index';
 const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
-  const {
-    setSubmittingNewRaceLoading,
-    submittingNewRaceError,
-  } = useAppSelector(SelectSubmittingNewRace);
+  const { loading, error } = useAppSelector(SelectSubmitNewRace);
 
   const onSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
     const createdRaceId = await dispatch(submitNewRace(raceDetails));
@@ -44,14 +41,14 @@ const NewRace = ({ jumpTo }: SceneMapRouteProps) => {
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">New race</StyledText>
-      <ErrorRenderer>{submittingNewRaceError}</ErrorRenderer>
+      <ErrorRenderer>{error}</ErrorRenderer>
       <Form<NewRaceValuesType>
         formFields={createRaceFormFields()}
         onSubmit={onSubmit}
         submitLabel="Create new race"
         validationSchema={newRaceValidationSchema}
       />
-      {setSubmittingNewRaceLoading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
+      {loading && <ActivityIndicator color={theme.colors.onPrimaryContainer} size="large" />}
     </ScrollView>
   );
 };
