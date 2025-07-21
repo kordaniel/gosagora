@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -37,6 +37,7 @@ interface RaceEditorProps {
 
 const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
   const dispatch = useAppDispatch();
+  const [error, setError] = useState<string>('');
 
   const formFields: FormProps<NewRaceValuesType>['formFields'] = createRaceFormFields({
     name: race.name,
@@ -48,20 +49,28 @@ const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
     description: race.description,
   });
 
-  const handleUpdateSubmit = async (raceDetails: NewRaceValuesType) => {
-    await dispatch(submitPatchRace(race.id, raceDetails));
+  const handleUpdateSubmit = async (raceDetails: NewRaceValuesType): Promise<boolean> => {
+    const errorString = await dispatch(submitPatchRace(race.id, raceDetails));
+    setError(errorString === null ? '' : errorString);
+    return errorString === null;
   };
 
   const handleDeleteCb = (deletionConfirmation: boolean) => {
-    if (deletionConfirmation) {
-      dispatch(deleteRace(race.id))
-        .then(wasDeleted => {
-          if (wasDeleted) {
-            jumpTo('racesList');
-          }
-        })
-        .catch(err => console.error('error deleting race:', err));
+    if (!deletionConfirmation) {
+      return;
     }
+    dispatch(deleteRace(race.id))
+      .then(errorString => {
+        if (errorString === null) {
+          setError('');
+          jumpTo('racesList');
+        } else {
+          setError(errorString);
+        }
+      })
+      .catch(err => {
+        console.error('Error deleting race:', err);
+      });
   };
 
   const onDeletePress = () => {
@@ -86,6 +95,7 @@ const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
           submitLabel="Update race"
           validationSchema={newRaceValidationSchema}
         />
+        <LoadingOrErrorRenderer error={error} />
         <Button onPress={onDeletePress}>Delete race</Button>
       </View>
     </Modal>

@@ -8,6 +8,7 @@ import {
   type NewRaceValuesType,
   toRaceDetails
 } from '../../models/race';
+import { ApplicationError } from '../../errors/applicationError';
 import raceService from '../../services/raceService';
 import { raceValuesToRaceArguments } from '../../schemas/race';
 
@@ -170,28 +171,30 @@ export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<number |
   };
 };
 
-export const submitPatchRace = (raceId: number, values: NewRaceValuesType): AppAsyncThunk => {
+export const submitPatchRace = (raceId: number, values: NewRaceValuesType): AppAsyncThunk<string | null> => {
   return async (dispatch, getState) => {
     const stateRace = getState().race.race;
     if (!stateRace.selectedRace || stateRace.selectedRace.id !== raceId) {
-      // TODO: Handle
-      return;
+      console.error('attempted to patch a race that is not selected');
+      return 'Unknown error happened when trying to edit race details. Please try again!';
     }
 
     const changedFields = raceValuesToRaceArguments(values, stateRace.selectedRace);
     if (!changedFields) {
-      return;
+      return null;
     }
 
     try {
-      console.log('updating values:', values);
-      console.log('updating fields:', changedFields);
       const updatedRace = await raceService.updateOne(raceId.toString(), changedFields);
-      console.log('updatedRace:', updatedRace);
       dispatch(patchSelectedRace(updatedRace));
+      return null;
     } catch (error: unknown) {
-      // TODO: Handle and render error
-      console.error('updating race:', error);// instanceof Error ? error.message : error);
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('updating race:', error);
+        return 'Unknown error happened when deleting race';
+      }
     }
   };
 };
@@ -212,7 +215,7 @@ export const fetchRace = (raceId: number): AppAsyncThunk => {
       }));
     } catch (error: unknown) {
       const errMsg: string = error instanceof Error ? error.message : `${error}`;
-      console.error('Fetching races:', errMsg);
+      console.error('fetching race:', errMsg);
       dispatch(setRace({
         selectedRace: null,
         loading: false,
@@ -222,17 +225,19 @@ export const fetchRace = (raceId: number): AppAsyncThunk => {
   };
 };
 
-export const deleteRace = (raceId: number): AppAsyncThunk<boolean> => {
+export const deleteRace = (raceId: number): AppAsyncThunk<string | null> => {
   return async (dispatch) => {
     try {
       await raceService.deleteOne(raceId.toString());
       dispatch(removeRace({ raceId }));
-      return true;
+      return null;
     } catch (error: unknown) {
-      // TODO: Handle error
-      const errMsg: string = error instanceof Error ? error.message : `${error}`;
-      console.error('Deleting race:', errMsg);
-      return false;
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('deleting race:', error);
+        return 'Unknown error happened when deleting race';
+      }
     }
   };
 };
