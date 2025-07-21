@@ -5,6 +5,7 @@ import {
   Formik,
   type FormikHelpers,
   type FormikProps,
+  type FormikSharedConfig,
   type FormikValues,
 } from 'formik';
 import {
@@ -87,6 +88,7 @@ export interface FormProps<T> {
   submitLabel: string;
   validationSchema: Yup.Schema<T>;
   clearFieldsAfterSubmit?: boolean;
+  enableReinitialize?: FormikSharedConfig['enableReinitialize'];
 }
 
 type FormikValuesType = {
@@ -98,7 +100,8 @@ const Form = <FormValuesType extends FormikValuesType, >({
   onSubmit,
   submitLabel,
   validationSchema,
-  clearFieldsAfterSubmit = true
+  clearFieldsAfterSubmit = true,
+  enableReinitialize = false
 }: FormProps<FormValuesType>) => {
   const theme = useTheme<AppTheme>();
   const formikRef = useRef<FormikProps<FormValuesType>>(null);
@@ -168,6 +171,7 @@ const Form = <FormValuesType extends FormikValuesType, >({
       innerRef={formikRef}
       onSubmit={handleOnSubmit}
       validationSchema={validationSchema}
+      enableReinitialize={enableReinitialize}
     >
       {({ handleSubmit, isValid, isSubmitting }) => {
         return (
