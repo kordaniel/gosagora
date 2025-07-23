@@ -6,6 +6,8 @@ export type NonNullableFields<T> = {
   [K in keyof T]: Exclude<T[K], null>;
 };
 
+export type ReplaceField<T, K extends keyof T, V> = Omit<T, K> & { [P in K]: V };
+
 export type WithRequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 export interface AppTheme extends MD3Theme {
