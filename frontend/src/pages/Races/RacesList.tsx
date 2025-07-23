@@ -11,6 +11,8 @@ import { SelectRaces, fetchRace, initializeRaces } from '../../store/slices/race
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { AppTheme } from '../../types';
 import { type SceneMapRouteProps } from './index';
+import { clampString } from '../../utils/helpers';
+import config from '../../utils/config';
 
 import { RaceListing } from '@common/types/race';
 
@@ -27,6 +29,8 @@ const RaceListingView = ({ race, jumpTo }: RaceListingViewProps) => {
     theme.styles.borderContainer,
   );
 
+  const raceDescription = clampString(race.description, config.IS_MOBILE ? 100 : 300);
+
   const onPress = (id: number) => {
     void dispatch(fetchRace(id));
     jumpTo('raceView');
@@ -36,7 +40,7 @@ const RaceListingView = ({ race, jumpTo }: RaceListingViewProps) => {
     <TouchableOpacity style={style} onPress={() => onPress(race.id)}>
       <StyledText variant="title">Name: {race.name}</StyledText>
       <StyledText variant="small">Type: {race.type}</StyledText>
-      <StyledText variant="small">Description: {race.description}</StyledText>
+      <StyledText variant="small">Description: {raceDescription}</StyledText>
       <StyledText variant="small">Organizer: {race.user.displayName}</StyledText>
     </TouchableOpacity>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Form, { type FormProps } from '../../components/Form';
@@ -25,6 +25,8 @@ import {
 import { type AppTheme } from '../../types';
 import { type SceneMapRouteProps } from './index';
 import { askConfirmation } from '../../helpers/askConfirmation';
+import { clampString } from '../../utils/helpers';
+import config from '../../utils/config';
 import { useAppDispatch } from '../../store/hooks';
 import useRace from '../../hooks/useRace';
 
@@ -104,6 +106,7 @@ const RaceEditor = ({ race, jumpTo }: RaceEditorProps) => {
 
 const RaceView = ({ jumpTo }: SceneMapRouteProps) => {
   const theme = useTheme<AppTheme>();
+  const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
   const { selectedRace, loading, error, isSignedUsersRace } = useRace();
 
   if (loading || error) {
@@ -127,6 +130,9 @@ const RaceView = ({ jumpTo }: SceneMapRouteProps) => {
   }
 
   const raceTypeStr = RaceTypeReverseMap[selectedRace.type] ?? '-';
+  const selectedRaceDescription = showFullDescription
+    ? selectedRace.description
+    : clampString(selectedRace.description, config.IS_MOBILE ? 300 : 600);
 
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
@@ -136,10 +142,12 @@ const RaceView = ({ jumpTo }: SceneMapRouteProps) => {
         <RaceEditor race={selectedRace} jumpTo={jumpTo} />
       </>}
       <View style={theme.styles.table}>
-        <View style={theme.styles.tableColumn}>
-          <StyledText variant="title" style={theme.styles.tableCellData}>Description</StyledText>
-          <StyledText style={theme.styles.tableCellData}>{selectedRace.description}</StyledText>
-        </View>
+        <Pressable onPress={() => setShowFullDescription(!showFullDescription)}>
+          <View style={theme.styles.tableColumn}>
+            <StyledText variant="title" style={theme.styles.tableCellData}>Description</StyledText>
+            <StyledText style={theme.styles.tableCellData}>{selectedRaceDescription}</StyledText>
+          </View>
+        </Pressable>
         <View style={theme.styles.tableRow}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Organizer</StyledText>
           <StyledText style={theme.styles.tableCellData}>{selectedRace.user.displayName}</StyledText>
