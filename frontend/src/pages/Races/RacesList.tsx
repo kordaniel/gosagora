@@ -58,11 +58,7 @@ const RacesHeader = ({ racesError }: RacesHeaderProps) => {
 
 const RacesList = ({ jumpTo }: SceneMapRouteProps) => {
   const dispatch = useAppDispatch();
-  const {
-    races,
-    racesLoading,
-    racesLoadingError
-  } = useAppSelector(SelectRaces);
+  const { races, loading, error } = useAppSelector(SelectRaces);
 
   useEffect(() => {
     void dispatch(initializeRaces());
@@ -75,9 +71,9 @@ const RacesList = ({ jumpTo }: SceneMapRouteProps) => {
       keyExtractor={item => item.id.toString()}
       ListEmptyComponent={<EmptyFlatList
         message="No races.."
-        loading={racesLoading}
+        loading={loading}
       />}
-      ListHeaderComponent={<RacesHeader racesError={racesLoadingError}/>}
+      ListHeaderComponent={<RacesHeader racesError={error}/>}
       stickyHeaderIndices={[0]}
     />
   );

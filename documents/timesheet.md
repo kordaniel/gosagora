@@ -82,4 +82,5 @@
 | 2025.07.11 | 4   | FRONTEND: Add useRace hook and implement a race details editor. Refactor race related helpers. Stylize |
 | 2025.07.12 | 2   | FRONTEND: Add PermissionForbiddenError, confirmation dialog, deletion of selected race |
 | 2025.07.21 | 1   | FRONTEND: Add enableReinitialize prop to Form component, manage race editor form state when updating race details |
+| 2025.07.23 | 0   | FRONTEND: Add ReplaceField utility type, refactor store raceSlice |
 | Total | 127 | |

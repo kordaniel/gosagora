@@ -9,6 +9,7 @@ import {
   toRaceDetails
 } from '../../models/race';
 import { ApplicationError } from '../../errors/applicationError';
+import { type ReplaceField } from '../../types';
 import raceService from '../../services/raceService';
 import { raceValuesToRaceArguments } from '../../schemas/race';
 
@@ -17,8 +18,15 @@ import {
   type RacePatchResponseData,
 } from '@common/types/rest_api';
 import {
+  type RaceDetails,
   type RaceListing
 } from '@common/types/race';
+
+interface RaceSliceRaces {
+  races: RaceListing[];
+  loading: boolean;
+  error: string | null;
+}
 
 interface RaceSliceRace {
   selectedRace: RaceData | null;
@@ -32,17 +40,17 @@ interface RaceSliceSubmitNewRace {
 }
 
 export interface RaceState {
-  races: RaceListing[];
-  racesLoading: boolean;
-  racesLoadingError: string | null;
+  races: RaceSliceRaces;
   race: RaceSliceRace;
   submitNewRace: RaceSliceSubmitNewRace;
 }
 
 const initialState: RaceState = {
-  races: [],
-  racesLoading: false,
-  racesLoadingError: null,
+  races: {
+    races: [],
+    loading: false,
+    error: null,
+  },
   submitNewRace: {
     loading: false,
     error: null,
@@ -59,21 +67,21 @@ export const raceSlice = createSlice({
   initialState,
   reducers: {
     appendNewSubmittedRace: (state, action: PayloadAction<RaceListing>) => {
-      state.races = [...state.races, action.payload];
+      state.races.races = [...state.races.races, action.payload];
       state.submitNewRace = {
         loading: false,
         error: null,
       };
     },
     setRacesAfterSuccesfullGet: (state, action: PayloadAction<RaceListing[]>) => {
-      state.races = action.payload;
-      state.racesLoadingError = null;
+      state.races.races = action.payload;
+      state.races.error = null;
     },
     setRacesLoading: (state, action: PayloadAction<boolean>) => {
-      state.racesLoading = action.payload;
+      state.races.loading = action.payload;
     },
     setRacesLoadingError: (state, action: PayloadAction<string | null>) => {
-      state.racesLoadingError = action.payload;
+      state.races.error = action.payload;
     },
     setSubmitNewRaceLoading: (state, action: PayloadAction<boolean>) => {
       state.submitNewRace.loading = action.payload;
@@ -93,7 +101,7 @@ export const raceSlice = createSlice({
     },
     patchSelectedRace: (state, action: PayloadAction<RacePatchResponseData>) => {
       state.race.selectedRace = action.payload.raceData;
-      state.races = state.races.map(race =>
+      state.races.races = state.races.races.map(race =>
         race.id !== action.payload.raceListing.id
           ? race
           : action.payload.raceListing
@@ -101,9 +109,13 @@ export const raceSlice = createSlice({
     },
     removeRace: (state, action: PayloadAction<{ raceId: number }>) => {
       if (action.payload.raceId === state.race.selectedRace?.id) {
-        state.race.selectedRace = null;
+        state.race = {
+          selectedRace: null,
+          loading: false,
+          error: null,
+        };
       }
-      state.races = state.races.filter(race => race.id !== action.payload.raceId);
+      state.races.races = state.races.races.filter(race => race.id !== action.payload.raceId);
     },
   }
 });
@@ -121,18 +133,11 @@ const {
   removeRace,
 } = raceSlice.actions;
 
-export const SelectRaces = (state: RootState) => ({
-  races: state.race.races,
-  racesLoading: state.race.racesLoading,
-  racesLoadingError: state.race.racesLoadingError,
-});
+export const SelectRaces = (state: RootState): RaceSliceRaces => state.race.races;
 
-export const SelectSubmitNewRace = (state: RootState) => ({
-  loading: state.race.submitNewRace.loading,
-  error: state.race.submitNewRace.error,
-});
+export const SelectSubmitNewRace = (state: RootState): RaceSliceSubmitNewRace => state.race.submitNewRace;
 
-export const SelectRace = (state: RootState) => ({
+export const SelectRace = (state: RootState): ReplaceField<RaceSliceRace, 'selectedRace', RaceDetails | null> => ({
   ...state.race.race,
   selectedRace: state.race.race.selectedRace ? toRaceDetails(state.race.race.selectedRace) : null,
 });
