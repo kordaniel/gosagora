@@ -9,6 +9,7 @@ import axios, { AxiosError } from 'axios';
 import {
   AuthError,
   HttpError,
+  PermissionForbiddenError,
   ServerConflictError,
 } from '../errors/applicationError';
 import appConfig from '../utils/config';
@@ -143,13 +144,11 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
         //    => error.response.data.error = { message: string }
         throw new AuthError(`${error.response.statusText}: Please Sign In to perform this action`);
       }
-      /*
       case 403: {
         // "Permission denied"
         // Delete token & Go To Login Page if required.
-        break;
+        throw new PermissionForbiddenError();
       }
-      */
       case 404: {
         // TODO: Relay backend error 404 message to UI.
         throw new HttpError('Sorry, we couldn\'t find what you were looking for. Please try again');

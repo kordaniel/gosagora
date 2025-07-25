@@ -27,3 +27,18 @@ export const getTimeSpanInMsec = (
     + minutes * MSEC_IN_MIN
     + seconds * MSEC_IN_SEC;
 };
+
+/**
+ * Returns an integer in the half-open range [min, max[.
+ * @param min The minimimum possible value (inclusive). Default = 0
+ * @param max The maximum possible value (exclusive). Default = 2^31
+ * @returns The generated random integer value.
+ */
+export const generateRandomInteger = (
+  min: number = 0,
+  max: number = 2_147_483_648
+): number => {
+  const minN = Math.ceil(min);
+  const maxN = Math.floor(max);
+  return Math.floor(Math.random() * (maxN - minN) + minN);
+};

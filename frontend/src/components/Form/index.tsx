@@ -5,6 +5,7 @@ import {
   Formik,
   type FormikHelpers,
   type FormikProps,
+  type FormikSharedConfig,
   type FormikValues,
 } from 'formik';
 import {
@@ -29,42 +30,43 @@ import type {
 import {
   assertNever,
   isDateRange,
+  isString,
 } from '../../utils/typeguards';
 import { FormInputType } from './enums';
 
 
-interface FormFieldBase {
+interface FormFieldBase<T extends FormInputType> {
+  inputType: T;
   label?: string;
 }
 
-interface FormFieldCheckbox extends FormFieldBase {
-  inputType: FormInputType.Checkbox
+interface FormFieldCheckbox extends FormFieldBase<FormInputType.Checkbox> {
   initialValue?: boolean;
   checkboxText: string;
   props?: RNPCheckboxProps;
 }
 
-interface FormFieldInputDatePicker extends WithRequiredFields<FormFieldBase, 'label'> {
-  inputType: FormInputType.InputDatePicker;
+interface FormFieldInputDatePicker extends WithRequiredFields<
+  FormFieldBase<FormInputType.InputDatePicker>, 'label'
+> {
   initialValue: Date | undefined;
   props?: DatePickerInputProps;
 }
 
-interface FormFieldRangeDatePicker extends FormFieldBase {
-  inputType: FormInputType.RangeDatePicker;
+interface FormFieldRangeDatePicker extends FormFieldBase<FormInputType.RangeDatePicker> {
   initialValue?: DateRange;
   datePickerModalOpenerLabel?: string;
   props?: DatePickerModalProps;
 }
 
-interface FormFieldSelectDropdown extends FormFieldBase {
-  inputType: FormInputType.SelectDropdown;
+interface FormFieldSelectDropdown extends FormFieldBase<FormInputType.SelectDropdown> { // default
+  initialValue?: string;
   placeholder: string;
   options: Array<{ label: string; value: string; }>;
 }
 
-interface FormFieldTextField extends FormFieldBase {
-  inputType: FormInputType.TextField;
+interface FormFieldTextField extends FormFieldBase<FormInputType.TextField> {
+  initialValue?: string;
   placeholder: string;
   props?: TextInputProps;
 }
@@ -86,6 +88,7 @@ export interface FormProps<T> {
   submitLabel: string;
   validationSchema: Yup.Schema<T>;
   clearFieldsAfterSubmit?: boolean;
+  enableReinitialize?: FormikSharedConfig['enableReinitialize'];
 }
 
 type FormikValuesType = {
@@ -97,7 +100,8 @@ const Form = <FormValuesType extends FormikValuesType, >({
   onSubmit,
   submitLabel,
   validationSchema,
-  clearFieldsAfterSubmit = true
+  clearFieldsAfterSubmit = true,
+  enableReinitialize = false
 }: FormProps<FormValuesType>) => {
   const theme = useTheme<AppTheme>();
   const formikRef = useRef<FormikProps<FormValuesType>>(null);
@@ -122,7 +126,8 @@ const Form = <FormValuesType extends FormikValuesType, >({
   const initialValues: FormValuesType = Object
     .entries(formFields)
     .reduce((acc, field) => {
-      switch (field[1].inputType) {
+      const inputType = field[1].inputType;
+      switch (inputType) {
         case FormInputType.Checkbox:
           if (('initialValue' in field[1]) && typeof field[1].initialValue === 'boolean') {
             Object.assign(acc, { [field[0]]: field[1].initialValue });
@@ -140,8 +145,22 @@ const Form = <FormValuesType extends FormikValuesType, >({
             Object.assign(acc, { [field[0]]: { startDate: undefined, endDate: undefined } });
           }
           break;
+        case FormInputType.SelectDropdown:
+          if ('initialValue' in field[1] && isString(field[1].initialValue)) {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: '' });
+          }
+          break;
+        case FormInputType.TextField:
+          if ('initialValue' in field[1] && isString(field[1].initialValue)) {
+            Object.assign(acc, { [field[0]]: field[1].initialValue });
+          } else {
+            Object.assign(acc, { [field[0]]: '' });
+          }
+          break;
         default:
-          Object.assign(acc, { [field[0]]: '' });
+          assertNever(inputType);
       }
       return acc;
     }, {}) as FormValuesType;
@@ -152,6 +171,7 @@ const Form = <FormValuesType extends FormikValuesType, >({
       innerRef={formikRef}
       onSubmit={handleOnSubmit}
       validationSchema={validationSchema}
+      enableReinitialize={enableReinitialize}
     >
       {({ handleSubmit, isValid, isSubmitting }) => {
         return (
