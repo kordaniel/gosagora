@@ -7,7 +7,7 @@ import {
 import { Race, User } from '../models';
 import { type NewRaceAttributes } from '../types';
 
-import type { RaceData } from '@common/types/rest_api';
+import type { RaceData, RacePatchResponseData } from '@common/types/rest_api';
 import type { RaceListing } from '@common/types/race';
 
 const raceDataQueryOpts: FindOptions = {
@@ -105,9 +105,34 @@ const getOne = async (id: number): Promise<RaceData> => {
   return toRaceData(race);
 };
 
+const updateRace = async (
+  userId: User['id'],
+  raceId: number,
+  updatedFields: Partial<NewRaceAttributes>
+): Promise<RacePatchResponseData> => {
+  const race = await Race.findByPk(raceId);
+
+  if (!race) {
+    throw new NotFoundError(`Race with ID ${raceId} not found`);
+  }
+  if (race.userId !== userId) {
+    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to update this race');
+  }
+
+  race.set(updatedFields);
+  await race.save();
+  await race.reload(raceDataQueryOpts);
+
+  return {
+    raceData: toRaceData(race),
+    raceListing: toRaceListing(race),
+  };
+};
+
 export default {
   createNewRace,
   deleteOne,
   getAll,
   getOne,
+  updateRace,
 };

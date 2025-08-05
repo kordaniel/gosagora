@@ -5,11 +5,11 @@ import express, {
 
 import { APIRequestError, ServiceError } from '../errors/applicationError';
 import type { NewRaceAttributes, RequestUserExtended } from '../types';
+import { newRaceParser, updateRaceParser } from './parsers/raceParsers';
 import middleware from '../utils/middleware';
-import { newRaceParser } from './parsers/raceParsers';
 import raceService from '../services/raceService';
 
-import type { APIRaceRequest, RaceData } from '@common/types/rest_api';
+import type { APIRaceRequest, RaceData, RacePatchResponseData } from '@common/types/rest_api';
 import type { RaceListing } from '@common/types/race';
 
 const router = express.Router();
@@ -39,11 +39,10 @@ router.get('/', async (_req: Request, res: Response<RaceListing[]>) => {
 router.get('/:id', async (req: Request, res: Response<RaceData>) => {
   const raceId = parseInt(req.params.id, 10);
   if (isNaN(raceId) || raceId === 0) {
-    throw new APIRequestError(); // TODO: Add message
+    throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
 
   const race = await raceService.getOne(raceId);
-
   res.json(race);
 });
 
@@ -61,6 +60,27 @@ router.delete('/:id', middleware.userExtractor, async (
   if (req.user) {
     await raceService.deleteOne(req.user.id, raceId);
     res.status(204).end();
+  } else {
+    throw new ServiceError(); // TODO: remove when typing is fixed
+  }
+});
+
+router.patch('/:id', [middleware.userExtractor, updateRaceParser], async (
+  req: RequestUserExtended<unknown, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
+  res: Response<RacePatchResponseData>
+) => {
+  const raceId = parseInt(req.params.id, 10);
+  if (isNaN(raceId) || raceId === 0) {
+    throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
+  }
+
+  if (req.user) {
+    const updatedRace = await raceService.updateRace(
+      req.user.id,
+      raceId,
+      req.body.data
+    );
+    res.status(200).json(updatedRace);
   } else {
     throw new ServiceError(); // TODO: remove when typing is fixed
   }
