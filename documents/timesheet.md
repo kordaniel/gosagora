@@ -83,4 +83,5 @@
 | 2025.07.12 | 2   | FRONTEND: Add PermissionForbiddenError, confirmation dialog, deletion of selected race |
 | 2025.07.21 | 1   | FRONTEND: Add enableReinitialize prop to Form component, manage race editor form state when updating race details |
 | 2025.07.23 | 0   | FRONTEND: Add ReplaceField utility type, refactor store raceSlice |
-| Total | 127 | |
+| 2025.08.05 | 7   | BACKEND: Implement race patch endpoind with tests, fix minor bugs related to race functionality and testing. |
+| Total | 134 | |

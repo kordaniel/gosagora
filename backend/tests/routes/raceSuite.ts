@@ -4,6 +4,7 @@ import { type UserCredential } from 'firebase/auth';
 import {
   generateRandomInteger,
   generateRandomString,
+  getTimeSpanInMsec,
   shuffleString,
 } from '../testUtils/testHelpers';
 import raceUtils from '../testUtils/raceUtils';
@@ -766,9 +767,9 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
         });
 
-        test('if registrationOpenDate is a date later than registrationCloseDate', async () => {
+        test('if registrationOpenDate is a date later than dateFrom', async () => {
           const raceData = raceUtils.getRaceCreationArgumentsObject();
-          raceData.registrationOpenDate = new Date(new Date(raceData.registrationCloseDate).getTime() + 1).toISOString();
+          raceData.registrationOpenDate = new Date(new Date(raceData.dateFrom).getTime() + 1).toISOString();
           const user = await userUtils.createSignedInUser();
           const idToken = await user.credentials.user.getIdToken();
           const initialRaceCount = await testDatabase.raceCount();
@@ -788,8 +789,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
 
           expect(res.body).toHaveProperty('error');
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          expect(res.body.error).toHaveProperty('data.registrationCloseDate._errors', [
-            'Registration close date cannot be before registration open date'
+          expect(res.body.error).toHaveProperty('data.registrationOpenDate._errors', [
+            'Registration open date cannot be after race starting date'
           ]);
 
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
@@ -1053,6 +1054,89 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
 
     }); // Listing races
 
+    describe('Fetching single race', () => {
+
+      test('succeeds when fetching by id', async () => {
+        if (!racesInDb) {
+          throw new Error('Internal test error: No races in DB');
+        }
+
+        const fromUtcStrToISOStr = (utcDateStr: string): string => {
+          const [year, month, date] = utcDateStr.split('-').map(Number);
+          return new Date(Date.UTC(year, month - 1, date)).toISOString();
+        };
+
+        const selectedRace = racesInDb[1];
+
+        const expected = {
+          id: selectedRace.race.id,
+          public: selectedRace.race.public,
+          name: selectedRace.race.name,
+          type: selectedRace.race.type,
+          url: selectedRace.race.url,
+          email: selectedRace.race.email,
+          description: selectedRace.race.description,
+          dateFrom: fromUtcStrToISOStr(selectedRace.race.dateFrom as unknown as string),
+          dateTo: fromUtcStrToISOStr(selectedRace.race.dateTo as unknown as string),
+          registrationOpenDate: selectedRace.race.registrationOpenDate.toISOString(),
+          registrationCloseDate: selectedRace.race.registrationCloseDate.toISOString(),
+          user: {
+            id: selectedRace.user.id,
+            displayName: selectedRace.user.displayName,
+          },
+        };
+
+        const res = await api
+          .get(`${baseUrl}/${selectedRace.race.id}`)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual(expected);
+      });
+
+      test('fails with status 404 for non existing ID', async () => {
+        let nonExistingRaceId: number = generateRandomInteger();
+        while ((await testDatabase.getRaceByPk(nonExistingRaceId)) !== null) {
+          nonExistingRaceId = generateRandomInteger();
+        }
+
+        const res = await api
+          .get(`${baseUrl}/${nonExistingRaceId}`)
+          .expect(404)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toStrictEqual({
+          status: 404,
+          error: {
+            message: `Race with ID ${nonExistingRaceId} not found`,
+          },
+        });
+      });
+
+      test('fails with status 400 for malformed ID', async () => {
+        if (!racesInDb) {
+          throw new Error('Internal test error: No races in DB');
+        }
+
+        const selectedRace = racesInDb[1];
+        const malformedId = `a${selectedRace.race.id}`;
+
+        const res = await api
+          .get(`${baseUrl}/${malformedId}`)
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual({
+          status: 400,
+          error: {
+            message: `Invalid ID for race: '${malformedId}'`
+          }
+        });
+      });
+
+    }); // Fetching single race
+
     describe('Deleting races', () => {
       let raceToBeDeleted: {
         race: Race;
@@ -1097,7 +1181,10 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
           const initialRaceCount = await testDatabase.raceCount();
 
-          expect(raceInDbInitial?.deletedAt).toBeNull();
+          if (raceInDbInitial === null) {
+            throw new Error('Internal test error: raceInDbInitial should not be null');
+          }
+          expect(raceInDbInitial.deletedAt).toBeNull();
 
           const res = await api
             .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
@@ -1123,7 +1210,10 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
           const initialRaceCount = await testDatabase.raceCount();
 
-          expect(raceInDbInitial?.deletedAt).toBeNull();
+          if (raceInDbInitial === null) {
+            throw new Error('Internal test error: raceInDbInitial should not be null');
+          }
+          expect(raceInDbInitial.deletedAt).toBeNull();
 
           const res = await api
             .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
@@ -1139,7 +1229,10 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(res.body.error).toHaveProperty('message', 'Unauthorized');
 
           const raceInDbFinal = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, false);
-          expect(raceInDbFinal?.deletedAt).toBeNull();
+          if (raceInDbFinal === null) {
+            throw new Error('Internal test error: raceInDbFinal should not be null');
+          }
+          expect(raceInDbFinal.deletedAt).toBeNull();
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
         });
 
@@ -1153,7 +1246,10 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           const raceInDbInitial = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, true);
           const initialRaceCount = await testDatabase.raceCount();
 
-          expect(raceInDbInitial?.deletedAt).toBeNull();
+          if (raceInDbInitial === null) {
+            throw new Error('Internal test error: raceInDbInitial should not be null');
+          }
+          expect(raceInDbInitial.deletedAt).toBeNull();
 
           const res = await api
             .delete(`${baseUrl}/${raceToBeDeleted.race.id}`)
@@ -1172,7 +1268,11 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           );
 
           const raceInDbFinal = await testDatabase.getRaceByPk(raceToBeDeleted.race.id, false);
-          expect(raceInDbFinal?.deletedAt).toBeNull();
+
+          if (raceInDbFinal === null) {
+            throw new Error('Internal test error: raceInDbFinal should not be null');
+          }
+          expect(raceInDbFinal.deletedAt).toBeNull();
           expect(await testDatabase.raceCount()).toEqual(initialRaceCount);
         });
 
@@ -1206,6 +1306,617 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
       }); // Fails
 
     }); // Deleting races
+
+    describe('Updating races', () => {
+
+      let raceToBeUpdated: {
+        race: Race;
+        user: User;
+        userCredentials: UserCredential;
+      } | undefined = undefined;
+
+      beforeEach(async () => {
+        raceToBeUpdated = await raceUtils.createRace();
+      });
+
+      describe('Succeeds', () => {
+
+        describe('when authorized user', () => {
+
+          test('updates her own race name', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceName = 'Updated racE';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  name: updatedRaceName,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            const expectedUserResponse = {
+              id: raceToBeUpdated.user.id,
+              displayName: raceToBeUpdated.user.displayName,
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { name: originalName, ...originalRace } = raceToBeUpdated.race.toJSON();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const { raceData, raceListing } = res.body;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+            expect(new Date(raceListing.updatedAt) > new Date(raceToBeUpdated.race.updatedAt)).toBe(true);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            delete raceListing.updatedAt;
+
+            const fromUtcStrToISOStr = (utcDateStr: string): string => {
+              // TODO: Refactor away into utils module !!!!!!!!!!
+              const [year, month, date] = utcDateStr.split('-').map(Number);
+              return new Date(Date.UTC(year, month - 1, date)).toISOString();
+            };
+            expect(raceListing).toStrictEqual({
+              id: raceToBeUpdated.race.id,
+              name: updatedRaceName,
+              type: raceToBeUpdated.race.type,
+              description: raceToBeUpdated.race.description,
+              user: expectedUserResponse,
+              createdAt: raceToBeUpdated.race.createdAt.toISOString(),
+            });
+            expect(raceData).toStrictEqual({
+              id: raceToBeUpdated.race.id,
+              public: raceToBeUpdated.race.public,
+              name: updatedRaceName,
+              type: raceToBeUpdated.race.type,
+              url: raceToBeUpdated.race.url,
+              email: raceToBeUpdated.race.email,
+              description: raceToBeUpdated.race.description,
+              dateFrom: fromUtcStrToISOStr(raceToBeUpdated.race.dateFrom.toString()),
+              dateTo: fromUtcStrToISOStr(raceToBeUpdated.race.dateTo.toString()),
+              registrationOpenDate: raceToBeUpdated.race.registrationOpenDate.toISOString(),
+              registrationCloseDate: raceToBeUpdated.race.registrationCloseDate.toISOString(),
+              user: expectedUserResponse,
+            });
+          });
+
+          // TODO: Add tests when new race types are implemented
+          //test('updates her own race type', async () => {});
+
+          test('updates her own race public status', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  public: !raceToBeUpdated.race.public,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.public).toBe(!raceToBeUpdated.race.public);
+          });
+
+          test('updates her own race url with a proper url', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceUrl = 'https://www.gosagora.race.com';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  url: updatedRaceUrl,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.url).toBe(updatedRaceUrl);
+          });
+
+          test('updates her own race url to be null', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            expect(raceToBeUpdated.race.url).not.toBeNull();
+
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  url: null,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.url).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.url).toBeNull();
+          });
+
+          test('updates her own race email with a proper email', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceEmail = 'testers.updated@gosagora.email.com';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  email: updatedRaceEmail,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.email).toBe(updatedRaceEmail);
+          });
+
+          test('updates her own race email to be null', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            expect(raceToBeUpdated.race.email).not.toBeNull();
+
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  email: null,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.email).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.email).toBeNull();
+          });
+
+          test('updates her own race description', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  description: updatedRaceDescription,
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.description).toBe(updatedRaceDescription);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing.description).toBe(updatedRaceDescription);
+          });
+
+          test('updates her own race dateFrom and dateTo', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceDateFrom = new Date(new Date(raceToBeUpdated.race.dateFrom).getTime() + getTimeSpanInMsec(1));
+            const updatedRaceDateTo = new Date(new Date(raceToBeUpdated.race.dateTo).getTime() + getTimeSpanInMsec(1));
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  dateFrom: updatedRaceDateFrom.toISOString(),
+                  dateTo: updatedRaceDateTo.toISOString(),
+                  registrationOpenDate:  raceToBeUpdated.race.registrationOpenDate.toISOString(),
+                  registrationCloseDate: raceToBeUpdated.race.registrationCloseDate.toISOString(),
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.dateFrom).toBe(updatedRaceDateFrom.toISOString());
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.dateTo).toBe(updatedRaceDateTo.toISOString());
+          });
+
+          test('updates her own race registrationOpenDate and registrationCloseDate', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRegistrationOpenDate = new Date(raceToBeUpdated.race.registrationOpenDate.getTime() + getTimeSpanInMsec(0, -1));
+            const updatedRegistrationCloseDate = new Date(raceToBeUpdated.race.registrationCloseDate.getTime() + getTimeSpanInMsec(0, 1));
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  dateFrom: new Date(raceToBeUpdated.race.dateFrom).toISOString(),
+                  dateTo: new Date(raceToBeUpdated.race.dateTo).toISOString(),
+                  registrationOpenDate: updatedRegistrationOpenDate.toISOString(),
+                  registrationCloseDate: updatedRegistrationCloseDate.toISOString(),
+                },
+              })
+              .expect(200)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListing).toBeDefined();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.registrationOpenDate).toBe(updatedRegistrationOpenDate.toISOString());
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceData.registrationCloseDate).toBe(updatedRegistrationCloseDate.toISOString());
+          });
+
+        }); // when authorized user
+
+      }); // Succeeds
+
+      describe('Fails', () => {
+
+        describe('when authorized user', () => {
+
+          test('patch request type is not update', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'patch',
+                data: {
+                  description: updatedRaceDescription,
+                },
+              })
+              .expect(400)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.data).toBeUndefined();
+
+            expect(res.body).toHaveProperty('error');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.error).toHaveProperty('type._errors', [
+              'Invalid literal value, expected "update"'
+            ]);
+
+            const raceFromDB = await testDatabase.getRaceByPk(raceToBeUpdated.race.id);
+            expect(raceFromDB?.description).toBe(raceToBeUpdated.race.description);
+          });
+
+          test('patch request contains no data object', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+              })
+              .expect(400)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.data).toBeUndefined();
+
+            expect(res.body).toHaveProperty('error');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.error).toHaveProperty('data._errors', ['Required']);
+          });
+
+          test('patch request data is empty object', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: { },
+              })
+              .expect(400)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.data).toBeUndefined();
+
+            expect(res.body).toHaveProperty('error');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.error).toHaveProperty('data._errors', [
+              'Patch request data object must contain data'
+            ]);
+          });
+
+          test('patch request data object contains unrecognized data', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  description: updatedRaceDescription,
+                  invalidExtraField: true,
+                },
+              })
+              .expect(400)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.data).toBeUndefined();
+
+            expect(res.body).toHaveProperty('error');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.error).toHaveProperty('data._errors', [
+              'Unrecognized key(s) in object: \'invalidExtraField\''
+            ]);
+
+            const raceFromDB = await testDatabase.getRaceByPk(raceToBeUpdated.race.id);
+            expect(raceFromDB?.description).toBe(raceToBeUpdated.race.description);
+          });
+
+          test('patch request data object contains only a single timestamp', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRegistrationOpenDate = new Date(raceToBeUpdated.race.registrationOpenDate.getTime() + getTimeSpanInMsec(0, -1));
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  registrationOpenDate: updatedRegistrationOpenDate.toISOString(),
+                },
+              })
+              .expect(400)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.data).toBeUndefined();
+
+            expect(res.body).toHaveProperty('error');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.error).toHaveProperty('data._errors', [
+              'Invalid datetime fields: either provide all or none'
+            ]);
+
+            const raceFromDB = await testDatabase.getRaceByPk(raceToBeUpdated.race.id);
+            expect(raceFromDB?.registrationOpenDate).toEqual(raceToBeUpdated.race.registrationOpenDate);
+          });
+
+          test('attempts to update a non existing race, returns 404', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+            let nonExistingRaceId: number = generateRandomInteger();
+            while ((await testDatabase.getRaceByPk(nonExistingRaceId)) !== null) {
+              nonExistingRaceId = generateRandomInteger();
+            }
+
+            const res = await api
+              .patch(`${baseUrl}/${nonExistingRaceId}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  description: updatedRaceDescription,
+                },
+              })
+              .expect(404)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            expect(res.body).toStrictEqual({
+              status: 404,
+              error: {
+                message: `Race with ID ${nonExistingRaceId} not found`
+              }
+            });
+          });
+
+          test('attempts to update another users race, returns 403', async () => {
+            if (!raceToBeUpdated) {
+              throw new Error('Internal test error: No race to be updated in DB');
+            }
+
+            const anotherUsersRace = await testDatabase.getRaceWhereUserIdIsNot(raceToBeUpdated.user.id);
+            if (anotherUsersRace === null) {
+              throw new Error('Internal test error: No another users race to be updated in DB');
+            }
+
+            const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+            const idToken = await raceToBeUpdated.userCredentials.user.getIdToken();
+
+            const res = await api
+              .patch(`${baseUrl}/${anotherUsersRace.id}`)
+              .set('Authorization', `Bearer ${idToken}`)
+              .send({
+                type: 'update',
+                data: {
+                  description: updatedRaceDescription,
+                },
+              })
+              .expect(403)
+              .expect('Content-Type', /application\/json/);
+
+            expect(res.body).toBeDefined();
+            expect(res.body).toStrictEqual({
+              status: 403,
+              error: {
+                message: 'Forbidden: You dont have the required credentials to update this race'
+              },
+            });
+          });
+
+        }); // when authorized user
+
+        test('with status 401 when not authorized user attempts to update an existing race', async () => {
+          if (!raceToBeUpdated) {
+            throw new Error('Internal test error: No race to be updated in DB');
+          }
+
+          const updatedRaceDescription = 'This is a short and prompt description of the updated race';
+
+          const res = await api
+            .patch(`${baseUrl}/${raceToBeUpdated.race.id}`)
+            .send({
+              type: 'update',
+              data: {
+                description: updatedRaceDescription,
+              },
+            })
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.data).toBeUndefined();
+
+          expect(res.body).toHaveProperty('error');
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.error).toHaveProperty('message', 'Unauthorized');
+        });
+
+      }); // Fails
+
+    }); // Updating races
 
   }); // When races exist
 
