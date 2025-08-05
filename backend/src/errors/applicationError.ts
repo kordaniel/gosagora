@@ -77,9 +77,13 @@ export class APIRequestError extends ApplicationError {
   }
 
   override toJSONObj() {
-    return !this.errorObj ? super.toJSONObj() : {
-      ...super.toJSONObj(),
-      error: this.errorObj,
+    const baseJson = super.toJSONObj();
+    return !this.errorObj ? baseJson : {
+      ...baseJson,
+      error: {
+        ...baseJson.error,
+        ...this.errorObj
+      },
     };
   }
 
