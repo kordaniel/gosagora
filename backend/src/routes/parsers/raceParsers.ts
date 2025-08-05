@@ -11,6 +11,7 @@ import {
 } from '../../utils/zodHelpers';
 import { APIRequestError } from '../../errors/applicationError';
 import { NewRaceAttributes } from '../../types';
+import { RACE_CONSTANTS } from '../../constants';
 import { isEmptyObject } from '../../utils/typeguards';
 
 import type { APIRaceRequest } from '@common/types/rest_api';
@@ -21,12 +22,12 @@ const NewRaceSchema = matchingZodSchema<APIRaceRequest<'create', NewRaceAttribut
   z.object({
     type: z.literal('create'),
     data: z.object({
-      name: z.string().trim().min(4).max(128),
+      name: z.string().trim().min(RACE_CONSTANTS.NAME_LEN.MIN).max(RACE_CONSTANTS.NAME_LEN.MAX),
       type: z.nativeEnum(RaceType),
       public: z.optional(z.boolean()),
-      url: z.nullable(z.string().trim().toLowerCase().min(8).max(256)),
-      email: z.nullable(z.string().trim().toLowerCase().min(8).max(256).email()),
-      description: z.string().trim().min(4).max(2000),
+      url: z.nullable(z.string().trim().toLowerCase().min(RACE_CONSTANTS.URL_LEN.MIN).max(RACE_CONSTANTS.URL_LEN.MAX)),
+      email: z.nullable(z.string().trim().toLowerCase().min(RACE_CONSTANTS.EMAIL_LEN.MIN).max(RACE_CONSTANTS.EMAIL_LEN.MAX).email()),
+      description: z.string().trim().min(RACE_CONSTANTS.DESCRIPTION_LEN.MIN).max(RACE_CONSTANTS.DESCRIPTION_LEN.MAX),
       dateFrom: zStringToDateSchema({ min: getDateUTCDateOnlyOffsetDaysFromNow(-1), }, {
         min: 'Starting date can not be in the past',
       }),
@@ -57,12 +58,12 @@ const UpdateRaceSchema = matchingZodSchema<APIRaceRequest<'update', Partial<NewR
   z.object({
     type: z.literal('update'),
     data: z.object({
-      name: z.optional(z.string().trim().min(4).max(128)),
+      name: z.optional(z.string().trim().min(RACE_CONSTANTS.NAME_LEN.MIN).max(RACE_CONSTANTS.NAME_LEN.MAX)),
       type: z.optional(z.nativeEnum(RaceType)),
       public: z.optional(z.boolean()),
-      url: z.optional(z.nullable(z.string().trim().toLowerCase().min(8).max(256))),
-      email: z.optional(z.nullable(z.string().trim().toLowerCase().min(8).max(256).email())),
-      description: z.optional(z.string().trim().min(4).max(2000)),
+      url: z.optional(z.nullable(z.string().trim().toLowerCase().min(RACE_CONSTANTS.URL_LEN.MIN).max(RACE_CONSTANTS.URL_LEN.MAX))),
+      email: z.optional(z.nullable(z.string().trim().toLowerCase().min(RACE_CONSTANTS.EMAIL_LEN.MIN).max(RACE_CONSTANTS.EMAIL_LEN.MAX).email())),
+      description: z.optional(z.string().trim().min(RACE_CONSTANTS.DESCRIPTION_LEN.MIN).max(RACE_CONSTANTS.DESCRIPTION_LEN.MAX)),
       dateFrom: z.optional(zStringToDateSchema({ min: getDateUTCDateOnlyOffsetDaysFromNow(-1), }, {
         min: 'Starting date can not be in the past',
       })),
