@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
 import { APIRequestError } from '../../errors/applicationError';
+import { USER_CONSTANTS } from '../../constants';
 import { matchingZodSchema } from '../../utils/zodHelpers';
 
 import type {
@@ -15,9 +16,9 @@ const SignUpUserSchema = matchingZodSchema<APIAuthRequest<'signup', SignUpArgume
   z.object({
     type: z.literal('signup'),
     data: z.object({
-      email: z.string().trim().toLowerCase().min(8).max(256).email(),
-      password: z.string().trim().min(8).max(30),
-      displayName: z.string().trim().min(4).max(64),
+      email: z.string().trim().toLowerCase().min(USER_CONSTANTS.EMAIL_LEN.MIN).max(USER_CONSTANTS.EMAIL_LEN.MAX).email(),
+      password: z.string().trim().min(USER_CONSTANTS.PASSWORD_LEN.MIN).max(USER_CONSTANTS.PASSWORD_LEN.MAX),
+      displayName: z.string().trim().min(USER_CONSTANTS.DISPLAY_NAME_LEN.MIN).max(USER_CONSTANTS.DISPLAY_NAME_LEN.MAX),
     }).strict(),
   }).strict() // strict => throws when parsing if object contains additional fields
 );
@@ -26,7 +27,7 @@ const SignInUserSchema = matchingZodSchema<APIAuthRequest<'login', SignInArgumen
   z.object({
     type: z.literal('login'),
     data: z.object({
-      email: z.string().trim().toLowerCase().min(8).max(256).email(),
+      email: z.string().trim().toLowerCase().min(USER_CONSTANTS.EMAIL_LEN.MIN).max(USER_CONSTANTS.EMAIL_LEN.MAX).email(),
       firebaseUid: z.string().trim(),
       firebaseIdToken: z.string().trim(),
     }).strict(),

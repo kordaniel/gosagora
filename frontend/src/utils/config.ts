@@ -21,8 +21,14 @@ const envSchema = Yup.object({
 });
 
 const parsedEnv: Yup.InferType<typeof envSchema> = (() => {
+  const envValues = Constants.expoConfig?.extra ?? {
+    ENV: 'test',
+    BACKEND_BASE_URL: 'http://not.set.url.org:99999',
+    FIREBASE_AUTH_EMULATOR_HOST: 'http://not.set.url.org:99999'
+  };
+
   try {
-    return envSchema.validateSync(Constants.expoConfig?.extra, {
+    return envSchema.validateSync(envValues, {
       stripUnknown: true,
     });
   } catch (error: unknown) {

@@ -1,3 +1,10 @@
+export const isEmptyObject = (param: unknown): param is Record<never, never> => {
+  if (param === null || param === undefined) {
+    return false;
+  }
+  return typeof param === 'object' && !Array.isArray(param) && Object.keys(param).length === 0;
+};
+
 export const isNumber = (param: unknown): param is number => {
   return typeof param === 'number';
 };

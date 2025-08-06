@@ -4,59 +4,121 @@ import {
 } from '@reduxjs/toolkit';
 
 import type { AppAsyncThunk, RootState } from '../index';
-import type { DateRange, NonNullableFields } from '../../types';
+import {
+  type NewRaceValuesType,
+  toRaceDetails,
+  toRaceListing,
+} from '../../models/race';
+import { ApplicationError } from '../../errors/applicationError';
+import { type ReplaceField } from '../../types';
 import raceService from '../../services/raceService';
+import { raceValuesToRaceArguments } from '../../schemas/race';
 
-import type { CreateRaceArguments } from '@common/types/rest_api';
-import type { RaceListing } from '@common/types/race';
+import {
+  type RaceData,
+  type RaceListingData,
+  type RacePatchResponseData,
+} from '@common/types/rest_api';
+import {
+  type RaceDetails,
+  type RaceListing,
+} from '@common/types/race';
 
-export type NewRaceValuesType = NonNullableFields<Omit<CreateRaceArguments,
-  'public' | 'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
->> & {
-  startEndDateRange: DateRange;
-  registrationStartEndDateRange: DateRange;
-};
+interface RaceSliceRaces {
+  races: RaceListingData[];
+  loading: boolean;
+  error: string | null;
+}
+
+interface RaceSliceRace {
+  selectedRace: RaceData | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface RaceSliceSubmitNewRace {
+  loading: boolean;
+  error: string | null;
+}
 
 export interface RaceState {
-  races: RaceListing[];
-  racesLoading: boolean;
-  racesLoadingError: string | null;
-  submittingNewRaceLoading: boolean;
-  submittingNewRaceError: string | null;
+  races: RaceSliceRaces;
+  race: RaceSliceRace;
+  submitNewRace: RaceSliceSubmitNewRace;
 }
 
 const initialState: RaceState = {
-  races: [],
-  racesLoading: false,
-  racesLoadingError: null,
-  submittingNewRaceLoading: false,
-  submittingNewRaceError: null,
+  races: {
+    races: [],
+    loading: false,
+    error: null,
+  },
+  submitNewRace: {
+    loading: false,
+    error: null,
+  },
+  race: {
+    selectedRace: null,
+    loading: false,
+    error: null,
+  },
 };
 
 export const raceSlice = createSlice({
   name: 'race',
   initialState,
   reducers: {
-    appendNewSubmittedRace: (state, action: PayloadAction<RaceListing>) => {
-      state.races = [...state.races, action.payload];
-      state.submittingNewRaceError = null;
+    appendNewSubmittedRace: (state, action: PayloadAction<RaceListingData>) => {
+      state.races.races = [...state.races.races, action.payload];
+      state.submitNewRace = {
+        loading: false,
+        error: null,
+      };
     },
-    setRacesAfterSuccesfullGet: (state, action: PayloadAction<RaceListing[]>) => {
-      state.races = action.payload;
-      state.racesLoadingError = null;
+    setRacesAfterSuccesfullGet: (state, action: PayloadAction<RaceListingData[]>) => {
+      state.races.races = action.payload;
+      state.races.error = null;
     },
     setRacesLoading: (state, action: PayloadAction<boolean>) => {
-      state.racesLoading = action.payload;
+      state.races.loading = action.payload;
     },
     setRacesLoadingError: (state, action: PayloadAction<string | null>) => {
-      state.racesLoadingError = action.payload;
+      state.races.error = action.payload;
     },
-    setSubmittingNewRaceLoading: (state, action: PayloadAction<boolean>) => {
-      state.submittingNewRaceLoading = action.payload;
+    setSubmitNewRaceLoading: (state, action: PayloadAction<boolean>) => {
+      state.submitNewRace.loading = action.payload;
     },
-    setSubmittingNewRaceError: (state, action: PayloadAction<string | null>) => {
-      state.submittingNewRaceError = action.payload;
-    }
+    setSubmitNewRaceError: (state, action: PayloadAction<string | null>) => {
+      state.submitNewRace.error = action.payload;
+    },
+    setRace: (state, action: PayloadAction<RaceSliceRace>) => {
+      state.race = action.payload;
+    },
+    setRaceFetching: (state) => {
+      state.race = {
+        selectedRace: null,
+        loading: true,
+        error: null,
+      };
+    },
+    patchSelectedRace: (state, action: PayloadAction<RacePatchResponseData>) => {
+      state.race.selectedRace = action.payload.raceData;
+      state.races.races = state.races.races.map(race =>
+        race.id !== action.payload.raceListingData.id
+          ? race
+          : action.payload.raceListingData
+      );
+    },
+    removeRace: (state, action: PayloadAction<{ raceId: number }>) => {
+      if (action.payload.raceId === state.race.selectedRace?.id) {
+        state.race = {
+          selectedRace: null,
+          loading: false,
+          error: null,
+        };
+      }
+      state.races.races = state.races.races.filter(race => race.id !== action.payload.raceId);
+    },
   }
 });
 
@@ -65,19 +127,24 @@ const {
   setRacesAfterSuccesfullGet,
   setRacesLoading,
   setRacesLoadingError,
-  setSubmittingNewRaceLoading,
-  setSubmittingNewRaceError,
+  setSubmitNewRaceLoading,
+  setSubmitNewRaceError,
+  setRace,
+  setRaceFetching,
+  patchSelectedRace,
+  removeRace,
 } = raceSlice.actions;
 
-export const SelectRaces = (state: RootState) => ({
-  races: state.race.races,
-  racesLoading: state.race.racesLoading,
-  racesLoadingError: state.race.racesLoadingError,
+export const SelectRaces = (state: RootState): ReplaceField<RaceSliceRaces, 'races', RaceListing[]> => ({
+  ...state.race.races,
+  races: state.race.races.races.map(toRaceListing),
 });
 
-export const SelectSubmittingNewRace = (state: RootState) => ({
-  setSubmittingNewRaceLoading: state.race.submittingNewRaceLoading,
-  submittingNewRaceError: state.race.submittingNewRaceError,
+export const SelectSubmitNewRace = (state: RootState): RaceSliceSubmitNewRace => state.race.submitNewRace;
+
+export const SelectRace = (state: RootState): ReplaceField<RaceSliceRace, 'selectedRace', RaceDetails | null> => ({
+  ...state.race.race,
+  selectedRace: state.race.race.selectedRace ? toRaceDetails(state.race.race.selectedRace) : null,
 });
 
 export const initializeRaces = (): AppAsyncThunk => {
@@ -100,36 +167,95 @@ export const initializeRaces = (): AppAsyncThunk => {
   };
 };
 
-export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<boolean> => {
+export const submitNewRace = (values: NewRaceValuesType): AppAsyncThunk<number | null> => {
   return async (dispatch) => {
-    dispatch(setSubmittingNewRaceLoading(true));
-
+    dispatch(setSubmitNewRaceLoading(true));
     try {
-      const newRace = await raceService.create({
-        name: values.name.trim(),
-        type: values.type,
-        url: values.url ? values.url.trim() : null,
-        email: values.email ? values.email.trim() : null,
-        dateFrom: values.startEndDateRange.startDate.toISOString(),
-        dateTo: values.startEndDateRange.endDate.toISOString(),
-        registrationOpenDate: values.registrationStartEndDateRange.startDate.toISOString(),
-        registrationCloseDate: values.registrationStartEndDateRange.endDate.toISOString(),
-        description: values.description.trim(),
-      });
+      const newRace = await raceService.create(raceValuesToRaceArguments(values));
       dispatch(appendNewSubmittedRace(newRace));
-      dispatch(setSubmittingNewRaceLoading(false));
 
-      return true;
+      return newRace.id;
     } catch (error: unknown) {
       if (error instanceof Error) {
-        dispatch(setSubmittingNewRaceError(error.message));
+        dispatch(setSubmitNewRaceError(error.message));
       } else {
-        dispatch(setSubmittingNewRaceError('Unknown error happened while creating race'));
+        dispatch(setSubmitNewRaceError('Unknown error happened while creating race'));
         console.error('unhandled post new race error:', error);
       }
-      dispatch(setSubmittingNewRaceLoading(false));
+      dispatch(setSubmitNewRaceLoading(false));
 
-      return false;
+      return null;
+    }
+  };
+};
+
+export const submitPatchRace = (raceId: number, values: NewRaceValuesType): AppAsyncThunk<string | null> => {
+  return async (dispatch, getState) => {
+    const stateRace = getState().race.race;
+    if (!stateRace.selectedRace || stateRace.selectedRace.id !== raceId) {
+      console.error('attempted to patch a race that is not selected');
+      return 'Unknown error happened when trying to edit race details. Please try again!';
+    }
+
+    const changedFields = raceValuesToRaceArguments(values, stateRace.selectedRace);
+    if (!changedFields) {
+      return null;
+    }
+
+    try {
+      const updatedRace = await raceService.updateOne(raceId.toString(), changedFields);
+      dispatch(patchSelectedRace(updatedRace));
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('updating race:', error);
+        return 'Unknown error happened when deleting race';
+      }
+    }
+  };
+};
+
+export const fetchRace = (raceId: number): AppAsyncThunk => {
+  return async (dispatch, getState) => {
+    if (getState().race.race.selectedRace?.id === raceId) {
+      return;
+    }
+    dispatch(setRaceFetching());
+
+    try {
+      const raceData = await raceService.getOne(raceId.toString());
+      dispatch(setRace({
+        selectedRace: raceData,
+        loading: false,
+        error: null
+      }));
+    } catch (error: unknown) {
+      const errMsg: string = error instanceof Error ? error.message : `${error}`;
+      console.error('fetching race:', errMsg);
+      dispatch(setRace({
+        selectedRace: null,
+        loading: false,
+        error: errMsg,
+      }));
+    }
+  };
+};
+
+export const deleteRace = (raceId: number): AppAsyncThunk<string | null> => {
+  return async (dispatch) => {
+    try {
+      await raceService.deleteOne(raceId.toString());
+      dispatch(removeRace({ raceId }));
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('deleting race:', error);
+        return 'Unknown error happened when deleting race';
+      }
     }
   };
 };

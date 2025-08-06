@@ -62,7 +62,28 @@
 | 2025.06.27 | 3   | FRONTEND: Add react-native-tab-view, RaceContext. Use tab-view for Races listing/creation. Stylize Races view |
 | 2025.06.27 | 0.5 | FRONTEND: Refactor RacesView to return FlatList, stylize containers |
 | 2025.06.27 | 1   | FRONTEND: Implement Form clearing after submit. Use in SignIn/Up & RaceCreation |
-| 2026.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
-| 2026.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
-| 2026.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
-| Total | 105 | |
+| 2025.06.28 | 3.5 | FRONTEND: Add react-redux, @reduxjs/toolkit. Implement redux store, slice for races. Refactor race state from context => redux slice |
+| 2025.06.29 | 3   | FRONTEND: Add authSlice to redux, move auth state there. Remove firebase user from auth state. Add ServerConflictError class |
+| 2025.06.30 | 1   | FRONTEND: Remove zod, refactor utils/config to parse with Yup, add firebase emulator status check |
+| 2025.07.02 | 0   | BACKEND: Add NotFoundError class, npm script tsc --noEmit |
+| 2025.07.02 | 2   | PACKAGES: Configure packages/common tsconfig to emit declarations only, better importing of types in back-/frontend. Attempted to configure the project so typing works for imported types from packages/common in backend/tests, without success |
+| 2025.07.03 | 1   | BACKEND: Add API endpoint to fetch race data by id |
+| 2025.07.03 | 2   | FRONTEND: Add a view with required supporting logic to show a specific race |
+| 2025.07.04 | 1.5 | FRONTEND: Add "models" directory that holds helper functions related to backend models, implement diff helpers. Add API response validator |
+| 2025.07.04 | 1   | FRONTEND: Validate fetch race response, refactor raceSlice to store race data |
+| 2025.07.04 | 0.5 | FRONTEND: Add Link, LoadingOrErrorRenderer components |
+| 2025.07.05 | 2   | FRONTEND: Stylize RaceView, extend theme |
+| 2025.07.05 | 0   | FRONTEND: Extend Form to support optional initialValue for every inputType |
+| 2025.07.05 | 1   | FRONTEND: Refactor NewRace formFields and validationSchema |
+| 2025.07.06 | 0.5 | BACKEND: Include express default type params for interface RequestUserExtended |
+| 2025.07.06 | 0   | BACKEND: Add PermissionForbiddenError |
+| 2025.07.06 | 2.5 | BACKEND: Add API endpoint for deleting race by id, tests |
+| 2025.07.11 | 1   | FRONTEND: define test env to config, add Modal component |
+| 2025.07.11 | 4   | FRONTEND: Add useRace hook and implement a race details editor. Refactor race related helpers. Stylize |
+| 2025.07.12 | 2   | FRONTEND: Add PermissionForbiddenError, confirmation dialog, deletion of selected race |
+| 2025.07.21 | 1   | FRONTEND: Add enableReinitialize prop to Form component, manage race editor form state when updating race details |
+| 2025.07.23 | 0   | FRONTEND: Add ReplaceField utility type, refactor store raceSlice |
+| 2025.08.05 | 7   | BACKEND: Implement race patch endpoind with tests, fix minor bugs related to race functionality and testing. |
+| 2025.08.05 | 0.5 | BACKEND: Add constants module |
+| 2025.08.06 | 2.5 | Add common interface RaceListingData that contains only serializable data, use in rest api and frontend. Refactor front- and backend to use the new interface |
+| Total | 137 | |

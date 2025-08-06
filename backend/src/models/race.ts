@@ -9,6 +9,7 @@ import {
   type NonAttribute,
 } from 'sequelize';
 
+import { RACE_CONSTANTS } from '../constants';
 import User from './user';
 import { sequelize } from '../database';
 
@@ -58,7 +59,10 @@ Race.init({
     type: DataTypes.TEXT,
     allowNull: false,
     validate: {
-      len: [4, 128],
+      len: [
+        RACE_CONSTANTS.NAME_LEN.MIN,
+        RACE_CONSTANTS.NAME_LEN.MAX,
+      ],
     },
   },
   type: {
@@ -69,21 +73,30 @@ Race.init({
   url: {
     type: DataTypes.TEXT,
     validate: {
-      len: [8, 256]
+      len: [
+        RACE_CONSTANTS.URL_LEN.MIN,
+        RACE_CONSTANTS.URL_LEN.MAX,
+      ],
     },
   },
   email: {
     type: DataTypes.TEXT,
     validate: {
       isEmail: true,
-      len: [8, 256],
+      len: [
+        RACE_CONSTANTS.EMAIL_LEN.MIN,
+        RACE_CONSTANTS.EMAIL_LEN.MAX,
+      ],
     },
   },
   description: {
     type: DataTypes.TEXT,
     allowNull: false,
     validate: {
-      len: [4, 2000],
+      len: [
+        RACE_CONSTANTS.DESCRIPTION_LEN.MIN,
+        RACE_CONSTANTS.DESCRIPTION_LEN.MAX,
+      ],
     },
   },
   dateFrom: {

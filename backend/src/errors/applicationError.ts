@@ -2,6 +2,8 @@ type ApplicationErrorKind =
   | 'APIRequestError'
   | 'AuthError'
   | 'CorsError'
+  | 'NotFoundError'
+  | 'PermissionForbiddenError'
   | 'ServiceError';
 
 interface IApplicationErrorJSON {
@@ -75,9 +77,13 @@ export class APIRequestError extends ApplicationError {
   }
 
   override toJSONObj() {
-    return !this.errorObj ? super.toJSONObj() : {
-      ...super.toJSONObj(),
-      error: this.errorObj,
+    const baseJson = super.toJSONObj();
+    return !this.errorObj ? baseJson : {
+      ...baseJson,
+      error: {
+        ...baseJson.error,
+        ...this.errorObj
+      },
     };
   }
 
@@ -98,6 +104,30 @@ export class AuthError extends ApplicationError {
   }
 };
 
+export class PermissionForbiddenError extends ApplicationError {
+  kind = 'PermissionForbiddenError' as const;
+
+  constructor(
+    public override message: string = 'Forbidden: insufficient rights to perform the requested action',
+    public status: number = 403,
+  ) {
+    super();
+    Object.setPrototypeOf(this, PermissionForbiddenError.prototype);
+  }
+};
+
+export class NotFoundError extends ApplicationError {
+  kind = 'NotFoundError' as const;
+
+  constructor(
+    public override message: string = 'Not found: the requested resource was not found',
+    public status: number = 404,
+  ) {
+    super();
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+};
+
 export class ServiceError extends ApplicationError {
   kind = 'ServiceError' as const;
 
@@ -115,4 +145,6 @@ export type ApplicationErrorType =
   | APIRequestError
   | AuthError
   | CorsError
+  | NotFoundError
+  | PermissionForbiddenError
   | ServiceError;

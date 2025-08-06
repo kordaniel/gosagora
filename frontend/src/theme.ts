@@ -135,6 +135,14 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
     paddingHorizontal: 3,
   },
+  modalContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  modalContentContainer: {
+    margin: 8,
+  },
   safeAreaView: {
     flex: 1,
     flexDirection: 'column',
@@ -158,15 +166,44 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     padding: 5,
   },
+  table: {
+    alignItems: 'stretch',
+    flexDirection: 'column',
+    gap: 3,
+    justifyContent: 'center',
+  },
+  tableCellData: {
+    justifyContent: 'center',
+    padding: 3,
+  },
+  tableColumn: {
+    flexDirection: 'column',
+  },
+  tableRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 3,
+    justifyContent: 'space-between',
+  },
   textInput: {
     borderRadius: 5,
     borderWidth: StyleSheet.hairlineWidth,
     padding: 8,
   },
+  textLink: {
+    color: '#1e90ff',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
 });
 
 const lightStyle = StyleSheet.create({
   ...styles,
+  borderContainer: {
+    ...styles.borderContainer,
+    borderColor: lightTheme.colors.outline,
+  },
   button: {
     ...styles.button,
     borderColor: lightTheme.colors.onPrimary,
@@ -186,6 +223,18 @@ const lightStyle = StyleSheet.create({
     backgroundColor: lightTheme.colors.errorContainer,
     borderColor: lightTheme.colors.onErrorContainer,
     color: lightTheme.colors.onErrorContainer,
+  },
+  modalContainer: {
+    ...styles.modalContainer,
+    backgroundColor: lightTheme.colors.elevation.level1,
+  },
+  modalContentContainer: {
+    ...styles.container,
+    ...styles.containerFlexColumn,
+    ...styles.borderContainer,
+    ...styles.modalContentContainer,
+    backgroundColor: lightTheme.colors.elevation.level2,
+    borderColor: lightTheme.colors.outline,
   },
   onErrorContainer: {
     ...lightTheme.fonts.default,
@@ -218,6 +267,16 @@ const lightStyle = StyleSheet.create({
     ...styles.tabBarTab,
     backgroundColor: lightTheme.colors.surfaceVariant,
   },
+  tableColumn: {
+    ...styles.borderContainer,
+    ...styles.tableColumn,
+    borderColor: lightTheme.colors.outline,
+  },
+  tableRow: {
+    ...styles.borderContainer,
+    ...styles.tableRow,
+    borderColor: lightTheme.colors.outline,
+  },
   tertiaryContainer: {
     ...styles.container,
     backgroundColor: lightTheme.colors.tertiaryContainer,
@@ -246,6 +305,10 @@ const lightStyle = StyleSheet.create({
 
 const darkStyle = StyleSheet.create({
   ...styles,
+  borderContainer: {
+    ...styles.borderContainer,
+    borderColor: darkTheme.colors.outline,
+  },
   button: {
     ...styles.button,
     borderColor: darkTheme.colors.onPrimary,
@@ -265,6 +328,18 @@ const darkStyle = StyleSheet.create({
     backgroundColor: darkTheme.colors.errorContainer,
     borderColor: darkTheme.colors.onErrorContainer,
     color: darkTheme.colors.onErrorContainer,
+  },
+  modalContainer: {
+    ...styles.modalContainer,
+    backgroundColor: darkTheme.colors.elevation.level1,
+  },
+  modalContentContainer: {
+    ...styles.container,
+    ...styles.containerFlexColumn,
+    ...styles.borderContainer,
+    ...styles.modalContentContainer,
+    backgroundColor: darkTheme.colors.elevation.level2,
+    borderColor: darkTheme.colors.outline,
   },
   onErrorContainer: {
     ...darkTheme.fonts.default,
@@ -296,6 +371,16 @@ const darkStyle = StyleSheet.create({
   tabBarTab: {
     ...styles.tabBarTab,
     backgroundColor: darkTheme.colors.surfaceVariant,
+  },
+  tableColumn: {
+    ...styles.borderContainer,
+    ...styles.tableColumn,
+    borderColor: darkTheme.colors.outline,
+  },
+  tableRow: {
+    ...styles.borderContainer,
+    ...styles.tableRow,
+    borderColor: darkTheme.colors.outline,
   },
   tertiaryContainer: {
     ...styles.container,

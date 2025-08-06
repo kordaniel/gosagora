@@ -27,13 +27,15 @@ const variantStyle = (theme: AppTheme, variant: StyledTextProps['variant']): Sty
       return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textHeadline);
     case 'small':
       return StyleSheet.compose(theme.styles.onPrimaryContainer, theme.styles.textSmall);
+    case 'link':
+      return theme.styles.textLink;
     default:
       return assertNever(variant);
   }
 };
 
-interface StyledTextProps extends TextProps {
-  variant?: 'title' | 'button' | 'error' | 'headline' | 'small';
+export interface StyledTextProps extends TextProps {
+  variant?: 'title' | 'button' | 'error' | 'headline' | 'small' | 'link';
 }
 
 const StyledText = ({ style, variant, ...props }: StyledTextProps) => {

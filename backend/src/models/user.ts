@@ -9,6 +9,7 @@ import {
   Op,
 } from 'sequelize';
 
+import { USER_CONSTANTS } from '../constants';
 import { sequelize } from '../database';
 
 export type UserAttributesType = Attributes<User>;
@@ -48,7 +49,10 @@ User.init({
     allowNull: false,
     validate: {
       isEmail: true,
-      len: [8, 256],
+      len: [
+        USER_CONSTANTS.EMAIL_LEN.MIN,
+        USER_CONSTANTS.EMAIL_LEN.MAX,
+      ],
     },
   },
   firebaseUid: {
@@ -61,7 +65,10 @@ User.init({
     unique: true,
     allowNull: false,
     validate: {
-      len: [4, 64],
+      len: [
+        USER_CONSTANTS.DISPLAY_NAME_LEN.MIN,
+        USER_CONSTANTS.DISPLAY_NAME_LEN.MAX,
+      ],
     },
   },
   lastseenAt: {

@@ -3,6 +3,8 @@ import { connectToDatabase, sequelize } from '../../src/database';
 import { UserCreationAttributesType } from '../../src/models/user';
 import config from '../../src/utils/config';
 
+import { Op } from 'sequelize';
+
 const disconnectFromDatabase = async () => {
   await sequelize.close();
 };
@@ -62,8 +64,23 @@ const getUserByFirebaseUid = async (firebaseUid: string) => {
   });
 };
 
-const getRaceByPk = async (id: number) => {
-  return await Race.findByPk(id);
+const getUserByPk = async (id: number, paranoid: boolean = true) => {
+  return await User.findByPk(id, { paranoid });
+};
+
+const getRaceByPk = async (id: number, paranoid: boolean = true) => {
+  return await Race.findByPk(id, { paranoid });
+};
+
+const getRaceWhereUserIdIsNot = async (userId: number, paranoid: boolean = true) => {
+  return await Race.findOne({
+    where: {
+      userId: {
+        [Op.ne]: userId,
+      },
+    },
+    paranoid
+  });
 };
 
 export default {
@@ -77,5 +94,7 @@ export default {
   userCount,
   raceCount,
   getUserByFirebaseUid,
+  getUserByPk,
   getRaceByPk,
+  getRaceWhereUserIdIsNot,
 };

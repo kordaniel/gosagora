@@ -1,33 +1,50 @@
 import React, { useEffect } from 'react';
 
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import EmptyFlatList from '../../components/FlatListComponents/EmptyFlatList';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
-import { SelectRaces, initializeRaces } from '../../store/slices/raceSlice';
+import { SelectRaces, fetchRace, initializeRaces } from '../../store/slices/raceSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { AppTheme } from '../../types';
+import { type SceneMapRouteProps } from './index';
+import { clampString } from '../../utils/helpers';
+import config from '../../utils/config';
 
 import { RaceListing } from '@common/types/race';
 
+interface RaceListingViewProps {
+  race: RaceListing;
+  jumpTo: SceneMapRouteProps['jumpTo']
+}
 
-const RaceView = ({ race }: { race: RaceListing }) => {
+const RaceListingView = ({ race, jumpTo }: RaceListingViewProps) => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
   const style = StyleSheet.compose(
     theme.styles.secondaryContainer,
     theme.styles.borderContainer,
   );
 
+  const raceDescription = clampString(race.description, config.IS_MOBILE ? 100 : 300);
+
+  const onPress = (id: number) => {
+    void dispatch(fetchRace(id));
+    jumpTo('raceView');
+  };
+
   return (
-    <View style={style}>
+    <TouchableOpacity style={style} onPress={() => onPress(race.id)}>
       <StyledText variant="title">Name: {race.name}</StyledText>
       <StyledText variant="small">Type: {race.type}</StyledText>
-      <StyledText variant="small">Description: {race.description}</StyledText>
+      <StyledText variant="small">From: {race.dateFrom.toLocaleDateString()}</StyledText>
+      <StyledText variant="small">To: {race.dateTo.toLocaleDateString()}</StyledText>
+      <StyledText variant="small">Description: {raceDescription}</StyledText>
       <StyledText variant="small">Organizer: {race.user.displayName}</StyledText>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -45,13 +62,9 @@ const RacesHeader = ({ racesError }: RacesHeaderProps) => {
   );
 };
 
-const RacesView = () => {
+const RacesList = ({ jumpTo }: SceneMapRouteProps) => {
   const dispatch = useAppDispatch();
-  const {
-    races,
-    racesLoading,
-    racesLoadingError
-  } = useAppSelector(SelectRaces);
+  const { races, loading, error } = useAppSelector(SelectRaces);
 
   useEffect(() => {
     void dispatch(initializeRaces());
@@ -60,16 +73,16 @@ const RacesView = () => {
   return (
     <FlatList
       data={races}
-      renderItem={({ item }) => <RaceView race={item} />}
+      renderItem={({ item }) => <RaceListingView race={item} jumpTo={jumpTo} />}
       keyExtractor={item => item.id.toString()}
       ListEmptyComponent={<EmptyFlatList
         message="No races.."
-        loading={racesLoading}
+        loading={loading}
       />}
-      ListHeaderComponent={<RacesHeader racesError={racesLoadingError}/>}
+      ListHeaderComponent={<RacesHeader racesError={error}/>}
       stickyHeaderIndices={[0]}
     />
   );
 };
 
-export default RacesView;
+export default RacesList;

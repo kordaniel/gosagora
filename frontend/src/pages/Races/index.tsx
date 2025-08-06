@@ -14,7 +14,8 @@ import { useTheme } from 'react-native-paper';
 import { useWindowDimensions } from 'react-native';
 
 import NewRace from './NewRace';
-import RacesView from './RacesView';
+import RaceView from './RaceView';
+import RacesList from './RacesList';
 
 import { AppTheme } from '../../types';
 
@@ -25,6 +26,7 @@ export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: R
 const routes: Route[] = [
   { key: 'newRace', title: 'New Race' },
   { key: 'racesList', title: 'Races' },
+  { key: 'raceView', title: 'Race' },
 ];
 
 // NOTE: Do not pass inline functions to SceneMap!
@@ -32,7 +34,8 @@ const routes: Route[] = [
 //       and also memoize the rendered components!
 const renderScene = SceneMap({
   newRace: NewRace,
-  racesList: RacesView,
+  racesList: RacesList,
+  raceView: RaceView,
 });
 
 const createRenderTabBar = (theme: AppTheme) =>
@@ -66,7 +69,7 @@ const Races = () => {
           height: 0,
           width: layout.width
         }}
-        lazy={({ route }) => route.key === 'newRace' }
+        lazy={({ route }) => route.key === 'newRace' || route.key === 'raceView' }
         navigationState={{ index: tabViewIndex, routes }}
         onIndexChange={setTabViewIndex}
         renderScene={renderScene}
