@@ -9,14 +9,18 @@ import { newRaceParser, updateRaceParser } from './parsers/raceParsers';
 import middleware from '../utils/middleware';
 import raceService from '../services/raceService';
 
-import type { APIRaceRequest, RaceData, RacePatchResponseData } from '@common/types/rest_api';
-import type { RaceListing } from '@common/types/race';
+import type {
+  APIRaceRequest,
+  RaceData,
+  RaceListingData,
+  RacePatchResponseData
+} from '@common/types/rest_api';
 
 const router = express.Router();
 
 router.post('/', [middleware.userExtractor, newRaceParser], async (
   req: RequestUserExtended<unknown, unknown, APIRaceRequest<'create', NewRaceAttributes>>,
-  res: Response<RaceListing>
+  res: Response<RaceListingData>
 ) => {
   //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
   //           not set => req.user is always defined here if this function is run
@@ -31,7 +35,7 @@ router.post('/', [middleware.userExtractor, newRaceParser], async (
   }
 });
 
-router.get('/', async (_req: Request, res: Response<RaceListing[]>) => {
+router.get('/', async (_req: Request, res: Response<RaceListingData[]>) => {
   const races = await raceService.getAll();
   res.json(races);
 });

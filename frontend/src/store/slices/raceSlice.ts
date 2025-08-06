@@ -6,7 +6,8 @@ import {
 import type { AppAsyncThunk, RootState } from '../index';
 import {
   type NewRaceValuesType,
-  toRaceDetails
+  toRaceDetails,
+  toRaceListing,
 } from '../../models/race';
 import { ApplicationError } from '../../errors/applicationError';
 import { type ReplaceField } from '../../types';
@@ -15,15 +16,16 @@ import { raceValuesToRaceArguments } from '../../schemas/race';
 
 import {
   type RaceData,
+  type RaceListingData,
   type RacePatchResponseData,
 } from '@common/types/rest_api';
 import {
   type RaceDetails,
-  type RaceListing
+  type RaceListing,
 } from '@common/types/race';
 
 interface RaceSliceRaces {
-  races: RaceListing[];
+  races: RaceListingData[];
   loading: boolean;
   error: string | null;
 }
@@ -66,14 +68,14 @@ export const raceSlice = createSlice({
   name: 'race',
   initialState,
   reducers: {
-    appendNewSubmittedRace: (state, action: PayloadAction<RaceListing>) => {
+    appendNewSubmittedRace: (state, action: PayloadAction<RaceListingData>) => {
       state.races.races = [...state.races.races, action.payload];
       state.submitNewRace = {
         loading: false,
         error: null,
       };
     },
-    setRacesAfterSuccesfullGet: (state, action: PayloadAction<RaceListing[]>) => {
+    setRacesAfterSuccesfullGet: (state, action: PayloadAction<RaceListingData[]>) => {
       state.races.races = action.payload;
       state.races.error = null;
     },
@@ -102,9 +104,9 @@ export const raceSlice = createSlice({
     patchSelectedRace: (state, action: PayloadAction<RacePatchResponseData>) => {
       state.race.selectedRace = action.payload.raceData;
       state.races.races = state.races.races.map(race =>
-        race.id !== action.payload.raceListing.id
+        race.id !== action.payload.raceListingData.id
           ? race
-          : action.payload.raceListing
+          : action.payload.raceListingData
       );
     },
     removeRace: (state, action: PayloadAction<{ raceId: number }>) => {
@@ -133,7 +135,10 @@ const {
   removeRace,
 } = raceSlice.actions;
 
-export const SelectRaces = (state: RootState): RaceSliceRaces => state.race.races;
+export const SelectRaces = (state: RootState): ReplaceField<RaceSliceRaces, 'races', RaceListing[]> => ({
+  ...state.race.races,
+  races: state.race.races.races.map(toRaceListing),
+});
 
 export const SelectSubmitNewRace = (state: RootState): RaceSliceSubmitNewRace => state.race.submitNewRace;
 

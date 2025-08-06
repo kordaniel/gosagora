@@ -16,6 +16,7 @@ import config from '../utils/config';
 import {
   type CreateRaceArguments,
   type RaceData,
+  type RacePatchResponseData,
 } from '@common/types/rest_api';
 import { RaceType } from '@common/types/race';
 
@@ -133,11 +134,9 @@ export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object
     .required('A description is required'),
 });
 
-export const patchRaceSchema: Yup.Schema = Yup.object().shape({
-  // TODO: Add correct type argument to: Yup.Schema<RacePatchResponseData>
-  //       when the type RaceListing Data has been defined with dates as strings
+export const patchRaceSchema: Yup.Schema<RacePatchResponseData> = Yup.object().shape({
   raceData: raceSchema,
-  raceListing: Yup.object().shape({
+  raceListingData: Yup.object().shape({
     id: Yup.number()
       .required(),
     name: Yup.string()
@@ -147,9 +146,9 @@ export const patchRaceSchema: Yup.Schema = Yup.object().shape({
       .required(),
     description: Yup.string()
       .required(),
-    createdAt: Yup.string()
+    dateFrom: Yup.string()
       .required(),
-    updatedAt: Yup.string()
+    dateTo: Yup.string()
       .required(),
     user: Yup.object().shape({
       id: Yup.number()

@@ -52,6 +52,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
       describe('Succeeds', () => {
 
         test('with valid data', async () => {
+          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           const user = await userUtils.createSignedInUser();
           const idToken = await user.credentials.user.getIdToken();
@@ -69,19 +70,16 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(res.body).toBeDefined();
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, createdAt, updatedAt, ...bodyRest } = res.body;
+          const { id, ...rest } = res.body;
 
           expect(id).toEqual(expect.any(Number));
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(createdAt)).not.toBeNaN();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(updatedAt)).not.toBeNaN();
-
-          expect(bodyRest).toStrictEqual({
+          expect(rest).toStrictEqual({
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
+            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
+            dateTo: utcDateStrToDateOnly(raceData.dateTo),
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -91,6 +89,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('with valid data where url is null', async () => {
+          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           raceData.url = null;
           const user = await userUtils.createSignedInUser();
@@ -109,19 +108,16 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(res.body).toBeDefined();
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, createdAt, updatedAt, ...bodyRest } = res.body;
+          const { id, ...rest } = res.body;
 
           expect(id).toEqual(expect.any(Number));
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(createdAt)).not.toBeNaN();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(updatedAt)).not.toBeNaN();
-
-          expect(bodyRest).toStrictEqual({
+          expect(rest).toStrictEqual({
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
+            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
+            dateTo: utcDateStrToDateOnly(raceData.dateTo),
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -131,6 +127,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('with valid data where email is null', async () => {
+          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           raceData.email = null;
           const user = await userUtils.createSignedInUser();
@@ -149,19 +146,16 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(res.body).toBeDefined();
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, createdAt, updatedAt, ...bodyRest } = res.body;
+          const { id, ...rest } = res.body;
 
           expect(id).toEqual(expect.any(Number));
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(createdAt)).not.toBeNaN();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(updatedAt)).not.toBeNaN();
-
-          expect(bodyRest).toStrictEqual({
+          expect(rest).toStrictEqual({
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
+            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
+            dateTo: utcDateStrToDateOnly(raceData.dateTo),
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -171,6 +165,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('With valid data without field public', async () => {
+          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { public: isPublic, ...raceData } = raceUtils.getRaceCreationArgumentsObject();
           const user = await userUtils.createSignedInUser();
@@ -189,19 +184,16 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           expect(res.body).toBeDefined();
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, createdAt, updatedAt, ...bodyRest } = res.body;
+          const { id, ...rest } = res.body;
 
           expect(id).toEqual(expect.any(Number));
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(createdAt)).not.toBeNaN();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          expect(Date.parse(updatedAt)).not.toBeNaN();
-
-          expect(bodyRest).toStrictEqual({
+          expect(rest).toStrictEqual({
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
+            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
+            dateTo: utcDateStrToDateOnly(raceData.dateTo),
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -1029,13 +1021,15 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           throw new Error('Internal test error: No races in DB');
         }
 
+        const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
+
         const expected = racesInDb.map(({
-          race: { id, name, type, description, createdAt, updatedAt },
+          race: { id, name, type, description, dateFrom, dateTo },
           user
         }) => ({
           id, name, type, description,
-          createdAt: createdAt.toISOString(),
-          updatedAt: updatedAt.toISOString(),
+          dateFrom: utcDateStrToDateOnly(dateFrom as unknown as string),
+          dateTo: utcDateStrToDateOnly(dateTo as unknown as string),
           user: {
             id: user.id,
             displayName: user.displayName
@@ -1347,34 +1341,30 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             const expectedUserResponse = {
               id: raceToBeUpdated.user.id,
               displayName: raceToBeUpdated.user.displayName,
             };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { name: originalName, ...originalRace } = raceToBeUpdated.race.toJSON();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const { raceData, raceListing } = res.body;
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-            expect(new Date(raceListing.updatedAt) > new Date(raceToBeUpdated.race.updatedAt)).toBe(true);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            delete raceListing.updatedAt;
+            const { raceData, raceListingData } = res.body;
 
+            const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
             const fromUtcStrToISOStr = (utcDateStr: string): string => {
               // TODO: Refactor away into utils module !!!!!!!!!!
               const [year, month, date] = utcDateStr.split('-').map(Number);
               return new Date(Date.UTC(year, month - 1, date)).toISOString();
             };
-            expect(raceListing).toStrictEqual({
+            expect(raceListingData).toStrictEqual({
               id: raceToBeUpdated.race.id,
               name: updatedRaceName,
               type: raceToBeUpdated.race.type,
               description: raceToBeUpdated.race.description,
+              dateFrom: utcDateStrToDateOnly(raceToBeUpdated.race.dateFrom as unknown as string),
+              dateTo: utcDateStrToDateOnly(raceToBeUpdated.race.dateTo as unknown as string),
               user: expectedUserResponse,
-              createdAt: raceToBeUpdated.race.createdAt.toISOString(),
             });
             expect(raceData).toStrictEqual({
               id: raceToBeUpdated.race.id,
@@ -1418,7 +1408,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.public).toBe(!raceToBeUpdated.race.public);
@@ -1448,7 +1438,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.url).toBe(updatedRaceUrl);
@@ -1479,7 +1469,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.url).toBeDefined();
@@ -1511,7 +1501,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.email).toBe(updatedRaceEmail);
@@ -1542,7 +1532,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.email).toBeDefined();
@@ -1574,12 +1564,12 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.description).toBe(updatedRaceDescription);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing.description).toBe(updatedRaceDescription);
+            expect(res.body.raceListingData.description).toBe(updatedRaceDescription);
           });
 
           test('updates her own race dateFrom and dateTo', async () => {
@@ -1610,12 +1600,16 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.dateFrom).toBe(updatedRaceDateFrom.toISOString());
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.dateTo).toBe(updatedRaceDateTo.toISOString());
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListingData.dateFrom).toBe(updatedRaceDateFrom.toISOString());
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(res.body.raceListingData.dateTo).toBe(updatedRaceDateTo.toISOString());
           });
 
           test('updates her own race registrationOpenDate and registrationCloseDate', async () => {
@@ -1646,7 +1640,7 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData).toBeDefined();
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(res.body.raceListing).toBeDefined();
+            expect(res.body.raceListingData).toBeDefined();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(res.body.raceData.registrationOpenDate).toBe(updatedRegistrationOpenDate.toISOString());

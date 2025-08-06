@@ -7,8 +7,11 @@ import {
 import { Race, User } from '../models';
 import { type NewRaceAttributes } from '../types';
 
-import type { RaceData, RacePatchResponseData } from '@common/types/rest_api';
-import type { RaceListing } from '@common/types/race';
+import type {
+  RaceData,
+  RaceListingData,
+  RacePatchResponseData,
+} from '@common/types/rest_api';
 
 const raceDataQueryOpts: FindOptions = {
   attributes: [
@@ -21,57 +24,58 @@ const raceDataQueryOpts: FindOptions = {
   }],
 };
 
-const raceListingQueryOpts: FindOptions = {
-  attributes: ['id', 'name', 'type', 'description', 'createdAt', 'updatedAt'],
+const raceListingDataQueryOpts: FindOptions = {
+  attributes: ['id', 'name', 'type', 'description', 'dateFrom', 'dateTo'],
   include: {
     model: User,
     attributes: ['id', 'displayName'],
   },
 };
 
-const toRaceListing = ({ id, name, type, description, createdAt, updatedAt, user }: Race): RaceListing => ({
-  id, name, type, description, createdAt, updatedAt, user: {
+const fromUtcStrToISOStr = (utcDateStr: string): string => {
+  const [year, month, date] = utcDateStr.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, date)).toISOString();
+};
+
+const toRaceListingData = ({ id, name, type, description, dateFrom, dateTo, user }: Race): RaceListingData => ({
+  id, name, type, description,
+  dateFrom: fromUtcStrToISOStr(dateFrom as unknown as string),
+  dateTo: fromUtcStrToISOStr(dateTo as unknown as string),
+  user: {
     id: user.id,
     displayName: user.displayName,
   },
 });
 
-const toRaceData = (race: Race): RaceData => {
-  const fromUtcStrToISOStr = (utcDateStr: string): string => {
-    const [year, month, date] = utcDateStr.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, date)).toISOString();
-  };
-
-  return {
-    id: race.id,
-    public: race.public,
-    name: race.name,
-    type: race.type,
-    url: race.url,
-    email: race.email,
-    description: race.description,
-    dateFrom: fromUtcStrToISOStr(race.dateFrom as unknown as string),
-    dateTo: fromUtcStrToISOStr(race.dateTo as unknown as string),
-    registrationOpenDate: race.registrationOpenDate.toISOString(),
-    registrationCloseDate: race.registrationCloseDate.toISOString(),
-    user: {
-      id: race.user.id,
-      displayName: race.user.displayName,
-    }
-  };
-};
+const toRaceData = (race: Race): RaceData => ({
+  id: race.id,
+  public: race.public,
+  name: race.name,
+  type: race.type,
+  url: race.url,
+  email: race.email,
+  description: race.description,
+  dateFrom: fromUtcStrToISOStr(race.dateFrom as unknown as string),
+  dateTo: fromUtcStrToISOStr(race.dateTo as unknown as string),
+  registrationOpenDate: race.registrationOpenDate.toISOString(),
+  registrationCloseDate: race.registrationCloseDate.toISOString(),
+  user: {
+    id: race.user.id,
+    displayName: race.user.displayName,
+  }
+});
 
 const createNewRace = async (
   userId: User['id'],
   newRaceArguments: NewRaceAttributes
-): Promise<RaceListing> => {
+): Promise<RaceListingData> => {
   const race = await Race.create({
     userId,
     ...newRaceArguments
   });
 
-  await race.reload(raceListingQueryOpts);
-  return toRaceListing(race);
+  await race.reload(raceListingDataQueryOpts);
+  return toRaceListingData(race);
 };
 
 const deleteOne = async (
@@ -90,9 +94,9 @@ const deleteOne = async (
   await race.destroy();
 };
 
-const getAll = async (): Promise<RaceListing[]> => {
-  const races = await Race.findAll(raceListingQueryOpts);
-  return races.map(toRaceListing);
+const getAll = async (): Promise<RaceListingData[]> => {
+  const races = await Race.findAll(raceListingDataQueryOpts);
+  return races.map(toRaceListingData);
 };
 
 const getOne = async (id: number): Promise<RaceData> => {
@@ -125,7 +129,7 @@ const updateRace = async (
 
   return {
     raceData: toRaceData(race),
-    raceListing: toRaceListing(race),
+    raceListingData: toRaceListingData(race),
   };
 };
 

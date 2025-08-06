@@ -6,21 +6,20 @@ import type {
   APIRaceRequest,
   CreateRaceArguments,
   RaceData,
+  RaceListingData,
   RacePatchResponseData,
 } from '@common/types/rest_api';
-import type {
-  RaceListing,
-} from '@common/types/race';
 
 const apiBasePath = '/api/v1/race';
 
-const create = async (raceDetails: CreateRaceArguments): Promise<RaceListing> => {
+const create = async (raceDetails: CreateRaceArguments): Promise<RaceListingData> => {
   const postData: APIRaceRequest<'create', CreateRaceArguments> = {
     type: 'create',
     data: raceDetails
   };
 
-  const { data } = await axiosInstance.post<RaceListing>(
+  // TODO: Validate response
+  const { data } = await axiosInstance.post<RaceListingData>(
     `${apiBasePath}`, postData
   );
   return data;
@@ -31,7 +30,8 @@ const deleteOne = async (raceId: string): Promise<void> => {
 };
 
 const getAll = async () => {
-  const { data } = await axiosInstance.get<RaceListing[]>(apiBasePath);
+  // TODO: Validate response
+  const { data } = await axiosInstance.get<RaceListingData[]>(apiBasePath);
   return data;
 };
 

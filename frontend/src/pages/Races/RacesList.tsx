@@ -40,6 +40,8 @@ const RaceListingView = ({ race, jumpTo }: RaceListingViewProps) => {
     <TouchableOpacity style={style} onPress={() => onPress(race.id)}>
       <StyledText variant="title">Name: {race.name}</StyledText>
       <StyledText variant="small">Type: {race.type}</StyledText>
+      <StyledText variant="small">From: {race.dateFrom.toLocaleDateString()}</StyledText>
+      <StyledText variant="small">To: {race.dateTo.toLocaleDateString()}</StyledText>
       <StyledText variant="small">Description: {raceDescription}</StyledText>
       <StyledText variant="small">Organizer: {race.user.displayName}</StyledText>
     </TouchableOpacity>

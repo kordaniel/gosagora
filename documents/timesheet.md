@@ -85,4 +85,5 @@
 | 2025.07.23 | 0   | FRONTEND: Add ReplaceField utility type, refactor store raceSlice |
 | 2025.08.05 | 7   | BACKEND: Implement race patch endpoind with tests, fix minor bugs related to race functionality and testing. |
 | 2025.08.05 | 0.5 | BACKEND: Add constants module |
-| Total | 134.5 | |
+| 2025.08.06 | 2.5 | Add common interface RaceListingData that contains only serializable data, use in rest api and frontend. Refactor front- and backend to use the new interface |
+| Total | 137 | |

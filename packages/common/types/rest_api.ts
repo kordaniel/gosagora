@@ -1,4 +1,4 @@
-import type { RaceListing, RaceType } from './race';
+import type { RaceType } from './race';
 
 export interface APIAuthRequest<
   REQT extends 'signup' | 'login',
@@ -52,6 +52,19 @@ export interface CreateRaceArguments {
   registrationCloseDate: string;
 };
 
+export interface RaceListingData {
+  id: number;
+  name: string;
+  type: RaceType;
+  description: string;
+  dateFrom: string;
+  dateTo: string;
+  user: {
+    id: number;
+    displayName: string;
+  };
+}
+
 export interface RaceData {
   id: number;
   public: boolean;
@@ -72,5 +85,5 @@ export interface RaceData {
 
 export interface RacePatchResponseData {
   raceData: RaceData;
-  raceListing: RaceListing;
+  raceListingData: RaceListingData;
 };

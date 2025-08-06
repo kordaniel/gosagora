@@ -25,8 +25,8 @@ export interface RaceListing {
   name: string;
   type: RaceType;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
+  dateFrom: Date;
+  dateTo: Date;
   user: {
     id: number;
     displayName: string;
