@@ -7,11 +7,11 @@ import {
   authSliceSetLoading,
   authSliceSetUser,
 } from '../store/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { ApplicationError } from '../errors/applicationError';
 import authService from '../services/authService';
 import { authSliceSetIsInitialized } from '../store/slices/authSlice';
 import firebase from '../modules/firebase';
+import { useAppDispatch } from '../store/hooks';
 
 /**
  * Registers a callback for firebase auth change observer. This hook should

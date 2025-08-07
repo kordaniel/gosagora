@@ -13,7 +13,8 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@common/*": ["../packages/common/*"]
+      "@common/*": ["../packages/common/*"],
+      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"]
     },
 
     /* Bundler mode */

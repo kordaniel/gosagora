@@ -1,8 +1,9 @@
 import {
   type FirebaseApp,
+  getApp,
+  getApps,
   initializeApp,
 } from 'firebase/app';
-
 import {
   type NextOrObserver,
   type Unsubscribe,
@@ -10,21 +11,39 @@ import {
   connectAuthEmulator,
   signInWithEmailAndPassword as fbAuthSignInWithEmailAndPassword,
   signOut as fbAuthSignOut,
+  initializeAuth as fbInitializeAuth,
   getAuth,
+  getReactNativePersistence, // NOTE: undefined outside mobile environments
   onAuthStateChanged,
 } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import config from '../utils/config';
 import firebaseConfigObj from '../utils/firebaseConfig';
 
-
 const initializeAuth = (app: FirebaseApp | undefined) => {
-  if (config.IS_PRODUCTION_ENV) {
-    // TODO: Add check that app is initialized!!
-    return getAuth(app);
+  if (!app) {
+    throw new Error('GosaGora misconfiguration: firebaseApp is not defined before auth');
   }
 
-  const fbAuth = getAuth();
+  let fbAuth;
+  if (config.IS_MOBILE) {
+    if (!getReactNativePersistence) {
+      throw new Error('GosaGora environment error: ReactNative Persistence is not available');
+    }
+    try {
+      // NOTE: Throws if auth is already initialized (dev env hot reload)
+      fbAuth = fbInitializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+    } catch (_error: unknown) {
+      fbAuth = getAuth(app);
+    }
+  } else {
+    fbAuth = getAuth(app);
+  }
+
+  if (config.IS_PRODUCTION_ENV) {
+    return fbAuth;
+  }
 
   if (config.FIREBASE_AUTH_EMULATOR_HOST) {
     try {
@@ -46,7 +65,7 @@ const initializeAuth = (app: FirebaseApp | undefined) => {
 let firebaseApp;
 
 try {
-  firebaseApp = initializeApp(firebaseConfigObj);
+  firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfigObj) : getApp();
   //const analytics = getAnalytics(firebaseApp); // TODO: Setup analytics
 } catch (error: unknown) {
   console.error('Error running firebase initializeApp:', error);
