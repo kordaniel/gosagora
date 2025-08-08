@@ -4,20 +4,20 @@ import express, {
 } from 'express';
 
 import { signinUserParser, signupUserParser } from './parsers/authParsers';
-import { User } from '../models';
 import authService from '../services/authService';
 
 import type {
   APIAuthRequest,
   SignInArguments,
-  SignUpArguments
+  SignUpArguments,
+  UserDetailsData,
 } from '@common/types/rest_api';
 
 const router = express.Router();
 
 router.post('/login', signinUserParser, async (
   req: Request<unknown, unknown, APIAuthRequest<'login', SignInArguments>>,
-  res: Response<User>
+  res: Response<UserDetailsData>
 ) => {
   const user = await authService.loginUser(req.body.data);
   res.json(user);
@@ -25,7 +25,7 @@ router.post('/login', signinUserParser, async (
 
 router.post('/signup', signupUserParser, async (
   req: Request<unknown, unknown, APIAuthRequest<'signup', SignUpArguments>>,
-  res: Response<User>
+  res: Response<UserDetailsData>
 ) => {
   const newUser = await authService.createNewUser(req.body.data);
   res.status(201).json(newUser);

@@ -5,10 +5,13 @@ import {
 import { FirebaseError } from 'firebase/app';
 
 import type { AppAsyncThunk, RootState } from '../index';
+import { type UserDetails, toUserDetails } from '../../models/user';
 import { ApplicationError } from '../../errors/applicationError';
-import { type GosaGoraUser } from '../../types';
+import { ReplaceField } from '../../types';
 import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
+
+import { type UserDetailsData } from '@common/types/rest_api';
 
 /**
  * !!! NOTE: The possible error strings that are set in the
@@ -18,7 +21,7 @@ import firebase from '../../modules/firebase';
  */
 
 export interface AuthState {
-  user: GosaGoraUser | null;
+  user: UserDetailsData | null;
   error: string | null;
   isInitialized: boolean;
   loading: boolean;
@@ -35,7 +38,7 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<GosaGoraUser | null>) => {
+    setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
@@ -57,8 +60,11 @@ export const {
   setLoading: authSliceSetLoading,
 } = authSlice.actions;
 
-export const SelectAuth = (state: RootState) => ({
+export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
+  isAuthenticated: boolean;
+} => ({
   ...state.auth,
+  user: state.auth.user ? toUserDetails(state.auth.user) : null,
   isAuthenticated: !state.auth.loading && state.auth.user !== null,
 });
 

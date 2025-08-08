@@ -40,7 +40,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         expect(res.body).toBeDefined();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, firebaseUid, createdAt, updatedAt, ...bodyRest } = res.body;
+        const { id, firebaseUid, ...bodyRest } = res.body;
 
         expect(id).toEqual(expect.any(Number));
         expect(typeof firebaseUid).toBe('string');
@@ -50,19 +50,16 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         // strings with a length [1,128]. Currently (2025-05-08) all automatically generated
         // uid's are of length 28.
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(createdAt)).not.toBeNaN();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(updatedAt)).not.toBeNaN();
-
-        expect(bodyRest).toEqual({
+        expect(bodyRest).toStrictEqual({
           lastseenAt: null,
-          deletedAt: null,
-          disabledAt: null,
           email: userBase.email.toLowerCase(),
           displayName: userBase.displayName,
         });
+
         expect(await testDatabase.userCount()).toEqual(initialUserCount + 1);
+
+        const userInDb = await testDatabase.getUserByPk(id as number);
+        expect(userInDb).not.toBeNull();
       });
 
       test('Fails when request type is not signup', async () => {
@@ -395,7 +392,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         expect(res.body).toBeDefined();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, firebaseUid, createdAt, updatedAt, ...bodyRest } = res.body;
+        const { id, firebaseUid, ...bodyRest } = res.body;
 
         expect(id).toEqual(expect.any(Number));
         expect(typeof firebaseUid).toBe('string');
@@ -405,19 +402,15 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         // strings with a length [1,128]. Currently (2025-05-08) all automatically generated
         // uid's are of length 28.
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(createdAt)).not.toBeNaN();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(updatedAt)).not.toBeNaN();
-
         expect(bodyRest).toStrictEqual({
           lastseenAt: null,
-          deletedAt: null,
-          disabledAt: null,
           email: userBase.email.toLowerCase(),
           displayName: userBase.displayName,
         });
         expect(await testDatabase.userCount()).toEqual(initialUserCount + 1);
+
+        const userInDb = await testDatabase.getUserByPk(id as number);
+        expect(userInDb).not.toBeNull();
       });
 
       describe('Fails if unique constraints validations are not satisfied', () => {
@@ -512,13 +505,9 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         expect(res.body).toBeDefined();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, createdAt, updatedAt, lastseenAt, ...bodyRest } = res.body;
+        const { id, lastseenAt, ...bodyRest } = res.body;
 
         expect(id).toEqual(userInDb!.id);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(createdAt)).not.toBeNaN();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(updatedAt)).not.toBeNaN();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         expect(Date.parse(lastseenAt)).not.toBeNaN();
 
@@ -526,8 +515,6 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
           email: user.userBase.email.toLowerCase(),
           firebaseUid: user.credentials.user.uid,
           displayName: user.userBase.displayName,
-          deletedAt: null,
-          disabledAt: null,
         });
       });
 

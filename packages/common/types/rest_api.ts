@@ -16,6 +16,14 @@ export interface APIAuthResponse<DT, ET> {
 }
 */
 
+export interface UserDetailsData {
+  id: number;
+  displayName: string;
+  email: string;
+  firebaseUid: string;
+  lastseenAt: string | null;
+}
+
 export interface SignUpArguments {
   email: string;
   password: string;
