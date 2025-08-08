@@ -7,7 +7,7 @@ import {
 import {
   type NextOrObserver,
   type Unsubscribe,
-  type User,
+  type as FirebaseUser,
   connectAuthEmulator,
   signInWithEmailAndPassword as fbAuthSignInWithEmailAndPassword,
   signOut as fbAuthSignOut,
@@ -84,7 +84,7 @@ const signOut = async (): Promise<void> => {
   await fbAuthSignOut(firebaseAuth);
 };
 
-const addOnAuthChangeObserver = (observer: NextOrObserver<User>): Unsubscribe => {
+const addOnAuthChangeObserver = (observer: NextOrObserver<FirebaseUser>): Unsubscribe => {
   return onAuthStateChanged(firebaseAuth, observer);
 };
 

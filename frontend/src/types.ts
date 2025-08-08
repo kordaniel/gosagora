@@ -16,23 +16,6 @@ export interface AppTheme extends MD3Theme {
   toggleScheme: () => void;
 }
 
-export interface GosaGoraUser {
-  id: number;
-  email: string;
-  firebaseUid: string;
-  displayName: string;
-  lastseenAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-  disabledAt: Date | null;
-}
-
-export interface User {
-  firebaseUser: FirebaseUser;
-  gosaGoraUser: GosaGoraUser;
-}
-
 export interface DateRange {
   startDate: Date;
   endDate: Date;

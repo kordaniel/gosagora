@@ -87,4 +87,5 @@
 | 2025.08.05 | 0.5 | BACKEND: Add constants module |
 | 2025.08.06 | 2.5 | Add common interface RaceListingData that contains only serializable data, use in rest api and frontend. Refactor front- and backend to use the new interface |
 | 2025.08.07 | 2   | FRONTEND: Add react-native-async-storage, configure firebase auth to persist user's session in mobile environments |
-| Total | 139 | |
+| 2025.08.08 | 2   | Add @common interface UserDetailsData. Refactor Back- & Frontend to use the new interface instead of User in suitable parts |
+| Total | 141 | |

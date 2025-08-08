@@ -6,10 +6,21 @@ import firebase from '../modules/firebase';
 import logger from '../utils/logger';
 import userService from './userService';
 
-import type { SignInArguments, SignUpArguments } from '@common/types/rest_api';
+import type {
+  SignInArguments,
+  SignUpArguments,
+  UserDetailsData,
+} from '@common/types/rest_api';
 
+const toUserDetailsData = (user: User): UserDetailsData => ({
+  id: user.id,
+  displayName: user.displayName,
+  email: user.email,
+  firebaseUid: user.firebaseUid,
+  lastseenAt: user.lastseenAt ? user.lastseenAt.toISOString() : null,
+});
 
-const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> => {
+const createNewUser = async (newUserArguments: SignUpArguments): Promise<UserDetailsData> => {
   const userRecord = await firebase.createUser(newUserArguments.email, newUserArguments.password, newUserArguments.displayName);
 
   if (!userRecord.email) {
@@ -29,10 +40,10 @@ const createNewUser = async (newUserArguments: SignUpArguments): Promise<User> =
     firebaseUid: userRecord.uid,
   });
 
-  return user;
+  return toUserDetailsData(user);
 };
 
-const loginUser = async (credentials: SignInArguments) => {
+const loginUser = async (credentials: SignInArguments): Promise<UserDetailsData> => {
   const decodedIdToken = await verifyIdToken(credentials.firebaseIdToken);
 
   if (credentials.email !== decodedIdToken.email) {
@@ -48,7 +59,7 @@ const loginUser = async (credentials: SignInArguments) => {
   }
 
   await user.updateLastseen();
-  return user;
+  return toUserDetailsData(user);
 };
 
 const verifyIdToken = async (firebaseIdToken: string): Promise<DecodedIdToken> => {

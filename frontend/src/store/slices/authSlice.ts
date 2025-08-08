@@ -6,9 +6,10 @@ import { FirebaseError } from 'firebase/app';
 
 import type { AppAsyncThunk, RootState } from '../index';
 import { ApplicationError } from '../../errors/applicationError';
-import { type GosaGoraUser } from '../../types';
 import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
+
+import { type UserDetailsData } from '@common/types/rest_api';
 
 /**
  * !!! NOTE: The possible error strings that are set in the
@@ -18,7 +19,7 @@ import firebase from '../../modules/firebase';
  */
 
 export interface AuthState {
-  user: GosaGoraUser | null;
+  user: UserDetailsData | null;
   error: string | null;
   isInitialized: boolean;
   loading: boolean;
@@ -35,7 +36,7 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<GosaGoraUser | null>) => {
+    setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {

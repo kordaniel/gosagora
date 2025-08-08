@@ -9,7 +9,6 @@ import SignedInView from './SignedInView';
 
 import { type AppTheme } from '../../types';
 import { SelectAuth } from '../../store/slices/authSlice';
-import firebase from '../../modules/firebase';
 import { useAppSelector } from '../../store/hooks';
 
 const UserProfile = () => {
@@ -20,7 +19,7 @@ const UserProfile = () => {
     <SafeAreaView style={theme.styles.safeAreaView}>
       <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
         {isAuthenticated
-          ? <SignedInView handleSignOut={firebase.signOut} />
+          ? <SignedInView />
           : <Authentication />
         }
       </ScrollView>
