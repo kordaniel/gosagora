@@ -1,4 +1,6 @@
 import axiosInstance from '../modules/axiosInstance';
+import { userDetailsDataSchema } from '../schemas/user';
+import { validateResponse } from './validators';
 
 import type {
   APIAuthRequest,
@@ -15,11 +17,14 @@ const signUpUser = async (credentials: SignUpArguments): Promise<UserDetailsData
     data: credentials,
   };
 
-  // TODO: Validate response
   const { data } = await axiosInstance.post<UserDetailsData>(
     `${apiBasePath}/signup`, postData
   );
-  return data;
+  return await validateResponse<UserDetailsData>(
+    data,
+    userDetailsDataSchema,
+    'We encountered a problem while creating an account for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 const signInUser = async (credentials: SignInArguments): Promise<UserDetailsData> => {
@@ -28,11 +33,14 @@ const signInUser = async (credentials: SignInArguments): Promise<UserDetailsData
     data: credentials,
   };
 
-  // TODO: Validate response
   const { data } = await axiosInstance.post<UserDetailsData>(
     `${apiBasePath}/login`, postData
   );
-  return data;
+  return await validateResponse<UserDetailsData>(
+    data,
+    userDetailsDataSchema,
+    'We encountered a problem signing you in. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 export default {
