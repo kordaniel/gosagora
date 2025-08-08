@@ -89,4 +89,5 @@
 | 2025.08.07 | 2   | FRONTEND: Add react-native-async-storage, configure firebase auth to persist user's session in mobile environments |
 | 2025.08.08 | 2   | Add @common interface UserDetailsData. Refactor Back- & Frontend to use the new interface instead of User in suitable parts |
 | 2025.08.09 | 0.5 | FRONTEND: Validate auth API responses |
-| Total | 141.5 | |
+| 2025.08.09 | 0.5 | FRONTEND: Add UserDetails type, refactor SelectAuth to return objects of this type |
+| Total | 142 | |

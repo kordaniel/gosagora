@@ -48,7 +48,7 @@ const SignedInView = () => {
         </View>
         <View style={theme.styles.tableRow}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Previous login</StyledText>
-          <StyledText style={theme.styles.tableCellData}>{user.lastseenAt ? user.lastseenAt : "First time here, welcome!"}</StyledText>
+          <StyledText style={theme.styles.tableCellData}>{user.lastseenAt ? user.lastseenAt.toLocaleString() : "First time here, welcome!"}</StyledText>
         </View>
       </View>
       <Button onPress={theme.toggleScheme}>

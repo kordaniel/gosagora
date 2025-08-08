@@ -1,5 +1,4 @@
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { User as FirebaseUser } from 'firebase/auth';
 import type { MD3Theme } from 'react-native-paper';
 
 export type NonNullableFields<T> = {

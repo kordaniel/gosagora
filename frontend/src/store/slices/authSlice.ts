@@ -5,7 +5,9 @@ import {
 import { FirebaseError } from 'firebase/app';
 
 import type { AppAsyncThunk, RootState } from '../index';
+import { type UserDetails, toUserDetails } from '../../models/user';
 import { ApplicationError } from '../../errors/applicationError';
+import { ReplaceField } from '../../types';
 import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
 
@@ -58,8 +60,11 @@ export const {
   setLoading: authSliceSetLoading,
 } = authSlice.actions;
 
-export const SelectAuth = (state: RootState) => ({
+export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
+  isAuthenticated: boolean;
+} => ({
   ...state.auth,
+  user: state.auth.user ? toUserDetails(state.auth.user) : null,
   isAuthenticated: !state.auth.loading && state.auth.user !== null,
 });
 
