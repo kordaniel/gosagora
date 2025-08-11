@@ -1088,6 +1088,44 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         expect(res.body).toStrictEqual(expected);
       });
 
+      test('succeeds when fetching by id where race creator has been deleted', async () => {
+        const fromUtcStrToISOStr = (utcDateStr: string): string => {
+          const [year, month, date] = utcDateStr.split('-').map(Number);
+          return new Date(Date.UTC(year, month - 1, date)).toISOString();
+        };
+
+        const raceInDb = await raceUtils.createRace({ public: true });
+        const idToken = await raceInDb.userCredentials.user.getIdToken();
+        const expected = {
+          id: raceInDb.race.id,
+          public: raceInDb.race.public,
+          name: raceInDb.race.name,
+          type: raceInDb.race.type,
+          url: raceInDb.race.url,
+          email: raceInDb.race.email,
+          description: raceInDb.race.description,
+          dateFrom: fromUtcStrToISOStr(raceInDb.race.dateFrom as unknown as string),
+          dateTo: fromUtcStrToISOStr(raceInDb.race.dateTo as unknown as string),
+          registrationOpenDate: raceInDb.race.registrationOpenDate.toISOString(),
+          registrationCloseDate: raceInDb.race.registrationCloseDate.toISOString(),
+          user: {
+            id: raceInDb.user.id,
+            displayName: raceInDb.user.displayName,
+          },
+        };
+
+        await api // TODO: delete user directly from DB
+          .delete(`/api/v1/user/${raceInDb.user.id}`)
+          .set('Authorization', `Bearer ${idToken}`)
+          .expect(204);
+
+        const res = await api
+          .get(`${baseUrl}/${raceInDb.race.id}`)
+          .expect(200);
+
+        expect(res.body).toStrictEqual(expected);
+      });
+
       test('fails with status 404 for non existing ID', async () => {
         let nonExistingRaceId: number = generateRandomInteger();
         while ((await testDatabase.getRaceByPk(nonExistingRaceId)) !== null) {

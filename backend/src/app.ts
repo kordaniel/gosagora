@@ -3,6 +3,7 @@ import express from 'express';
 
 import authRouter from './routes/auth';
 import raceRouter from './routes/race';
+import userRouter from './routes/user';
 
 import config from './utils/config';
 import corsConfig from './utils/corsConfig';
@@ -21,6 +22,7 @@ app.get('/healthcheck', (_req, res) => {
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/race', raceRouter);
+app.use('/api/v1/user', userRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

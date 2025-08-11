@@ -2,6 +2,8 @@ import supertest from 'supertest';
 
 import { authTestSuite } from './authSuite';
 import { raceTestSuite } from './raceSuite';
+import { userTestSuite } from './userSuite';
+
 import testDatabase from '../testUtils/testDatabase';
 import testFirebase from '../testUtils/testFirebase';
 
@@ -23,4 +25,5 @@ describe('API routes', () => {
 
   authTestSuite(api);
   raceTestSuite(api);
+  userTestSuite(api);
 });

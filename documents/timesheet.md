@@ -90,4 +90,5 @@
 | 2025.08.08 | 2   | Add @common interface UserDetailsData. Refactor Back- & Frontend to use the new interface instead of User in suitable parts |
 | 2025.08.09 | 0.5 | FRONTEND: Validate auth API responses |
 | 2025.08.09 | 0.5 | FRONTEND: Add UserDetails type, refactor SelectAuth to return objects of this type |
-| Total | 142 | |
+| 2025.08.11 | 2   | BACKEND: Add user route, implement user (soft) deletion |
+| Total | 144 | |
