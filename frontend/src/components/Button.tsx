@@ -6,14 +6,22 @@ import { useTheme } from 'react-native-paper';
 
 import StyledText from './StyledText';
 
-import { AppTheme } from '../types';
+import type { AppTheme } from '../types';
 
 interface ButtonProps extends Omit<PressableProps, 'children' | 'onPressIn' | 'onPressOut'> {
   children: ReactNode, // Omit cb from PressableProps ('ReactNode | ((state: PressableStateCallbackType) => ReactNode)')
   ctxLoading?: boolean;
+  colors?: [string, string];
 }
 
-const Button = ({ children, ctxLoading, disabled, onPress, ...props }: ButtonProps) => {
+const Button = ({
+  children,
+  ctxLoading,
+  colors,
+  disabled,
+  onPress,
+  ...props
+}: ButtonProps) => {
   const theme = useTheme<AppTheme>();
   const backgroundColorRef = new Animated.Value(0);
 
@@ -35,7 +43,7 @@ const Button = ({ children, ctxLoading, disabled, onPress, ...props }: ButtonPro
 
   const backgroundColor = backgroundColorRef.interpolate({
     inputRange: [0, 1],
-    outputRange: [theme.colors.primary, theme.colors.onPrimary],
+    outputRange: colors ?? [theme.colors.primary, theme.colors.onPrimary],
   });
 
   return (
@@ -52,7 +60,7 @@ const Button = ({ children, ctxLoading, disabled, onPress, ...props }: ButtonPro
         disabled && theme.styles.buttonDisabled,
         ctxLoading && theme.styles.buttonLoading,
       ]}>
-        {ctxLoading && <ActivityIndicator color={theme.colors.onPrimary} size='small'/>}
+        {ctxLoading && <ActivityIndicator color={theme.colors.onPrimary} size="small"/>}
         <StyledText variant="button">
           {children}
         </StyledText>
