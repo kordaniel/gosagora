@@ -4,31 +4,51 @@ import { type GestureResponderEvent, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Button from '../../components/Button';
+import ErrorRenderer from '../../components/ErrorRenderer';
 import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
 import Separator from '../../components/Separator';
 import StyledText from '../../components/StyledText';
 
+import { SelectAuth, authSliceDeleteUser } from '../../store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { AppTheme } from '../../types';
-import { SelectAuth } from '../../store/slices/authSlice';
+import { askConfirmation } from '../../helpers/askConfirmation';
 import firebase from '../../modules/firebase';
-import { useAppSelector } from '../../store/hooks';
-
 
 const DangerZone = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
-  const handleDeletion = () => {
-    console.log('DEL');
+  const handleDeleteCb = (deletionConfirmation: boolean) => {
+    if (!deletionConfirmation) {
+      return;
+    }
+    dispatch(authSliceDeleteUser())
+      .then(errorString => {
+        setError(errorString === null ? '' : errorString);
+      })
+      .catch(err => {
+        console.error('Error deleting user:', err);
+      });
+  };
+
+  const onDeletePress = () => {
+    askConfirmation(
+      'Are you sure you want to delete your profile?',
+      handleDeleteCb
+    );
   };
 
   return (
     <View style={theme.styles.errorContainer}>
       <StyledText variant="title">Danger zone</StyledText>
       {isOpen && <>
+        <ErrorRenderer>{error}</ErrorRenderer>
         <Button
           colors={[theme.colors.onErrorContainer, theme.colors.errorContainer]}
-          onPress={handleDeletion}
+          onPress={onDeletePress}
         >
           Delete profile
         </Button>

@@ -10,6 +10,7 @@ import { ApplicationError } from '../../errors/applicationError';
 import { ReplaceField } from '../../types';
 import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
+import userService from '../../services/userService';
 
 import { type UserDetailsData } from '@common/types/rest_api';
 
@@ -141,6 +142,36 @@ export const authSliceHandleSignUp = (
         dispatch(authSliceSetError(error.message));
       } else {
         console.error('signup error was unhandled');
+      }
+    }
+  };
+};
+
+export const authSliceDeleteUser = (): AppAsyncThunk<string | null> => {
+  return async (dispatch, getState) => {
+    try {
+      const authState = getState();
+
+      if (!SelectAuth(authState).isAuthenticated) {
+        return 'Please Sign In to perform this action';
+      }
+
+      const userId = SelectAuth(authState).user?.id; // user !== null if isAuthenticated
+      if (!userId) {
+        return 'We ran into a problem while deleting your profile. Please try again, or contact our support team if the problem persists';
+      }
+
+      await userService.deleteOne(userId.toString());
+      dispatch(authSliceSetLoading(true));
+      await firebase.signOut();
+      return null;
+    } catch (error: unknown) {
+      dispatch(authSliceSetLoading(false));
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('deleting user:', error);
+        return 'Unknown error happened when deleting your profile';
       }
     }
   };
