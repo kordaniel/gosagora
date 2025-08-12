@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { type GestureResponderEvent, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Button from '../../components/Button';
 import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
+import Separator from '../../components/Separator';
 import StyledText from '../../components/StyledText';
 
 import type { AppTheme } from '../../types';
@@ -12,6 +13,39 @@ import { SelectAuth } from '../../store/slices/authSlice';
 import firebase from '../../modules/firebase';
 import { useAppSelector } from '../../store/hooks';
 
+
+const DangerZone = () => {
+  const theme = useTheme<AppTheme>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleDeletion = () => {
+    console.log('DEL');
+  };
+
+  return (
+    <View style={theme.styles.errorContainer}>
+      <StyledText variant="title">Danger zone</StyledText>
+      {isOpen && <>
+        <Button
+          colors={[theme.colors.onErrorContainer, theme.colors.errorContainer]}
+          onPress={handleDeletion}
+        >
+          Delete profile
+        </Button>
+      </>
+      }
+      <Button
+        colors={isOpen
+          ? undefined
+          : [theme.colors.onErrorContainer, theme.colors.errorContainer]
+        }
+        onPress={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? "Close danger zone" : "Open danger zone"}
+      </Button>
+    </View>
+  );
+};
 
 const SignedInView = () => {
   const theme = useTheme<AppTheme>();
@@ -57,6 +91,8 @@ const SignedInView = () => {
       <Button onPress={firebase.signOut as (e?: GestureResponderEvent) => void}>
         Sign Out
       </Button>
+      <Separator height={20} />
+      <DangerZone />
     </View>
   );
 };
