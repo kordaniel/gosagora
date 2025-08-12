@@ -5,9 +5,9 @@ import {
   initializeApp,
 } from 'firebase/app';
 import {
+  type User as FirebaseUser,
   type NextOrObserver,
   type Unsubscribe,
-  type as FirebaseUser,
   connectAuthEmulator,
   signInWithEmailAndPassword as fbAuthSignInWithEmailAndPassword,
   signOut as fbAuthSignOut,
