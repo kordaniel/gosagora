@@ -147,20 +147,34 @@ export const authSliceHandleSignUp = (
   };
 };
 
-export const authSliceDeleteUser = (): AppAsyncThunk<string | null> => {
+export const authSliceDeleteUser = (password: string): AppAsyncThunk<string | null> => {
   return async (dispatch, getState) => {
+    const authState = getState();
+
+    if (!SelectAuth(authState).isAuthenticated) {
+      return 'Please Sign In to perform this action';
+    }
+
+    const userId = SelectAuth(authState).user?.id; // user !== null if isAuthenticated
+    if (!userId) {
+      return 'We ran into a problem while deleting your profile. Please try again, or contact our support team if the problem persists';
+    }
+
     try {
-      const authState = getState();
-
-      if (!SelectAuth(authState).isAuthenticated) {
-        return 'Please Sign In to perform this action';
+      await firebase.verifyCurrentUserPassword(password.trim());
+    } catch (error: unknown) {
+      if (error instanceof FirebaseError && error.code === 'auth/wrong-password') {
+        return 'Incorrect password. Please try again!';
+      } else if (error instanceof Error) {
+        console.log('gen err:', error.message);
+        return error.message;
+      } else {
+        console.log('unhandled error at DeleteUser passwd confirmation:', error);
+        return 'Unknown error happened. Please try again!';
       }
+    }
 
-      const userId = SelectAuth(authState).user?.id; // user !== null if isAuthenticated
-      if (!userId) {
-        return 'We ran into a problem while deleting your profile. Please try again, or contact our support team if the problem persists';
-      }
-
+    try {
       await userService.deleteOne(userId.toString());
       dispatch(authSliceSetLoading(true));
       await firebase.signOut();
@@ -170,8 +184,8 @@ export const authSliceDeleteUser = (): AppAsyncThunk<string | null> => {
       if (error instanceof ApplicationError) {
         return error.message;
       } else {
-        console.error('deleting user:', error);
-        return 'Unknown error happened when deleting your profile';
+        console.error('unhandled error at DeleteUser:', error);
+        return 'Unknown error happened. Please try again!';
       }
     }
   };

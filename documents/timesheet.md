@@ -92,4 +92,5 @@
 | 2025.08.09 | 0.5 | FRONTEND: Add UserDetails type, refactor SelectAuth to return objects of this type |
 | 2025.08.11 | 2   | BACKEND: Add user route, implement user (soft) deletion |
 | 2025.08.12 | 2   | FRONTEND: Add DangerZone component to UserProfile page where user can delete her profile, implement required logic |
-| Total | 146 | |
+| 2025.08.13 | 2   | FRONTEND: Add password confirmation to user profile deletion |
+| Total | 148 | |

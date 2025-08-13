@@ -4,7 +4,9 @@ import {
   getApps,
   initializeApp,
 } from 'firebase/app';
+
 import {
+  EmailAuthProvider,
   type User as FirebaseUser,
   type NextOrObserver,
   type Unsubscribe,
@@ -15,9 +17,11 @@ import {
   getAuth,
   getReactNativePersistence, // NOTE: undefined outside mobile environments
   onAuthStateChanged,
+  reauthenticateWithCredential,
 } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { AuthError } from '../errors/applicationError';
 import config from '../utils/config';
 import firebaseConfigObj from '../utils/firebaseConfig';
 
@@ -98,9 +102,22 @@ const getCurrentUserIdToken = async (): Promise<string | null> => {
   return await currentUser.getIdToken();
 };
 
+const verifyCurrentUserPassword = async (password: string) => {
+  const currentUser = firebaseAuth.currentUser;
+
+  if (!currentUser || !currentUser.email) {
+    throw new AuthError();
+  }
+
+  const credential = EmailAuthProvider.credential(currentUser.email, password);
+
+  await reauthenticateWithCredential(currentUser, credential);
+};
+
 export default {
   addOnAuthChangeObserver,
   getCurrentUserIdToken,
   signInWithEmailAndPassword,
   signOut,
+  verifyCurrentUserPassword,
 };

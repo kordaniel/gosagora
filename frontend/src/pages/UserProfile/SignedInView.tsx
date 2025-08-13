@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 
+import * as Yup from 'yup';
 import { type GestureResponderEvent, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
+
+import Form, { type FormProps } from '../../components/Form';
+import { FormInputType } from '../../components/Form/enums';
 
 import Button from '../../components/Button';
 import ErrorRenderer from '../../components/ErrorRenderer';
@@ -15,23 +19,90 @@ import type { AppTheme } from '../../types';
 import { askConfirmation } from '../../helpers/askConfirmation';
 import firebase from '../../modules/firebase';
 
-const DangerZone = () => {
+export type PasswordValidationValuesType = {
+  password: string;
+};
+
+const validationSchema: Yup.Schema<PasswordValidationValuesType> = Yup.object().shape({
+  password: Yup.string()
+    .trim()
+    .min(8, 'Password must be at least 8 characters long')
+    .max(30, 'Password can not be longer than 30 characters')
+    .required('We need your password before we can proceed'),
+});
+
+const formFields: FormProps<PasswordValidationValuesType>['formFields'] = {
+  password: {
+    inputType: FormInputType.TextField,
+    placeholder: 'Password',
+    props: {
+      autoCapitalize: 'none',
+      autoComplete: 'off',
+      autoCorrect: false,
+      autoFocus: false,
+      inputMode: 'text',
+      secureTextEntry: true,
+    },
+  },
+};
+
+interface VerifyPasswordAndDeleteProfileProps {
+  setDeletionConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
+  setError: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const VerifyPasswordAndDeleteProfile = ({ setDeletionConfirmed, setError }: VerifyPasswordAndDeleteProfileProps) => {
   const dispatch = useAppDispatch();
+
+  const onSubmit = async (values: PasswordValidationValuesType) => {
+    const errorMessage = await dispatch(authSliceDeleteUser(values.password));
+
+    if (!errorMessage) {
+      setError('');
+      setDeletionConfirmed(false);
+    } else {
+      setError(errorMessage);
+    }
+  };
+
+  const onCancel = () => {
+    setError('');
+    setDeletionConfirmed(false);
+  };
+
+  return (
+    <View>
+      <StyledText variant="title">Are you sure you want to delete your profile</StyledText>
+      <StyledText>This action is permanent. Enter your password below to confirm that you really want to delete your profile</StyledText>
+      <Form<PasswordValidationValuesType>
+        formFields={formFields}
+        onSubmit={onSubmit}
+        submitLabel="Confirm profile deletion"
+        validationSchema={validationSchema}
+      />
+      <Button onPress={onCancel}>Cancel</Button>
+    </View>
+  );
+};
+
+const DangerZone = () => {
   const theme = useTheme<AppTheme>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [deletionConfirmend, setDeletionConfirmed] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const handleDeleteCb = (deletionConfirmation: boolean) => {
-    if (!deletionConfirmation) {
-      return;
+    setDeletionConfirmed(deletionConfirmation);
+  };
+
+  const onOpenClosePress = () => {
+    if (isOpen) {
+      setError('');
+      setDeletionConfirmed(false);
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
     }
-    dispatch(authSliceDeleteUser())
-      .then(errorString => {
-        setError(errorString === null ? '' : errorString);
-      })
-      .catch(err => {
-        console.error('Error deleting user:', err);
-      });
   };
 
   const onDeletePress = () => {
@@ -43,15 +114,21 @@ const DangerZone = () => {
 
   return (
     <View style={theme.styles.errorContainer}>
-      <StyledText variant="title">Danger zone</StyledText>
+      <StyledText variant={isOpen ? 'headline' : 'title'}>Danger zone</StyledText>
       {isOpen && <>
         <ErrorRenderer>{error}</ErrorRenderer>
-        <Button
-          colors={[theme.colors.onErrorContainer, theme.colors.errorContainer]}
-          onPress={onDeletePress}
-        >
-          Delete profile
-        </Button>
+        {deletionConfirmend
+          ? <VerifyPasswordAndDeleteProfile
+              setDeletionConfirmed={setDeletionConfirmed}
+              setError={setError}
+            />
+          : <Button
+              colors={[theme.colors.onErrorContainer, theme.colors.errorContainer]}
+              onPress={onDeletePress}
+            >
+              I want to delete my profile
+            </Button>
+        }
       </>
       }
       <Button
@@ -59,7 +136,7 @@ const DangerZone = () => {
           ? undefined
           : [theme.colors.onErrorContainer, theme.colors.errorContainer]
         }
-        onPress={() => setIsOpen(!isOpen)}
+        onPress={onOpenClosePress}
       >
         {isOpen ? "Close danger zone" : "Open danger zone"}
       </Button>
