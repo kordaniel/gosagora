@@ -181,7 +181,6 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     alignItems: 'center',
-    flex: 1,
     flexDirection: 'row',
     gap: 3,
     justifyContent: 'space-between',
@@ -210,7 +209,6 @@ const lightStyle = StyleSheet.create({
   },
   buttonText: {
     ...lightTheme.fonts.default,
-    backgroundColor: lightTheme.colors.primary,
     color: lightTheme.colors.onPrimary,
   },
   developerViewContainer: {
@@ -315,7 +313,6 @@ const darkStyle = StyleSheet.create({
   },
   buttonText: {
     ...darkTheme.fonts.default,
-    backgroundColor: darkTheme.colors.primary,
     color: darkTheme.colors.onPrimary,
   },
   developerViewContainer: {

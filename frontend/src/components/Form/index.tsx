@@ -11,6 +11,7 @@ import {
 import {
   type GestureResponderEvent,
   type TextInputProps,
+  StyleSheet,
   View
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -106,11 +107,10 @@ const Form = <FormValuesType extends FormikValuesType, >({
   const theme = useTheme<AppTheme>();
   const formikRef = useRef<FormikProps<FormValuesType>>(null);
 
-  const style = [
+  const style = StyleSheet.compose(
     theme.styles.containerFlexColumn,
-    theme.styles.primaryContainer,
     theme.styles.stretchContainer,
-  ];
+  );
 
   const handleOnSubmit = async (
     values: FormValuesType,

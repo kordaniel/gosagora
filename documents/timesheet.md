@@ -87,4 +87,10 @@
 | 2025.08.05 | 0.5 | BACKEND: Add constants module |
 | 2025.08.06 | 2.5 | Add common interface RaceListingData that contains only serializable data, use in rest api and frontend. Refactor front- and backend to use the new interface |
 | 2025.08.07 | 2   | FRONTEND: Add react-native-async-storage, configure firebase auth to persist user's session in mobile environments |
-| Total | 139 | |
+| 2025.08.08 | 2   | Add @common interface UserDetailsData. Refactor Back- & Frontend to use the new interface instead of User in suitable parts |
+| 2025.08.09 | 0.5 | FRONTEND: Validate auth API responses |
+| 2025.08.09 | 0.5 | FRONTEND: Add UserDetails type, refactor SelectAuth to return objects of this type |
+| 2025.08.11 | 2   | BACKEND: Add user route, implement user (soft) deletion |
+| 2025.08.12 | 2   | FRONTEND: Add DangerZone component to UserProfile page where user can delete her profile, implement required logic |
+| 2025.08.13 | 2   | FRONTEND: Add password confirmation to user profile deletion |
+| Total | 148 | |

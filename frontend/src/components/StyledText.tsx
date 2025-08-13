@@ -10,7 +10,7 @@ import type {
 import { StyleSheet, Text } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-import { AppTheme } from '../types';
+import type { AppTheme } from '../types';
 import { assertNever } from '../utils/typeguards';
 
 const variantStyle = (theme: AppTheme, variant: StyledTextProps['variant']): StyleProp<ViewStyle | ImageStyle | TextStyle> => {

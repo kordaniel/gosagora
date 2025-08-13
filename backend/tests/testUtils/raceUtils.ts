@@ -87,11 +87,14 @@ const createRaces = async (): Promise<Array<{ user: User; race: Race, userCreden
   }));
 };
 
-const createRace = async (): Promise<{ user: User; race: Race, userCredentials: UserCredential }> => {
+const createRace = async (
+  raceCreationArguments?: { public: boolean; }
+): Promise<{ user: User; race: Race, userCredentials: UserCredential }> => {
   const user = await userUtils.createSignedInUser();
   const race = await Race.create({
     userId: user.user.id,
-    ...getRaceCreationAttributesObject()
+    ...getRaceCreationAttributesObject(),
+    ...raceCreationArguments,
   });
   return {
     user: user.user,

@@ -5,10 +5,14 @@ import {
 import { FirebaseError } from 'firebase/app';
 
 import type { AppAsyncThunk, RootState } from '../index';
+import { type UserDetails, toUserDetails } from '../../models/user';
 import { ApplicationError } from '../../errors/applicationError';
-import { type GosaGoraUser } from '../../types';
+import { ReplaceField } from '../../types';
 import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
+import userService from '../../services/userService';
+
+import { type UserDetailsData } from '@common/types/rest_api';
 
 /**
  * !!! NOTE: The possible error strings that are set in the
@@ -18,7 +22,7 @@ import firebase from '../../modules/firebase';
  */
 
 export interface AuthState {
-  user: GosaGoraUser | null;
+  user: UserDetailsData | null;
   error: string | null;
   isInitialized: boolean;
   loading: boolean;
@@ -35,7 +39,7 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<GosaGoraUser | null>) => {
+    setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
@@ -57,8 +61,11 @@ export const {
   setLoading: authSliceSetLoading,
 } = authSlice.actions;
 
-export const SelectAuth = (state: RootState) => ({
+export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
+  isAuthenticated: boolean;
+} => ({
   ...state.auth,
+  user: state.auth.user ? toUserDetails(state.auth.user) : null,
   isAuthenticated: !state.auth.loading && state.auth.user !== null,
 });
 
@@ -135,6 +142,50 @@ export const authSliceHandleSignUp = (
         dispatch(authSliceSetError(error.message));
       } else {
         console.error('signup error was unhandled');
+      }
+    }
+  };
+};
+
+export const authSliceDeleteUser = (password: string): AppAsyncThunk<string | null> => {
+  return async (dispatch, getState) => {
+    const authState = getState();
+
+    if (!SelectAuth(authState).isAuthenticated) {
+      return 'Please Sign In to perform this action';
+    }
+
+    const userId = SelectAuth(authState).user?.id; // user !== null if isAuthenticated
+    if (!userId) {
+      return 'We ran into a problem while deleting your profile. Please try again, or contact our support team if the problem persists';
+    }
+
+    try {
+      await firebase.verifyCurrentUserPassword(password.trim());
+    } catch (error: unknown) {
+      if (error instanceof FirebaseError && error.code === 'auth/wrong-password') {
+        return 'Incorrect password. Please try again!';
+      } else if (error instanceof Error) {
+        console.log('gen err:', error.message);
+        return error.message;
+      } else {
+        console.log('unhandled error at DeleteUser passwd confirmation:', error);
+        return 'Unknown error happened. Please try again!';
+      }
+    }
+
+    try {
+      await userService.deleteOne(userId.toString());
+      dispatch(authSliceSetLoading(true));
+      await firebase.signOut();
+      return null;
+    } catch (error: unknown) {
+      dispatch(authSliceSetLoading(false));
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('unhandled error at DeleteUser:', error);
+        return 'Unknown error happened. Please try again!';
       }
     }
   };

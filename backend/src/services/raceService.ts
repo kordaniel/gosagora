@@ -20,6 +20,7 @@ const raceDataQueryOpts: FindOptions = {
   ],
   include: [{
     model: User,
+    paranoid: false,
     attributes: ['id', 'displayName']
   }],
 };
@@ -28,6 +29,7 @@ const raceListingDataQueryOpts: FindOptions = {
   attributes: ['id', 'name', 'type', 'description', 'dateFrom', 'dateTo'],
   include: {
     model: User,
+    paranoid: false,
     attributes: ['id', 'displayName'],
   },
 };
