@@ -2,10 +2,11 @@ import express, {
   type Request,
   type Response,
 } from 'express';
+import type { ParamsDictionary } from 'express-serve-static-core';
 
-import { APIRequestError, ServiceError } from '../errors/applicationError';
-import type { NewRaceAttributes, RequestUserExtended } from '../types';
+import { APIRequestError, AuthError } from '../errors/applicationError';
 import { newRaceParser, updateRaceParser } from './parsers/raceParsers';
+import type { NewRaceAttributes } from '../types';
 import middleware from '../utils/middleware';
 import raceService from '../services/raceService';
 
@@ -19,20 +20,18 @@ import type {
 const router = express.Router();
 
 router.post('/', [middleware.userExtractor, newRaceParser], async (
-  req: RequestUserExtended<unknown, unknown, APIRaceRequest<'create', NewRaceAttributes>>,
+  req: Request<unknown, unknown, APIRaceRequest<'create', NewRaceAttributes>>,
   res: Response<RaceListingData>
 ) => {
-  //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
-  //           not set => req.user is always defined here if this function is run
-  if (req.user) {
-    const newRace = await raceService.createNewRace(
-      req.user.id,
-      req.body.data
-    );
-    res.status(201).json(newRace);
-  } else {
-    throw new ServiceError(); // TODO: remove when typing is fixed
+  if (!req.user) {
+    throw new AuthError('Forbidden: invalid user', 403);
   }
+
+  const newRace = await raceService.createNewRace(
+    req.user.id,
+    req.body.data
+  );
+  res.status(201).json(newRace);
 });
 
 router.get('/', async (_req: Request, res: Response<RaceListingData[]>) => {
@@ -51,43 +50,39 @@ router.get('/:id', async (req: Request, res: Response<RaceData>) => {
 });
 
 router.delete('/:id', middleware.userExtractor, async (
-  req: RequestUserExtended,
+  req: Request,
   res: Response
 ) => {
   const raceId = parseInt(req.params.id, 10);
   if (isNaN(raceId) || raceId === 0) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
-
-  //  // TODO: Fix typing for RequestUserExtended.... userExtractor throws if user is
-  //           not set => req.user is always defined here if this function is run
-  if (req.user) {
-    await raceService.deleteOne(req.user.id, raceId);
-    res.status(204).end();
-  } else {
-    throw new ServiceError(); // TODO: remove when typing is fixed
+  if (!req.user) {
+    throw new AuthError('Forbidden: invalid user', 403);
   }
+
+  await raceService.deleteOne(req.user.id, raceId);
+  res.status(204).end();
 });
 
 router.patch('/:id', [middleware.userExtractor, updateRaceParser], async (
-  req: RequestUserExtended<unknown, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
+  req: Request<ParamsDictionary, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
   res: Response<RacePatchResponseData>
 ) => {
   const raceId = parseInt(req.params.id, 10);
   if (isNaN(raceId) || raceId === 0) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
-
-  if (req.user) {
-    const updatedRace = await raceService.updateRace(
-      req.user.id,
-      raceId,
-      req.body.data
-    );
-    res.status(200).json(updatedRace);
-  } else {
-    throw new ServiceError(); // TODO: remove when typing is fixed
+  if (!req.user) {
+    throw new AuthError('Forbidden: invalid user', 403);
   }
+
+  const updatedRace = await raceService.updateRace(
+    req.user.id,
+    raceId,
+    req.body.data
+  );
+  res.status(200).json(updatedRace);
 });
 
 export default router;

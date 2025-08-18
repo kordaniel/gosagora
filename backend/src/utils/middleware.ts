@@ -1,6 +1,7 @@
 import type {
   ErrorRequestHandler,
   NextFunction,
+  Request,
   RequestHandler,
   Response,
 } from 'express';
@@ -24,8 +25,6 @@ import { snakeToCamelCase } from './helpers';
 
 import authService from '../services/authService';
 import userService from '../services/userService';
-
-import type { RequestUserExtended } from '../types';
 
 
 const handleApplicationError = (err: ApplicationErrorType, res: Response) => {
@@ -198,7 +197,7 @@ const unknownEndpoint: RequestHandler = (req, res) => {
 };
 
 const userExtractor = async (
-  req: RequestUserExtended<unknown, unknown, unknown>,
+  req: Request,
   _res: Response,
   next: NextFunction
 ) => {
@@ -214,10 +213,9 @@ const userExtractor = async (
 
   if (user) {
     req.user = user;
-    next();
-  } else {
-    throw new AuthError('Forbidden: invalid user', 403);
   }
+
+  next();
 };
 
 export default {

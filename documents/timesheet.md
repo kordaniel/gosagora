@@ -93,4 +93,6 @@
 | 2025.08.11 | 2   | BACKEND: Add user route, implement user (soft) deletion |
 | 2025.08.12 | 2   | FRONTEND: Add DangerZone component to UserProfile page where user can delete her profile, implement required logic |
 | 2025.08.13 | 2   | FRONTEND: Add password confirmation to user profile deletion |
-| Total | 148 | |
+| 2025.08.18 | 0.5 | BACKEND: Refactor userExtractor to not throw if firebase token user uid was not found in local DB |
+| 2025.08.18 | 0.5 | BACKEND: Delete RequestUserExtended interface and augment @types/express Request type with optional user field |
+| Total | 149 | |
