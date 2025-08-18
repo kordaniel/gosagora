@@ -214,10 +214,9 @@ const userExtractor = async (
 
   if (user) {
     req.user = user;
-    next();
-  } else {
-    throw new AuthError('Forbidden: invalid user', 403);
   }
+
+  next();
 };
 
 export default {
