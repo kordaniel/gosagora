@@ -1,16 +1,16 @@
 import express, {
+  type Request,
   type Response,
 } from 'express';
 
 import { APIRequestError, AuthError } from '../errors/applicationError';
-import type { RequestUserExtended } from '../types';
 import middleware from '../utils/middleware';
 import userService from '../services/userService';
 
 const router = express.Router();
 
 router.delete('/:id', middleware.userExtractor, async (
-  req: RequestUserExtended,
+  req: Request,
   res: Response
 ) => {
   const userToDeleteId = parseInt(req.params.id, 10);

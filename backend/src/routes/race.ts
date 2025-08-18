@@ -2,10 +2,11 @@ import express, {
   type Request,
   type Response,
 } from 'express';
+import type { ParamsDictionary } from 'express-serve-static-core';
 
 import { APIRequestError, AuthError } from '../errors/applicationError';
-import type { NewRaceAttributes, RequestUserExtended } from '../types';
 import { newRaceParser, updateRaceParser } from './parsers/raceParsers';
+import type { NewRaceAttributes } from '../types';
 import middleware from '../utils/middleware';
 import raceService from '../services/raceService';
 
@@ -19,7 +20,7 @@ import type {
 const router = express.Router();
 
 router.post('/', [middleware.userExtractor, newRaceParser], async (
-  req: RequestUserExtended<unknown, unknown, APIRaceRequest<'create', NewRaceAttributes>>,
+  req: Request<unknown, unknown, APIRaceRequest<'create', NewRaceAttributes>>,
   res: Response<RaceListingData>
 ) => {
   if (!req.user) {
@@ -49,7 +50,7 @@ router.get('/:id', async (req: Request, res: Response<RaceData>) => {
 });
 
 router.delete('/:id', middleware.userExtractor, async (
-  req: RequestUserExtended,
+  req: Request,
   res: Response
 ) => {
   const raceId = parseInt(req.params.id, 10);
@@ -65,7 +66,7 @@ router.delete('/:id', middleware.userExtractor, async (
 });
 
 router.patch('/:id', [middleware.userExtractor, updateRaceParser], async (
-  req: RequestUserExtended<unknown, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
+  req: Request<ParamsDictionary, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
   res: Response<RacePatchResponseData>
 ) => {
   const raceId = parseInt(req.params.id, 10);
