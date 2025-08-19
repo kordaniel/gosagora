@@ -1,0 +1,76 @@
+import {
+  type Attributes,
+  type CreationAttributes,
+  type CreationOptional,
+  DataTypes,
+  type ForeignKey,
+  type InferAttributes,
+  type InferCreationAttributes,
+  Model,
+} from 'sequelize';
+
+import {
+  SAILBOAT_CONSTANTS,
+  USER_CONSTANTS,
+  USER_SAILBOAT_CONSTANTS,
+} from '../constants';
+import Sailboat from './sailboat';
+import User from './user';
+
+import { sequelize } from '../database';
+
+export type UserSailboatAttributesType = Attributes<UserSailboat>;
+export type UserSailboatCreationAttributesType = CreationAttributes<UserSailboat>;
+
+class UserSailboat extends Model<InferAttributes<UserSailboat>, InferCreationAttributes<UserSailboat>> {
+  declare userId: ForeignKey<User['id']>;
+  declare sailboatId: ForeignKey<Sailboat['id']>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+  declare deletedAt: Date | null;
+};
+
+UserSailboat.init({
+  userId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+    references: {
+      model: USER_CONSTANTS.MODEL_NAME,
+      key: 'id'
+    },
+  },
+  sailboatId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+    references: {
+      model: SAILBOAT_CONSTANTS.MODEL_NAME,
+      key: 'id'
+    },
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+    validate: {
+      isDate: true,
+    },
+  },
+}, {
+  sequelize,
+  modelName: USER_SAILBOAT_CONSTANTS.MODEL_NAME,
+  paranoid: true,
+  timestamps: true,
+  underscored: true,
+});
+
+export default UserSailboat;

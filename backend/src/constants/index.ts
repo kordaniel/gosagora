@@ -1,2 +1,4 @@
 export { RACE_CONSTANTS } from './race.constants';
+export { SAILBOAT_CONSTANTS } from './sailboat.constants';
 export { USER_CONSTANTS } from './user.constants';
+export { USER_SAILBOAT_CONSTANTS } from './userSailboat.constants';
