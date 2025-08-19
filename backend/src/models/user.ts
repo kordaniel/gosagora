@@ -50,8 +50,8 @@ User.init({
     validate: {
       isEmail: true,
       len: [
-        USER_CONSTANTS.EMAIL_LEN.MIN,
-        USER_CONSTANTS.EMAIL_LEN.MAX,
+        USER_CONSTANTS.VALIDATION.EMAIL_LEN.MIN,
+        USER_CONSTANTS.VALIDATION.EMAIL_LEN.MAX,
       ],
     },
   },
@@ -66,8 +66,8 @@ User.init({
     allowNull: false,
     validate: {
       len: [
-        USER_CONSTANTS.DISPLAY_NAME_LEN.MIN,
-        USER_CONSTANTS.DISPLAY_NAME_LEN.MAX,
+        USER_CONSTANTS.VALIDATION.DISPLAY_NAME_LEN.MIN,
+        USER_CONSTANTS.VALIDATION.DISPLAY_NAME_LEN.MAX,
       ],
     },
   },
@@ -132,7 +132,7 @@ User.init({
     },
   },
   sequelize,
-  modelName: 'user',
+  modelName: USER_CONSTANTS.MODEL_NAME,
   paranoid: true, // soft-delete
   timestamps: true,
   underscored: true,

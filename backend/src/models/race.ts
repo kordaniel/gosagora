@@ -9,7 +9,10 @@ import {
   type NonAttribute,
 } from 'sequelize';
 
-import { RACE_CONSTANTS } from '../constants';
+import {
+  RACE_CONSTANTS,
+  USER_CONSTANTS,
+} from '../constants';
 import User from './user';
 import { sequelize } from '../database';
 
@@ -47,7 +50,7 @@ Race.init({
   userId: {
     type: DataTypes.INTEGER,
     allowNull: true, // allow null values so the user can be deleted while keeping the races, requires SET NULL onDelete
-    references: { model: 'user', key: 'id' },
+    references: { model: USER_CONSTANTS.MODEL_NAME, key: 'id' },
     onDelete: 'SET NULL',
   },
   public: {
@@ -60,8 +63,8 @@ Race.init({
     allowNull: false,
     validate: {
       len: [
-        RACE_CONSTANTS.NAME_LEN.MIN,
-        RACE_CONSTANTS.NAME_LEN.MAX,
+        RACE_CONSTANTS.VALIDATION.NAME_LEN.MIN,
+        RACE_CONSTANTS.VALIDATION.NAME_LEN.MAX,
       ],
     },
   },
@@ -74,8 +77,8 @@ Race.init({
     type: DataTypes.TEXT,
     validate: {
       len: [
-        RACE_CONSTANTS.URL_LEN.MIN,
-        RACE_CONSTANTS.URL_LEN.MAX,
+        RACE_CONSTANTS.VALIDATION.URL_LEN.MIN,
+        RACE_CONSTANTS.VALIDATION.URL_LEN.MAX,
       ],
     },
   },
@@ -84,8 +87,8 @@ Race.init({
     validate: {
       isEmail: true,
       len: [
-        RACE_CONSTANTS.EMAIL_LEN.MIN,
-        RACE_CONSTANTS.EMAIL_LEN.MAX,
+        RACE_CONSTANTS.VALIDATION.EMAIL_LEN.MIN,
+        RACE_CONSTANTS.VALIDATION.EMAIL_LEN.MAX,
       ],
     },
   },
@@ -94,8 +97,8 @@ Race.init({
     allowNull: false,
     validate: {
       len: [
-        RACE_CONSTANTS.DESCRIPTION_LEN.MIN,
-        RACE_CONSTANTS.DESCRIPTION_LEN.MAX,
+        RACE_CONSTANTS.VALIDATION.DESCRIPTION_LEN.MIN,
+        RACE_CONSTANTS.VALIDATION.DESCRIPTION_LEN.MAX,
       ],
     },
   },
@@ -145,7 +148,7 @@ Race.init({
   },
 }, {
   sequelize,
-  modelName: 'race',
+  modelName: RACE_CONSTANTS.MODEL_NAME,
   paranoid: true,
   timestamps: true,
   underscored: true,

@@ -20,3 +20,14 @@ export interface NewRaceAttributes extends Omit<CreateRaceArguments,
   registrationOpenDate: Date;
   registrationCloseDate: Date;
 }
+
+export interface ConstantsModelObj {
+  MODEL_NAME: string;
+  SQL_TABLE_NAME: string;
+  VALIDATION: {
+    [key: string]: {
+      MIN: number;
+      MAX: number;
+    }
+  }
+}

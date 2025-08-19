@@ -95,4 +95,5 @@
 | 2025.08.13 | 2   | FRONTEND: Add password confirmation to user profile deletion |
 | 2025.08.18 | 0.5 | BACKEND: Refactor userExtractor to not throw if firebase token user uid was not found in local DB |
 | 2025.08.18 | 0.5 | BACKEND: Delete RequestUserExtended interface and augment @types/express Request type with optional user field |
-| Total | 149 | |
+| 2025.08.19 | 1   | BACKEND: Add interface for objects holding constants, refactor sql table- and model names into constants |
+| Total | 150 | |

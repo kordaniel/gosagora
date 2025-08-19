@@ -1,8 +1,10 @@
 import { DataTypes, QueryInterface } from 'sequelize';
 
+import { USER_CONSTANTS } from '../../constants';
+
 module.exports = {
   up: async ({ context: queryInterface }: { context: QueryInterface }) => {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable(USER_CONSTANTS.SQL_TABLE_NAME, {
       id:{
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -49,6 +51,6 @@ module.exports = {
     });
   },
   down: async ({ context: queryInterface }: { context: QueryInterface }) => {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable(USER_CONSTANTS.SQL_TABLE_NAME);
   },
 };

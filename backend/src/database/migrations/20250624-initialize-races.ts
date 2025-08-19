@@ -1,10 +1,12 @@
 import { DataTypes, QueryInterface } from 'sequelize';
 
+import { RACE_CONSTANTS, USER_CONSTANTS } from '../../constants';
+
 import { RaceType } from '@common/types/race';
 
 module.exports = {
   up: async ({ context: queryInterface }: { context: QueryInterface }) => {
-    await queryInterface.createTable('races', {
+    await queryInterface.createTable(RACE_CONSTANTS.SQL_TABLE_NAME, {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -13,7 +15,7 @@ module.exports = {
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: true, // allow null values so the user can be deleted while keeping the races, requires SET NULL onDelete
-        references: { model: 'users', key: 'id' },
+        references: { model: USER_CONSTANTS.SQL_TABLE_NAME, key: 'id' },
         onDelete: 'SET NULL',
       },
       public: {
@@ -72,7 +74,7 @@ module.exports = {
     });
   },
   down: async ({ context: queryInterface }: { context: QueryInterface }) => {
-    await queryInterface.dropTable('races');
+    await queryInterface.dropTable(RACE_CONSTANTS.SQL_TABLE_NAME);
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_races_type"');
   },
 };
