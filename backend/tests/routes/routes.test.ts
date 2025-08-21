@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 
 import { authTestSuite } from './authSuite';
+import { boatTestSuite } from './boatSuite';
 import { raceTestSuite } from './raceSuite';
 import { userTestSuite } from './userSuite';
 
@@ -10,6 +11,20 @@ import testFirebase from '../testUtils/testFirebase';
 import app from '../../src/app';
 
 const api = supertest(app);
+
+const clearDbRunTestSuite = (testSuite: () => void) => {
+  describe('With empty DB', () => {
+    beforeAll(async () => {
+      await testFirebase.dropUsers();
+      await testDatabase.dropUserSailboats();
+      await testDatabase.dropSailboats();
+      await testDatabase.dropRaces();
+      await testDatabase.dropUsers();
+    });
+
+    testSuite();
+  });
+};
 
 describe('API routes', () => {
   beforeAll(async () => {
@@ -23,7 +38,8 @@ describe('API routes', () => {
 
   // Test suites are run in sequential order
 
-  authTestSuite(api);
-  raceTestSuite(api);
-  userTestSuite(api);
+  clearDbRunTestSuite(() => authTestSuite(api));
+  clearDbRunTestSuite(() => boatTestSuite(api));
+  clearDbRunTestSuite(() => raceTestSuite(api));
+  clearDbRunTestSuite(() => userTestSuite(api));
 });

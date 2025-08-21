@@ -4,19 +4,12 @@ import { type UserCredential } from 'firebase/auth';
 import { generateRandomInteger } from '../testUtils/testHelpers';
 import raceUtils from '../testUtils/raceUtils';
 import testDatabase from '../testUtils/testDatabase';
-import testFirebase from '../testUtils/testFirebase';
 import userUtils from '../testUtils/userUtils';
 
 import { Race, User } from '../../src/models';
 
 export const userTestSuite = (api: TestAgent) => describe('/user', () => {
   const baseUrl = '/api/v1/user';
-
-  beforeAll(async () => {
-    await testFirebase.dropUsers();
-    await testDatabase.dropRaces();
-    await testDatabase.dropUsers();
-  });
 
   describe('Deleting user', () => {
     let userWithoutRaceCredentials: {

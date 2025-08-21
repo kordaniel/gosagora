@@ -13,11 +13,6 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
   const baseUrl = '/api/v1/auth';
 
   describe('When no users exist', () => {
-    beforeAll(async () => {
-      await testFirebase.dropUsers();
-      await testDatabase.dropRaces();
-      await testDatabase.dropUsers();
-    });
 
     describe('Addition of new users', () => {
 
@@ -353,6 +348,8 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
 
     beforeAll(async () => {
       await testFirebase.dropUsers();
+      await testDatabase.dropUserSailboats();
+      await testDatabase.dropSailboats();
       await testDatabase.dropRaces();
       await testDatabase.dropUsers();
 

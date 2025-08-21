@@ -1,4 +1,4 @@
-import { Race, User } from '../../src/models';
+import { Race, Sailboat, User, UserSailboats } from '../../src/models';
 import { connectToDatabase, sequelize } from '../../src/database';
 import { UserCreationAttributesType } from '../../src/models/user';
 import config from '../../src/utils/config';
@@ -34,9 +34,29 @@ const dropUsers = async () => {
 
 const dropRaces = async () => {
   if (!config.IS_TEST_ENV) {
-    throw new Error('Attempted to truncate users table outside test environment');
+    throw new Error('Attempted to truncate races table outside test environment');
   }
   await Race.destroy({
+    where: {},
+    force: true,
+  });
+};
+
+const dropSailboats = async () => {
+  if (!config.IS_TEST_ENV) {
+    throw new Error('Attempted to truncate sailboat table outside test environment');
+  }
+  await Sailboat.destroy({
+    where: {},
+    force: true,
+  });
+};
+
+const dropUserSailboats = async () => {
+  if (!config.IS_TEST_ENV) {
+    throw new Error('Attempted to truncate userSailboats table outside test environment');
+  }
+  await UserSailboats.destroy({
     where: {},
     force: true,
   });
@@ -57,6 +77,18 @@ const userCount = async () => {
 const raceCount = async () => {
   return await Race.count({});
 };
+
+const sailboatCount = async () => {
+  return await Sailboat.count({});
+};
+
+const userSailboatsCount = async () => {
+  return await UserSailboats.count({});
+};
+
+//const getUsers = async () => {
+//  return await User.findAll({});
+//};
 
 const getUserByFirebaseUid = async (firebaseUid: string) => {
   return await User.findOne({
@@ -89,10 +121,15 @@ export default {
   dropDb,
   dropUsers,
   dropRaces,
+  dropSailboats,
+  dropUserSailboats,
   insertUser,
   insertUsers,
   userCount,
   raceCount,
+  sailboatCount,
+  userSailboatsCount,
+  //getUsers,
   getUserByFirebaseUid,
   getUserByPk,
   getRaceByPk,
