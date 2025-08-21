@@ -6,6 +6,7 @@ import express, {
 import { APIRequestError, AuthError } from '../errors/applicationError';
 import boatService from '../services/boatService';
 import middleware from '../utils/middleware';
+import { newBoatParser } from './parsers/boatParsers';
 
 import type {
   APIBoatRequest,
@@ -24,7 +25,7 @@ const router = express.Router();
 //  res.json({ id: 99999, boatType: BoatType.Sailboat, name: 'fake_test', description: null, sailNumber: null, users: [] });
 //});
 
-router.post('/', middleware.userExtractor, async (
+router.post('/', [middleware.userExtractor, newBoatParser], async (
   req: Request<unknown, unknown, APIBoatRequest<'create', CreateSailboatArguments>>,
   res: Response<SailboatData>
 ) => {
