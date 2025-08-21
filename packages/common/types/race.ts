@@ -1,3 +1,5 @@
+import type { UserIdentity } from './user';
+
 export enum RaceType {
   OneDesign = 'ONE_DESIGN',
 }
@@ -14,10 +16,7 @@ export interface RaceDetails {
   dateTo: Date;
   registrationOpenDate: Date;
   registrationCloseDate: Date;
-  user: {
-    id: number;
-    displayName: string;
-  }
+  user: UserIdentity;
 }
 
 export interface RaceListing {
@@ -27,8 +26,5 @@ export interface RaceListing {
   description: string;
   dateFrom: Date;
   dateTo: Date;
-  user: {
-    id: number;
-    displayName: string;
-  };
+  user: UserIdentity;
 }

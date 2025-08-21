@@ -1,4 +1,6 @@
+import type { BoatType } from './boat';
 import type { RaceType } from './race';
+import type { UserIdentity } from './user';
 
 export interface APIAuthRequest<
   REQT extends 'signup' | 'login',
@@ -67,10 +69,7 @@ export interface RaceListingData {
   description: string;
   dateFrom: string;
   dateTo: string;
-  user: {
-    id: number;
-    displayName: string;
-  };
+  user: UserIdentity;
 }
 
 export interface RaceData {
@@ -85,10 +84,7 @@ export interface RaceData {
   dateTo: string;
   registrationOpenDate: string;
   registrationCloseDate: string;
-  user: {
-    id: number;
-    displayName: string;
-  }
+  user: UserIdentity;
 };
 
 export interface RacePatchResponseData {
