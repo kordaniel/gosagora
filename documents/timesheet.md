@@ -101,4 +101,5 @@
 | 2025.08.21 | 0.5 | COMMON: Add interface UserIdentity. BACKEND: Rename UserSailboat => UserSailboats |
 | 2025.08.21 | 1   | BACKEND: Add API /boats router, service. Implement POST new sailboat. COMMON: Add related types |
 | 2025.08.21 | 1   | BACKEND: Refactor tests, clear DB for every test suite. Add first test for /boats API |
-| Total | 154 | |
+| 2025.08.21 | 2   | BACKEND: Add newBoatParser to API /boat POST. Implement tests for creating new sailboat |
+| Total | 156 | |
