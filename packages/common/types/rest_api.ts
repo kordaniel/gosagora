@@ -91,3 +91,27 @@ export interface RacePatchResponseData {
   raceData: RaceData;
   raceListingData: RaceListingData;
 };
+
+export interface APIBoatRequest<
+  REQT extends 'create',
+  DT
+> {
+  type: REQT;
+  boatType: BoatType;
+  data: DT;
+};
+
+export interface CreateSailboatArguments {
+  name: string;
+  sailNumber: string | null;
+  description: string | null;
+};
+
+export interface SailboatData {
+  id: number;
+  boatType: BoatType.Sailboat;
+  name: string;
+  sailNumber: string | null;
+  description: string | null;
+  users: UserIdentity[];
+}

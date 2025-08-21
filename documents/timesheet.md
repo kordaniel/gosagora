@@ -99,4 +99,5 @@
 | 2025.08.19 | 1   | BACKEND: Add migrations and models for Sailboat and UserSailboat junction table |
 | 2025.08.21 | 0.5 | BACKEND: Add BoatType enum, extend sailboat model, refactor |
 | 2025.08.21 | 0.5 | COMMON: Add interface UserIdentity. BACKEND: Rename UserSailboat => UserSailboats |
-| Total | 152 | |
+| 2025.08.21 | 1   | BACKEND: Add API /boats router, service. Implement POST new sailboat. COMMON: Add related types |
+| Total | 153 | |

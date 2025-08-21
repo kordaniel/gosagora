@@ -11,7 +11,7 @@ import {
 import {
   SAILBOAT_CONSTANTS,
   USER_CONSTANTS,
-  USER_SAILBOAT_CONSTANTS,
+  USER_SAILBOATS_CONSTANTS,
 } from '../constants';
 
 import { sequelize } from '../database';
@@ -64,7 +64,7 @@ UserSailboats.init({
   },
 }, {
   sequelize,
-  modelName: USER_SAILBOAT_CONSTANTS.MODEL_NAME,
+  modelName: USER_SAILBOATS_CONSTANTS.MODEL_NAME,
   paranoid: true,
   timestamps: true,
   underscored: true,
