@@ -3,7 +3,6 @@ import {
   type CreationAttributes,
   type CreationOptional,
   DataTypes,
-  type ForeignKey,
   type InferAttributes,
   type InferCreationAttributes,
   Model,
@@ -14,8 +13,6 @@ import {
   USER_CONSTANTS,
   USER_SAILBOAT_CONSTANTS,
 } from '../constants';
-import Sailboat from './sailboat';
-import User from './user';
 
 import { sequelize } from '../database';
 
@@ -23,8 +20,8 @@ export type UserSailboatAttributesType = Attributes<UserSailboat>;
 export type UserSailboatCreationAttributesType = CreationAttributes<UserSailboat>;
 
 class UserSailboat extends Model<InferAttributes<UserSailboat>, InferCreationAttributes<UserSailboat>> {
-  declare userId: ForeignKey<User['id']>;
-  declare sailboatId: ForeignKey<Sailboat['id']>;
+  declare userId: number;
+  declare sailboatId: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: Date | null;

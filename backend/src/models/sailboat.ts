@@ -1,4 +1,5 @@
 import {
+  Association,
   type Attributes,
   type CreationAttributes,
   type CreationOptional,
@@ -6,15 +7,21 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   Model,
+  type NonAttribute,
 } from 'sequelize';
 
 import { SAILBOAT_CONSTANTS } from '../constants';
+import User from './user';
 import { sequelize } from '../database';
+
+import { BoatType } from '@common/types/boat';
 
 export type SailboatAttributesType = Attributes<Sailboat>;
 export type SailboatCreationAttributesType = CreationAttributes<Sailboat>;
 
 class Sailboat extends Model<InferAttributes<Sailboat>, InferCreationAttributes<Sailboat>> {
+  readonly boatType: NonAttribute<BoatType> = BoatType.Sailboat;
+
   declare id: CreationOptional<number>;
   declare name: string;
   declare sailNumber: string | null;
@@ -22,6 +29,11 @@ class Sailboat extends Model<InferAttributes<Sailboat>, InferCreationAttributes<
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: Date | null;
+
+  declare users?: NonAttribute<User[]>;
+  declare static associations: {
+    users: Association<Sailboat, User>;
+  };
 };
 
 Sailboat.init({
