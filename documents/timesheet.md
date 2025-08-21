@@ -97,4 +97,6 @@
 | 2025.08.18 | 0.5 | BACKEND: Delete RequestUserExtended interface and augment @types/express Request type with optional user field |
 | 2025.08.19 | 1   | BACKEND: Add interface for objects holding constants, refactor sql table- and model names into constants |
 | 2025.08.19 | 1   | BACKEND: Add migrations and models for Sailboat and UserSailboat junction table |
-| Total | 151 | |
+| 2025.08.21 | 0.5 | BACKEND: Add BoatType enum, extend sailboat model, refactor |
+| 2025.08.21 | 0.5 | COMMON: Add interface UserIdentity. BACKEND: Rename UserSailboat => UserSailboats |
+| Total | 152 | |

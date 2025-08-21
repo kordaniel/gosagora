@@ -16,10 +16,10 @@ import {
 
 import { sequelize } from '../database';
 
-export type UserSailboatAttributesType = Attributes<UserSailboat>;
-export type UserSailboatCreationAttributesType = CreationAttributes<UserSailboat>;
+export type UserSailboatsAttributesType = Attributes<UserSailboats>;
+export type UserSailboatsCreationAttributesType = CreationAttributes<UserSailboats>;
 
-class UserSailboat extends Model<InferAttributes<UserSailboat>, InferCreationAttributes<UserSailboat>> {
+class UserSailboats extends Model<InferAttributes<UserSailboats>, InferCreationAttributes<UserSailboats>> {
   declare userId: number;
   declare sailboatId: number;
   declare createdAt: CreationOptional<Date>;
@@ -27,7 +27,7 @@ class UserSailboat extends Model<InferAttributes<UserSailboat>, InferCreationAtt
   declare deletedAt: Date | null;
 };
 
-UserSailboat.init({
+UserSailboats.init({
   userId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -70,4 +70,4 @@ UserSailboat.init({
   underscored: true,
 });
 
-export default UserSailboat;
+export default UserSailboats;

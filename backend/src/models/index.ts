@@ -1,13 +1,13 @@
 import Race, * as RaceModule from './race';
 import Sailboat, * as SailboatModule from './sailboat';
 import User, * as UserModule from './user';
-import UserSailboat, * as UserSailboatModule from './userSailboat';
+import UserSailboats, * as UserSailboatsModule from './userSailboats';
 
 User.hasMany(Race);
 Race.belongsTo(User);
 
-User.belongsToMany(Sailboat, { through: UserSailboat });
-Sailboat.belongsToMany(User, { through: UserSailboat });
+User.belongsToMany(Sailboat, { through: UserSailboats });
+Sailboat.belongsToMany(User, { through: UserSailboats });
 
 export {
   Race,
@@ -16,6 +16,6 @@ export {
   SailboatModule,
   User,
   UserModule,
-  UserSailboat,
-  UserSailboatModule,
+  UserSailboats,
+  UserSailboatsModule,
 };
