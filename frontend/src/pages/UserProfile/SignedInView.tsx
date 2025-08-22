@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import * as Yup from 'yup';
-import { type GestureResponderEvent, View } from 'react-native';
+import { type GestureResponderEvent, ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Form, { type FormProps } from '../../components/Form';
@@ -170,7 +170,7 @@ const SignedInView = () => {
   }
 
   return (
-    <View>
+    <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <StyledText variant="headline">{user.displayName}</StyledText>
       <View style={theme.styles.table}>
         <View style={theme.styles.tableRow}>
@@ -190,7 +190,7 @@ const SignedInView = () => {
       </Button>
       <Separator height={20} />
       <DangerZone />
-    </View>
+    </ScrollView>
   );
 };
 
