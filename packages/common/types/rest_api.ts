@@ -24,7 +24,7 @@ export interface UserDetailsData {
   email: string;
   firebaseUid: string;
   lastseenAt: string | null;
-  boats: BoatIdentity[];
+  boatIdentities: BoatIdentity[];
 }
 
 export interface SignUpArguments {

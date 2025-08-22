@@ -102,4 +102,6 @@
 | 2025.08.21 | 1   | BACKEND: Add API /boats router, service. Implement POST new sailboat. COMMON: Add related types |
 | 2025.08.21 | 1   | BACKEND: Refactor tests, clear DB for every test suite. Add first test for /boats API |
 | 2025.08.21 | 2   | BACKEND: Add newBoatParser to API /boat POST. Implement tests for creating new sailboat |
-| Total | 156 | |
+| 2025.08.22 | 2   | BACKEND: Add fields boatType to Sailboat, sailboats to User. Add boats to UserDetailsData interface with required refactoring |
+| 2025.08.22 | 0   | BACKEND: Add boats: BoatIdentity[] field to User model, refactor UserDetailsData.boats -> boatIdentities |
+| Total | 158 | |

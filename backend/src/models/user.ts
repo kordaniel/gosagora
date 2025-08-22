@@ -15,11 +15,17 @@ import Sailboat from './sailboat';
 import { USER_CONSTANTS } from '../constants';
 import { sequelize } from '../database';
 
+import { BoatIdentity } from '@common/types/boat';
+
 export type UserAttributesType = Attributes<User>;
 export type UserCreationAttributesType = CreationAttributes<User>;
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User, { omit: 'boatIdentities' }>
+> {
   declare id: CreationOptional<number>;
+  declare readonly boatIdentities: BoatIdentity[]; // Virtual
   declare email: string;
   declare firebaseUid: string;
   declare displayName: string;
@@ -50,6 +56,14 @@ User.init({
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
+  },
+  boatIdentities: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.sailboats
+        ? this.sailboats.map(({ id, name, boatType }) => ({ id, name, boatType }))
+        : [];
+    },
   },
   email: {
     type: DataTypes.TEXT,

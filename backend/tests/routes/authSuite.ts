@@ -49,7 +49,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
           lastseenAt: null,
           email: userBase.email.toLowerCase(),
           displayName: userBase.displayName,
-          boats: [],
+          boatIdentities: [],
         });
 
         expect(await testDatabase.userCount()).toEqual(initialUserCount + 1);
@@ -404,7 +404,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
           lastseenAt: null,
           email: userBase.email.toLowerCase(),
           displayName: userBase.displayName,
-          boats: [],
+          boatIdentities: [],
         });
         expect(await testDatabase.userCount()).toEqual(initialUserCount + 1);
 
@@ -514,7 +514,7 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
           email: user.userBase.email.toLowerCase(),
           firebaseUid: user.credentials.user.uid,
           displayName: user.userBase.displayName,
-          boats: [],
+          boatIdentities: [],
         });
       });
 
