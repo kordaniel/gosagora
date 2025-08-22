@@ -1,5 +1,6 @@
 import { Race, Sailboat, User, UserSailboats } from '../../src/models';
 import { connectToDatabase, sequelize } from '../../src/database';
+import type { SailboatCreationAttributesType } from '../../src/models/sailboat';
 import { UserCreationAttributesType } from '../../src/models/user';
 import config from '../../src/utils/config';
 
@@ -60,6 +61,21 @@ const dropUserSailboats = async () => {
     where: {},
     force: true,
   });
+};
+
+const insertSailboat = async (
+  attributes: SailboatCreationAttributesType,
+  userId?: number
+) => {
+  const sailboat = await Sailboat.create(attributes);
+  const userSailboats = !userId
+    ? undefined
+    : await UserSailboats.create({
+      userId,
+      sailboatId: sailboat.id,
+    });
+
+  return { sailboat, userSailboats };
 };
 
 const insertUser = async (attributes: UserCreationAttributesType) => {
@@ -123,6 +139,7 @@ export default {
   dropRaces,
   dropSailboats,
   dropUserSailboats,
+  insertSailboat,
   insertUser,
   insertUsers,
   userCount,

@@ -104,4 +104,5 @@
 | 2025.08.21 | 2   | BACKEND: Add newBoatParser to API /boat POST. Implement tests for creating new sailboat |
 | 2025.08.22 | 2   | BACKEND: Add fields boatType to Sailboat, sailboats to User. Add boats to UserDetailsData interface with required refactoring |
 | 2025.08.22 | 0   | BACKEND: Add boats: BoatIdentity[] field to User model, refactor UserDetailsData.boats -> boatIdentities |
-| Total | 158 | |
+| 2025.08.22 | 0.5 | BACKEND: Add /auth integration test that asserts that Users boatIdentities are returned after login |
+| Total | 158.5 | |

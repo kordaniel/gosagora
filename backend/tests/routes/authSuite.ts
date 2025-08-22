@@ -747,6 +747,53 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
 
     }); // Signing in users
 
+    describe('With created boats in the DB', () => {
+
+      test('Signing in user returns all her boatIdentities', async () => {
+        const user = await userUtils.createSignedInUser();
+        const boats = await Promise.all([1, 2, 3]
+          .map(num => testDatabase.insertSailboat({
+            name: `${user.user.displayName} sailboat ${num}`,
+          }, user.user.id
+          ))
+        );
+
+        const res = await api
+          .post(`${baseUrl}/login`)
+          .send({
+            type: 'login',
+            data: {
+              email: user.user.email,
+              firebaseUid: user.credentials.user.uid,
+              firebaseIdToken: await user.credentials.user.getIdToken(),
+            },
+          })
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { id, lastseenAt, ...bodyRest } = res.body;
+
+        expect(id).toEqual(user.user.id);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(Date.parse(lastseenAt)).not.toBeNaN();
+
+        expect(bodyRest).toStrictEqual({
+          email: user.user.email,
+          firebaseUid: user.credentials.user.uid,
+          displayName: user.user.displayName,
+          boatIdentities: boats.map(({ sailboat }) => ({
+            id: sailboat.id,
+            name: sailboat.name,
+            boatType: sailboat.boatType,
+          })),
+        });
+      });
+
+    }); // With created boats in the DB
+
   }); // When there are users in the db
 
 }); // '/auth'
