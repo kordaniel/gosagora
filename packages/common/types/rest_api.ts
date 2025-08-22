@@ -1,4 +1,4 @@
-import type { BoatType } from './boat';
+import type { BoatIdentity, BoatType } from './boat';
 import type { RaceType } from './race';
 import type { UserIdentity } from './user';
 
@@ -24,6 +24,7 @@ export interface UserDetailsData {
   email: string;
   firebaseUid: string;
   lastseenAt: string | null;
+  boats: BoatIdentity[];
 }
 
 export interface SignUpArguments {

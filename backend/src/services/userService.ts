@@ -1,6 +1,17 @@
+import { type FindOptions, type InferAttributes } from 'sequelize';
+
+import { Sailboat, User } from '../models';
 import { PermissionForbiddenError } from '../errors/applicationError';
-import { User } from '../models';
 import type { UserCreationAttributesType } from '../models/user';
+
+const userDetailsDataQueryOpts: FindOptions<InferAttributes<User, { omit: never; }>> = {
+  attributes: ['id', 'displayName', 'email', 'firebaseUid', 'lastseenAt'],
+  include: [{
+    model: Sailboat,
+    paranoid: false,
+    attributes: ['id', 'name', 'boatType']
+  }],
+};
 
 const createNewUser = async (
   newUserArguments: UserCreationAttributesType
@@ -28,18 +39,20 @@ const deleteUser = async (
   await user.destroy();
 };
 
-const getUserBy = async (
-  attributes: { firebaseUid: string }
-): Promise<User | null> => {
+const getUserByFirebaseUid = async (firebaseUid: string): Promise<User | null> => {
+  return await User.findOne({ where: { firebaseUid } });
+};
+
+const getUserDetailsDataByFirebaseUid = async (firebaseUid: string) => {
   return await User.findOne({
-    where: {
-      firebaseUid: attributes.firebaseUid
-    }
+    ...userDetailsDataQueryOpts,
+    where: { firebaseUid }
   });
 };
 
 export default {
   createNewUser,
   deleteUser,
-  getUserBy,
+  getUserByFirebaseUid,
+  getUserDetailsDataByFirebaseUid,
 };

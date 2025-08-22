@@ -19,10 +19,12 @@ import { BoatType } from '@common/types/boat';
 export type SailboatAttributesType = Attributes<Sailboat>;
 export type SailboatCreationAttributesType = CreationAttributes<Sailboat>;
 
-class Sailboat extends Model<InferAttributes<Sailboat>, InferCreationAttributes<Sailboat>> {
-  readonly boatType: NonAttribute<BoatType> = BoatType.Sailboat;
-
+class Sailboat extends Model<
+  InferAttributes<Sailboat>,
+  InferCreationAttributes<Sailboat, { omit: 'boatType' }>
+> {
   declare id: CreationOptional<number>;
+  declare readonly boatType: BoatType; // Virtual
   declare name: string;
   declare sailNumber: string | null;
   declare description: string | null;
@@ -41,6 +43,12 @@ Sailboat.init({
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
+  },
+  boatType: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return BoatType.Sailboat;
+    },
   },
   name: {
     type: DataTypes.TEXT,

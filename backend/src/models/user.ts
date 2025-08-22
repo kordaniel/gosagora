@@ -1,4 +1,5 @@
 import {
+  Association,
   type Attributes,
   type CreationAttributes,
   type CreationOptional,
@@ -6,9 +7,11 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   Model,
+  type NonAttribute,
   Op,
 } from 'sequelize';
 
+import Sailboat from './sailboat';
 import { USER_CONSTANTS } from '../constants';
 import { sequelize } from '../database';
 
@@ -25,6 +28,11 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: Date | null;
   declare disabledAt: Date | null;
+
+  declare sailboats?: NonAttribute<Sailboat[]>;
+  declare static associations: {
+    sailboats: Association<User, Sailboat>;
+  };
 
   async setDisabled(disabled: boolean = true) {
     this.disabledAt = disabled ? new Date() : null;
