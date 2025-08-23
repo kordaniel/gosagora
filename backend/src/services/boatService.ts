@@ -65,7 +65,7 @@ const getOne = async (id: number): Promise<SailboatData> => {
   const boat = await Sailboat.findByPk(id, sailboatDataQueryOpts);
 
   if (!boat) {
-    throw new NotFoundError(`Boat with ID ${id} not found`);
+    throw new NotFoundError(`Boat with ID ${id} was not found`);
   }
 
   return toSailboatData(boat);

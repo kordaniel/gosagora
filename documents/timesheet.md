@@ -107,4 +107,7 @@
 | 2025.08.22 | 0.5 | BACKEND: Add /auth integration test that asserts that Users boatIdentities are returned after login |
 | 2025.08.22 | 1   | FRONTEND: Add boatIdentities to userDetailsDataSchema, tab-view to user profile and render users boats |
 | 2025.08.23 | 1.5 | FRONTEND: Add boatService, boat schemas, boatSlice to store. BoatView to user profile page, rename UserBoats -> BoatsList |
-| Total | 161 | |
+| 2025.08.23 | 0.5 | BACKEND: Add API endpoint to query boat by id, return BoatCreateResponseData instead of SailboatData after POST new sailboat |
+| 2025.08.23 | 2.5 | FRONTEND: Extend Modal component, implement creation of new boats for user |
+| 2025.08.23 | 0.5 | BACKEND: Add tests for GET /boat/:id, fix return message for NotFoundError |
+| Total | 164.5 | |

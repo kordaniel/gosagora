@@ -1,8 +1,15 @@
 import TestAgent from 'supertest/lib/agent';
+import { type UserCredential } from 'firebase/auth';
 
-import { generateRandomString } from '../testUtils/testHelpers';
+import {
+  generateRandomInteger,
+  generateRandomString
+} from '../testUtils/testHelpers';
+import boatUtils from '../testUtils/boatUtils';
 import testDatabase from '../testUtils/testDatabase';
 import userUtils from '../testUtils/userUtils';
+
+import { Sailboat, User, UserSailboats } from '../../src/models';
 
 export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
   const baseUrl = '/api/v1/boat';
@@ -748,5 +755,92 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
     }); // Addition of new boats
 
   }); // When no boats exist
+
+  describe('When boats exist', () => {
+    let userBoatInDb: {
+      user: User,
+      credentials: UserCredential,
+      sailboat: Sailboat,
+      userSailboats: UserSailboats | undefined,
+    } | undefined = undefined;
+
+    beforeAll(async () => {
+      const user = await userUtils.createSignedInUser();
+      const boat = await boatUtils.createBoatForUser(user.user);
+      userBoatInDb = {
+        ...user,
+        ...boat,
+      };
+    });
+
+    describe('Fetching single boat', () => {
+
+      test('succeeds when fetching by id', async () => {
+        if (!userBoatInDb) {
+          throw new Error('Internal test error: No userBoat in DB');
+        }
+
+        const res = await api
+          .get(`${baseUrl}/${userBoatInDb.sailboat.id}`)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual({
+          id: userBoatInDb.sailboat.id,
+          boatType: userBoatInDb.sailboat.boatType,
+          name: userBoatInDb.sailboat.name,
+          description: userBoatInDb.sailboat.description,
+          sailNumber: userBoatInDb.sailboat.sailNumber?.toUpperCase(),
+          users: [{
+            id: userBoatInDb.user.id,
+            displayName: userBoatInDb.user.displayName
+          }],
+        });
+      });
+
+      test('fails with status 404 for non existing ID', async () => {
+        let nonExistingSailboatId: number = generateRandomInteger();
+        while ((await testDatabase.getSailboatByPk(nonExistingSailboatId)) !== null) {
+          nonExistingSailboatId = generateRandomInteger();
+        }
+
+        const res = await api
+          .get(`${baseUrl}/${nonExistingSailboatId}`)
+          .expect(404)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toStrictEqual({
+          status: 404,
+          error: {
+            message: `Boat with ID ${nonExistingSailboatId} was not found`,
+          },
+        });
+      });
+
+      test('fails with status 400 for malformed ID', async () => {
+        if (!userBoatInDb) {
+          throw new Error('Internal test error: No userBoat in DB');
+        }
+
+        const malformedId = `0x${userBoatInDb.sailboat.id}`;
+
+        const res = await api
+          .get(`${baseUrl}/${malformedId}`)
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toStrictEqual({
+          status: 400,
+          error: {
+            message: `Invalid ID for boat: '${malformedId}'`,
+          },
+        });
+      });
+
+    }); // Fetching single boat
+
+  }); // When boats exist
 
 }); // '/boat'

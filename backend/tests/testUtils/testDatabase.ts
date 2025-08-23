@@ -120,6 +120,10 @@ const getRaceByPk = async (id: number, paranoid: boolean = true) => {
   return await Race.findByPk(id, { paranoid });
 };
 
+const getSailboatByPk = async (id: number, paranoid: boolean = true) => {
+  return await Sailboat.findByPk(id, { paranoid });
+};
+
 const getRaceWhereUserIdIsNot = async (userId: number, paranoid: boolean = true) => {
   return await Race.findOne({
     where: {
@@ -150,5 +154,6 @@ export default {
   getUserByFirebaseUid,
   getUserByPk,
   getRaceByPk,
+  getSailboatByPk,
   getRaceWhereUserIdIsNot,
 };
