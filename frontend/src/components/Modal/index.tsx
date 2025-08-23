@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 
 import {
   Portal,
@@ -13,19 +13,34 @@ import StyledText from '../StyledText';
 
 import { AppTheme } from 'src/types';
 
+export type ModalCloseHandleType = {
+  hideModal: () => void;
+};
+
 interface ModalProps {
   children: RNPModalProps['children'];
   title?: string;
   closeButtonLabel?: string;
   openButtonLabel: string;
+  onShowModal?: () => void;
 }
 
-const Modal = ({ children, title, openButtonLabel, closeButtonLabel = 'Cancel' }: ModalProps) => {
+const Modal = forwardRef<ModalCloseHandleType, ModalProps>(function Modal(
+  { children, title, openButtonLabel, closeButtonLabel = 'Cancel', onShowModal }: ModalProps,
+  ref?
+) {
   const theme = useTheme<AppTheme>();
   const [visible, setVisible] = useState<boolean>(false);
 
-  const showModal = () => setVisible(true);
+  const showModal = () => {
+    if (onShowModal) {
+      onShowModal();
+    }
+    setVisible(true);
+  };
   const hideModal = () => setVisible(false);
+
+  useImperativeHandle(ref, () => ({ hideModal }));
 
   return (
     <>
@@ -49,6 +64,6 @@ const Modal = ({ children, title, openButtonLabel, closeButtonLabel = 'Cancel' }
       </Button>
     </>
   );
-};
+});
 
 export default Modal;
