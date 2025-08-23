@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
   tableRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 3,
     justifyContent: 'space-between',
   },
