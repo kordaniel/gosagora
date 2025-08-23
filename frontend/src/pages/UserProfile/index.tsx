@@ -14,17 +14,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 
 import Authentication from '../../components/Authentication';
+import BoatView from './BoatView';
+import BoatsList from './BoatsList';
 import SignedInView from './SignedInView';
-import UserBoats from './UserBoats';
 
 import { type AppTheme } from '../../types';
 import { SelectAuth } from '../../store/slices/authSlice';
 import { useAppSelector } from '../../store/hooks';
 
-
 const routes: Route[] = [
   { key: 'userProfile', title: 'My Profile' },
-  { key: 'userBoats', title: 'My Boats' },
+  { key: 'boatsList', title: 'My Boats' },
+  { key: 'boatView', title: 'Boat' },
 ];
 
 // NOTE: Do not pass inline functions to SceneMap!
@@ -32,7 +33,8 @@ const routes: Route[] = [
 //       and also memoize the rendered components!
 const renderScene = SceneMap({
   userProfile: SignedInView,
-  userBoats: UserBoats,
+  boatsList: BoatsList,
+  boatView: BoatView,
 });
 
 const createRenderTabBar = (theme: AppTheme) =>
@@ -71,7 +73,7 @@ const UserProfile = () => {
               height: 0,
               width: layout.width
             }}
-            lazy={({ route }) => route.key === 'userBoats' }
+            lazy={({ route }) => route.key === 'boatsList' || route.key === 'boatView' }
             navigationState={{ index: tabViewIndex, routes }}
             onIndexChange={setTabViewIndex}
             renderScene={renderScene}

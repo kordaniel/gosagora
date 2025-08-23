@@ -106,4 +106,5 @@
 | 2025.08.22 | 0   | BACKEND: Add boats: BoatIdentity[] field to User model, refactor UserDetailsData.boats -> boatIdentities |
 | 2025.08.22 | 0.5 | BACKEND: Add /auth integration test that asserts that Users boatIdentities are returned after login |
 | 2025.08.22 | 1   | FRONTEND: Add boatIdentities to userDetailsDataSchema, tab-view to user profile and render users boats |
-| Total | 159.5 | |
+| 2025.08.23 | 1.5 | FRONTEND: Add boatService, boat schemas, boatSlice to store. BoatView to user profile page, rename UserBoats -> BoatsList |
+| Total | 161 | |

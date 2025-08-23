@@ -5,11 +5,13 @@ import {
 } from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
+import boatReducer from './slices/boatSlice';
 import raceReducer from './slices/raceSlice';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    boat: boatReducer,
     race: raceReducer,
   },
 });
