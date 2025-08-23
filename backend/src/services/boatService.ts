@@ -5,10 +5,11 @@ import { NotFoundError } from '../errors/applicationError';
 import { assertNever } from '../utils/typeguards';
 
 import type {
+  BoatCreateResponseData,
   CreateSailboatArguments,
   SailboatData,
 } from '@common/types/rest_api';
-import { BoatType } from '@common/types/boat';
+import { type BoatIdentity, BoatType } from '@common/types/boat';
 
 const sailboatDataQueryOpts: FindOptions = {
   attributes: [ 'id', 'name', 'sailNumber', 'description' ],
@@ -29,11 +30,22 @@ const toSailboatData = (sailboat: Sailboat): SailboatData => ({
     : [],
 });
 
+const toBoatIdentity = (sailboat: Sailboat): BoatIdentity => ({
+  id: sailboat.id,
+  name: sailboat.name,
+  boatType: sailboat.boatType,
+});
+
+const toBoatCreateResponseData = (sailboat: Sailboat): BoatCreateResponseData => ({
+  boat: toSailboatData(sailboat),
+  boatIdentity: toBoatIdentity(sailboat),
+});
+
 const createNewBoat = async (
   userId: User['id'],
   boatType: BoatType,
   newBoatArguments: CreateSailboatArguments
-): Promise<SailboatData> => {
+): Promise<BoatCreateResponseData> => {
   switch (boatType) {
     case BoatType.Sailboat: {
       const sailboat = await Sailboat.create(newBoatArguments);
@@ -43,23 +55,23 @@ const createNewBoat = async (
       });
       await sailboat.reload(sailboatDataQueryOpts);
 
-      return toSailboatData(sailboat);
+      return toBoatCreateResponseData(sailboat);
     }
     default: return assertNever(boatType);
   }
 };
 
-//const getOne = async (id: number): Promise<SailboatData> => {
-//  const boat = await Sailboat.findByPk(id, sailboatDataQueryOpts);
-//
-//  if (!boat) {
-//    throw new NotFoundError(`Boat with ID ${id} not found`);
-//  }
-//
-//  return toSailboatData(boat);
-//};
+const getOne = async (id: number): Promise<SailboatData> => {
+  const boat = await Sailboat.findByPk(id, sailboatDataQueryOpts);
+
+  if (!boat) {
+    throw new NotFoundError(`Boat with ID ${id} not found`);
+  }
+
+  return toSailboatData(boat);
+};
 
 export default {
   createNewBoat,
-  //getOne,
+  getOne,
 };

@@ -12,7 +12,8 @@ import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
 import userService from '../../services/userService';
 
-import { type UserDetailsData } from '@common/types/rest_api';
+import type { BoatIdentity } from '@common/types/boat';
+import type { UserDetailsData } from '@common/types/rest_api';
 
 /**
  * !!! NOTE: The possible error strings that are set in the
@@ -39,6 +40,11 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    addUserBoatIdentity: (state, action: PayloadAction<BoatIdentity>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.concat(action.payload);
+      }
+    },
     setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
@@ -55,6 +61,7 @@ export const authSlice = createSlice({
 });
 
 export const {
+  addUserBoatIdentity: authSliceAddUserBoatIdentity,
   setUser: authSliceSetUser,
   setError: authSliceSetError,
   setIsInitialized: authSliceSetIsInitialized,

@@ -10,24 +10,26 @@ import { newBoatParser } from './parsers/boatParsers';
 
 import type {
   APIBoatRequest,
+  BoatCreateResponseData,
   CreateSailboatArguments,
   SailboatData,
 } from '@common/types/rest_api';
-//import { BoatType } from '@common/types/boat';
 
 const router = express.Router();
 
-//router.get('/:id', (req: Request, res: Response<SailboatData>) => {
-//  const boatId = parseInt(req.params.id, 10);
-//  if (isNaN(boatId) || boatId === 0) {
-//    throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
-//  }
-//  res.json({ id: 99999, boatType: BoatType.Sailboat, name: 'fake_test', description: null, sailNumber: null, users: [] });
-//});
+router.get('/:id', async (req: Request, res: Response<SailboatData>) => {
+  const boatId = parseInt(req.params.id, 10);
+  if (isNaN(boatId) || boatId === 0) {
+    throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
+  }
+
+  const boat = await boatService.getOne(boatId);
+  res.json(boat);
+});
 
 router.post('/', [middleware.userExtractor, newBoatParser], async (
   req: Request<unknown, unknown, APIBoatRequest<'create', CreateSailboatArguments>>,
-  res: Response<SailboatData>
+  res: Response<BoatCreateResponseData>
 ) => {
   if (!req.user) {
     throw new AuthError('Forbidden: invalid user', 403);

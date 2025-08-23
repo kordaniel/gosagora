@@ -116,3 +116,8 @@ export interface SailboatData {
   description: string | null;
   users: UserIdentity[];
 }
+
+export interface BoatCreateResponseData {
+  boat: SailboatData;
+  boatIdentity: BoatIdentity;
+};

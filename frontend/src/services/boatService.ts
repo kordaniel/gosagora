@@ -2,9 +2,27 @@ import axiosInstance from '../modules/axiosInstance';
 import { sailboatDataSchema } from '../schemas/boat';
 import { validateResponse } from './validators';
 
-import { SailboatData } from '@common/types/rest_api';
+import type {
+  APIBoatRequest,
+  BoatCreateResponseData,
+  CreateSailboatArguments,
+  SailboatData,
+} from '@common/types/rest_api';
+import { BoatType } from '@common/types/boat';
 
 const apiBasePath = '/api/v1/boat';
+
+const createSailboat = async (boatDetails: CreateSailboatArguments): Promise<BoatCreateResponseData> => {
+  const postData: APIBoatRequest<'create', CreateSailboatArguments> = {
+    type: 'create',
+    boatType: BoatType.Sailboat,
+    data: boatDetails,
+  };
+
+  // TODO: Validate response
+  const { data } = await axiosInstance.post<BoatCreateResponseData>(apiBasePath, postData);
+  return data;
+};
 
 const getOne = async (boatId: string): Promise<SailboatData> => {
   const { data } = await axiosInstance.get<SailboatData>(`${apiBasePath}/${boatId}`);
@@ -16,5 +34,6 @@ const getOne = async (boatId: string): Promise<SailboatData> => {
 };
 
 export default {
+  createSailboat,
   getOne,
 };

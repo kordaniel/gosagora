@@ -12,7 +12,7 @@ import { useAppSelector } from '../../store/hooks';
 
 const BoatView = () => {
   const theme = useTheme<AppTheme>();
-  const { selectedBoat, error, loading } = useAppSelector(SelectSelectedBoat);
+  const { boat, error, loading } = useAppSelector(SelectSelectedBoat);
 
   if (loading || error) {
     return (
@@ -26,7 +26,7 @@ const BoatView = () => {
     );
   }
 
-  if (!selectedBoat) {
+  if (!boat) {
     return (
       <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
         <StyledText variant="headline">Select a boat to see it&apos;s details</StyledText>
@@ -36,25 +36,25 @@ const BoatView = () => {
 
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
-      <StyledText variant="headline">{selectedBoat.name}</StyledText>
+      <StyledText variant="headline">{boat.name}</StyledText>
       <View style={theme.styles.table}>
         <View style={theme.styles.tableRow}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Type</StyledText>
-          <StyledText style={theme.styles.tableCellData}>{selectedBoat.boatType}</StyledText>
+          <StyledText style={theme.styles.tableCellData}>{boat.boatType}</StyledText>
         </View>
         {<View style={theme.styles.tableRow}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Sail Number</StyledText>
-          <StyledText style={theme.styles.tableCellData}>{selectedBoat.sailNumber ?? "No sail number given"}</StyledText>
+          <StyledText style={theme.styles.tableCellData}>{boat.sailNumber ?? "No sail number given"}</StyledText>
         </View>}
         <View style={theme.styles.tableRow}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Description</StyledText>
-          <StyledText style={theme.styles.tableCellData}>{selectedBoat.description ?? "No description given"}</StyledText>
+          <StyledText style={theme.styles.tableCellData}>{boat.description ?? "No description given"}</StyledText>
         </View>
         <View style={theme.styles.tableColumn}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Owners list</StyledText>
-          {selectedBoat.users.length === 0
+          {boat.users.length === 0
             ? <StyledText style={theme.styles.tableCellData}>No owners</StyledText>
-            : selectedBoat.users.map((({ id, displayName }) =>
+            : boat.users.map((({ id, displayName }) =>
               <StyledText key={id} style={theme.styles.tableCellData}>{displayName}</StyledText>
             ))}
         </View>

@@ -36,13 +36,20 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
             .expect('Content-Type', /application\/json/);
 
           expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boat).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boatIdentity).toBeDefined();
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, ...rest } = res.body;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatId, ...restBoat } = res.body.boat;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatIdentityId, ...restBoatIdentity } = res.body.boatIdentity;
 
-          expect(id).toEqual(expect.any(Number));
+          expect(boatId).toEqual(expect.any(Number));
+          expect(boatId).toEqual(boatIdentityId);
 
-          expect(rest).toStrictEqual({
+          expect(restBoat).toStrictEqual({
             ...sailboatData,
             sailNumber: 'FIN-123',
             boatType: 'SAILBOAT',
@@ -50,6 +57,11 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
               id: user.user.id,
               displayName: user.user.displayName,
             }]
+          });
+
+          expect(restBoatIdentity).toStrictEqual({
+            name: sailboatData.name,
+            boatType: 'SAILBOAT',
           });
 
           expect(await testDatabase.sailboatCount()).toEqual(initialSailboatCount + 1);
@@ -79,19 +91,31 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
             .expect('Content-Type', /application\/json/);
 
           expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boat).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boatIdentity).toBeDefined();
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, ...rest } = res.body;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatId, ...restBoat } = res.body.boat;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatIdentityId, ...restBoatIdentity } = res.body.boatIdentity;
 
-          expect(id).toEqual(expect.any(Number));
+          expect(boatId).toEqual(expect.any(Number));
+          expect(boatId).toEqual(boatIdentityId);
 
-          expect(rest).toStrictEqual({
+          expect(restBoat).toStrictEqual({
             ...sailboatData,
             boatType: 'SAILBOAT',
             users: [{
               id: user.user.id,
               displayName: user.user.displayName,
             }]
+          });
+
+          expect(restBoatIdentity).toStrictEqual({
+            name: sailboatData.name,
+            boatType: 'SAILBOAT',
           });
 
           expect(await testDatabase.sailboatCount()).toEqual(initialSailboatCount + 1);
@@ -121,13 +145,20 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
             .expect('Content-Type', /application\/json/);
 
           expect(res.body).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boat).toBeDefined();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(res.body.boatIdentity).toBeDefined();
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const { id, ...rest } = res.body;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatId, ...restBoat } = res.body.boat;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          const { id: boatIdentityId, ...restBoatIdentity } = res.body.boatIdentity;
 
-          expect(id).toEqual(expect.any(Number));
+          expect(boatId).toEqual(expect.any(Number));
+          expect(boatId).toEqual(boatIdentityId);
 
-          expect(rest).toStrictEqual({
+          expect(restBoat).toStrictEqual({
             ...sailboatData,
             sailNumber: 'SWE-99999',
             boatType: 'SAILBOAT',
@@ -135,6 +166,11 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
               id: user.user.id,
               displayName: user.user.displayName,
             }]
+          });
+
+          expect(restBoatIdentity).toStrictEqual({
+            name: sailboatData.name,
+            boatType: 'SAILBOAT',
           });
 
           expect(await testDatabase.sailboatCount()).toEqual(initialSailboatCount + 1);
