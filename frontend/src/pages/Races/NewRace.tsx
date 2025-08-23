@@ -7,6 +7,7 @@ import ErrorRenderer from '../../components/ErrorRenderer';
 import Form from '../../components/Form';
 import StyledText from '../../components/StyledText';
 
+import { type AppTheme, type SceneMapRouteProps, } from '../../types';
 import {
   SelectSubmitNewRace,
   fetchRace,
@@ -17,9 +18,7 @@ import {
   newRaceValidationSchema,
 } from '../../schemas/race';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { type AppTheme, } from '../../types';
 import { type NewRaceValuesType, } from '../../models/race';
-import { type SceneMapRouteProps } from './index';
 
 
 const NewRace = ({ jumpTo }: SceneMapRouteProps) => {

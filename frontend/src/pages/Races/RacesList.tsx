@@ -7,10 +7,9 @@ import EmptyFlatList from '../../components/FlatListComponents/EmptyFlatList';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import StyledText from '../../components/StyledText';
 
+import { type AppTheme, type SceneMapRouteProps } from '../../types';
 import { SelectRaces, fetchRace, initializeRaces } from '../../store/slices/raceSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import type { AppTheme } from '../../types';
-import { type SceneMapRouteProps } from './index';
 import { clampString } from '../../utils/helpers';
 import config from '../../utils/config';
 
