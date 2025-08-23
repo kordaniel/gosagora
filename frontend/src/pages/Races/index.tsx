@@ -21,8 +21,6 @@ import { AppTheme } from '../../types';
 
 // react-navigation-tab-view documentation: https://reactnavigation.org/docs/tab-view/
 
-export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: Route; };
-
 const routes: Route[] = [
   { key: 'newRace', title: 'New Race' },
   { key: 'racesList', title: 'Races' },
