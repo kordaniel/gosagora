@@ -15,16 +15,18 @@ import User from './user';
 import { sequelize } from '../database';
 
 import { BoatType } from '@common/types/boat';
+import { UserIdentity } from '@common/types/user';
 
 export type SailboatAttributesType = Attributes<Sailboat>;
 export type SailboatCreationAttributesType = CreationAttributes<Sailboat>;
 
 class Sailboat extends Model<
   InferAttributes<Sailboat>,
-  InferCreationAttributes<Sailboat, { omit: 'boatType' }>
+  InferCreationAttributes<Sailboat, { omit: 'boatType' | 'userIdentities' }>
 > {
   declare id: CreationOptional<number>;
   declare readonly boatType: BoatType; // Virtual
+  declare readonly userIdentities: UserIdentity[]; // Virtual
   declare name: string;
   declare sailNumber: string | null;
   declare description: string | null;
@@ -48,6 +50,14 @@ Sailboat.init({
     type: DataTypes.VIRTUAL,
     get() {
       return BoatType.Sailboat;
+    },
+  },
+  userIdentities: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.users
+        ? this.users.map(({ id, displayName }) => ({ id, displayName }))
+        : [];
     },
   },
   name: {
