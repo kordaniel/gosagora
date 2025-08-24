@@ -103,7 +103,7 @@ export const createNewSailboatFormFields = (
   },
   description: {
     inputType: FormInputType.TextField,
-    ...(initialValues?.description && { description: initialValues.description }),
+    ...(initialValues?.description && { initialValue: initialValues.description }),
     label: config.IS_MOBILE ? undefined : 'Boat Description',
     placeholder: 'Boat Description (Optional)',
     props: {
@@ -119,10 +119,27 @@ export const createNewSailboatFormFields = (
   },
 });
 
-export const newSailboatValuesToCreateSailboatArguments = (newValues: NewSailboatValuesType): CreateSailboatArguments => {
-  return {
-    name: newValues.name.trim(),
-    sailNumber: newValues.sailNumber.trim() ? newValues.sailNumber.trim() : null,
-    description: newValues.description.trim() ? newValues.description.trim() : null,
+export function newSailboatValuesToCreateSailboatArguments(
+  newValues: NewSailboatValuesType
+): CreateSailboatArguments;
+export function newSailboatValuesToCreateSailboatArguments(
+  newValues: NewSailboatValuesType,
+  oldValues: Pick<SailboatData, 'name' | 'sailNumber' | 'description'>
+): Partial<CreateSailboatArguments> | null;
+export function newSailboatValuesToCreateSailboatArguments(
+  newValues: NewSailboatValuesType,
+  oldValues?: Pick<SailboatData, 'name' | 'sailNumber' | 'description'>
+): CreateSailboatArguments | Partial<CreateSailboatArguments> | null {
+  const cmpEmptyNullStrVals = (newVal: string, oldVal: string | null) => {
+    const parsed = newVal ? newVal.trim() : null;
+    return parsed === oldVal;
   };
-};
+
+  const values = {
+    ...((!oldValues || newValues.name.trim() !== oldValues.name) && { name: newValues.name.trim() }),
+    ...((!oldValues || !cmpEmptyNullStrVals(newValues.sailNumber.toUpperCase(), oldValues.sailNumber)) && { sailNumber: newValues.sailNumber ? newValues.sailNumber.trim().toUpperCase() : null }),
+    ...((!oldValues || !cmpEmptyNullStrVals(newValues.description, oldValues.description)) && { description: newValues.description ? newValues.description.trim() : null })
+  };
+
+  return Object.keys(values).length === 0 ? null : values;
+}

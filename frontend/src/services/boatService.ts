@@ -33,7 +33,25 @@ const getOne = async (boatId: string): Promise<SailboatData> => {
   );
 };
 
+const updateOne = async (
+  boatId: string,
+  boatDetails: Partial<CreateSailboatArguments>
+): Promise<BoatCreateResponseData> => {
+  const patchData: APIBoatRequest<'update', Partial<CreateSailboatArguments>> = {
+    type: 'update',
+    boatType: BoatType.Sailboat,
+    data: boatDetails,
+  };
+
+  const { data } = await axiosInstance.patch<BoatCreateResponseData>(
+    `${apiBasePath}/${boatId}`, patchData
+  );
+  // TODO: Validate response
+  return data;
+};
+
 export default {
   createSailboat,
   getOne,
+  updateOne,
 };

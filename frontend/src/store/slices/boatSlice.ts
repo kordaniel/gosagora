@@ -4,8 +4,12 @@ import {
 } from '@reduxjs/toolkit';
 
 import type { AppAsyncThunk, RootState } from '../index';
-import { NewSailboatValuesType } from '../../models/boat';
-import { authSliceAddUserBoatIdentity } from './authSlice';
+import {
+  authSliceAddUserBoatIdentity,
+  authSliceUpdateUserBoatIdentity
+} from './authSlice';
+import { ApplicationError } from '../../errors/applicationError';
+import { type NewSailboatValuesType } from '../../models/boat';
 import boatService from '../../services/boatService';
 import { newSailboatValuesToCreateSailboatArguments } from '../../schemas/boat';
 
@@ -116,6 +120,35 @@ export const submitNewBoat = (values: NewSailboatValuesType): AppAsyncThunk<numb
       dispatch(setSubmitNewBoatLoading(false));
 
       return null;
+    }
+  };
+};
+
+export const submitPatchBoat = (boatId: number, values: NewSailboatValuesType): AppAsyncThunk<string | null> => {
+  return async (dispatch, getState) => {
+    const stateSelectedBoat = getState().boat.selectedBoat;
+    if (!stateSelectedBoat.boat || stateSelectedBoat.boat.id !== boatId) {
+      console.error('attempted to patch a boat that is not selected');
+      return 'Unknown error happened when trying to edit boat details. Please try again!';
+    }
+
+    const changedFields = newSailboatValuesToCreateSailboatArguments(values, stateSelectedBoat.boat);
+    if (!changedFields) {
+      return null;
+    }
+
+    try {
+      const updatedBoat = await boatService.updateOne(boatId.toString(), changedFields);
+      dispatch(setSelectedBoat(updatedBoat.boat));
+      dispatch(authSliceUpdateUserBoatIdentity(updatedBoat.boatIdentity));
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.error('updating boat:', error);
+        return 'Unknown error happened when updating boat';
+      }
     }
   };
 };

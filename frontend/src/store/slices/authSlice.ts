@@ -57,6 +57,13 @@ export const authSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    updateUserBoatIdentity: (state, action: PayloadAction<BoatIdentity>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.map(
+          bi => bi.id === action.payload.id ? action.payload : bi
+        );
+      }
+    },
   },
 });
 
@@ -66,6 +73,7 @@ export const {
   setError: authSliceSetError,
   setIsInitialized: authSliceSetIsInitialized,
   setLoading: authSliceSetLoading,
+  updateUserBoatIdentity: authSliceUpdateUserBoatIdentity,
 } = authSlice.actions;
 
 export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
