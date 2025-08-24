@@ -110,4 +110,5 @@
 | 2025.08.23 | 0.5 | BACKEND: Add API endpoint to query boat by id, return BoatCreateResponseData instead of SailboatData after POST new sailboat |
 | 2025.08.23 | 2.5 | FRONTEND: Extend Modal component, implement creation of new boats for user |
 | 2025.08.23 | 0.5 | BACKEND: Add tests for GET /boat/:id, fix return message for NotFoundError |
-| Total | 164.5 | |
+| 2025.08.24 | 2.5 | BACKEND: Add userIdentities virtual property to Sailboat model, implement POST /boat/:id endpoint with tests |
+| Total | 167 | |

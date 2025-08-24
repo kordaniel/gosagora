@@ -94,7 +94,7 @@ export interface RacePatchResponseData {
 };
 
 export interface APIBoatRequest<
-  REQT extends 'create',
+  REQT extends 'create' | 'update',
   DT
 > {
   type: REQT;

@@ -1,7 +1,7 @@
 import { type FindOptions } from 'sequelize';
 
+import { NotFoundError, PermissionForbiddenError } from '../errors/applicationError';
 import { Sailboat, User, UserSailboats } from '../models';
-import { NotFoundError } from '../errors/applicationError';
 import { assertNever } from '../utils/typeguards';
 
 import type {
@@ -25,9 +25,7 @@ const toSailboatData = (sailboat: Sailboat): SailboatData => ({
   name: sailboat.name,
   description: sailboat.description,
   sailNumber: sailboat.sailNumber,
-  users: sailboat.users
-    ? sailboat.users.map(({ id, displayName }) => ({ id, displayName }))
-    : [],
+  users: sailboat.userIdentities,
 });
 
 const toBoatIdentity = (sailboat: Sailboat): BoatIdentity => ({
@@ -71,7 +69,28 @@ const getOne = async (id: number): Promise<SailboatData> => {
   return toSailboatData(boat);
 };
 
+const updateBoat = async (
+  userId: User['id'],
+  boatId: number,
+  updatedFields: Partial<CreateSailboatArguments>
+): Promise<BoatCreateResponseData> => {
+  const sailboat = await Sailboat.findByPk(boatId, sailboatDataQueryOpts);
+
+  if (!sailboat) {
+    throw new NotFoundError(`Boat with ID ${boatId} was not found`);
+  }
+  if (!sailboat.userIdentities.some(u => u.id === userId)) {
+    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to update this boat');
+  }
+
+  sailboat.set(updatedFields);
+  await sailboat.save();
+
+  return toBoatCreateResponseData(sailboat);
+};
+
 export default {
   createNewBoat,
   getOne,
+  updateBoat,
 };
