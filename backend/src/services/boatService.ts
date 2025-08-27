@@ -3,6 +3,7 @@ import { type FindOptions } from 'sequelize';
 import { NotFoundError, PermissionForbiddenError } from '../errors/applicationError';
 import { Sailboat, User, UserSailboats } from '../models';
 import { assertNever } from '../utils/typeguards';
+import { sequelize } from '../database';
 
 import type {
   BoatCreateResponseData,
@@ -59,6 +60,35 @@ const createNewBoat = async (
   }
 };
 
+const deleteUserSailboats = async (
+  userId: User['id'],
+  boatId: number
+): Promise<void> => {
+  await sequelize.transaction(async (transaction) => {
+    // NOTE: If transaction fails => sequelize will rollback the transaction and throw
+    const userSailboats = await UserSailboats.findOne({
+      where: { userId, sailboatId: boatId, },
+      transaction,
+    });
+
+    if (userSailboats) {
+      await userSailboats.destroy({ transaction });
+    } else {
+      const sailboat = await Sailboat.findOne({
+        where: { id: boatId },
+        attributes: ['id'],
+      });
+      if (sailboat) {
+        // Sailboat exists but user has no relation mapped to it
+        throw new PermissionForbiddenError();
+        // NOTE: Depending on the count of rows in the junction table where sailboatId = boatId, the
+        //       delete query can either remove a mapping OR delete the only mapping and the sailboat
+        //       => use default 403 message
+      }
+    }
+  });
+};
+
 const getOne = async (id: number): Promise<SailboatData> => {
   const boat = await Sailboat.findByPk(id, sailboatDataQueryOpts);
 
@@ -91,6 +121,7 @@ const updateBoat = async (
 
 export default {
   createNewBoat,
+  deleteUserSailboats,
   getOne,
   updateBoat,
 };

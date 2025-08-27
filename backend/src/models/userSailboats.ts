@@ -6,6 +6,7 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   Model,
+  Op,
 } from 'sequelize';
 
 import {
@@ -14,6 +15,8 @@ import {
   USER_SAILBOATS_CONSTANTS,
 } from '../constants';
 
+import Sailboat from './sailboat';
+import User from './user';
 import { sequelize } from '../database';
 
 export type UserSailboatsAttributesType = Attributes<UserSailboats>;
@@ -24,7 +27,6 @@ class UserSailboats extends Model<InferAttributes<UserSailboats>, InferCreationA
   declare sailboatId: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
-  declare deletedAt: Date | null;
 };
 
 UserSailboats.init({
@@ -54,18 +56,45 @@ UserSailboats.init({
     type: DataTypes.DATE,
     allowNull: false,
   },
-  deletedAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null,
-    validate: {
-      isDate: true,
+}, {
+  hooks: {
+    afterBulkDestroy: async (options) => {
+      const relatedSailboats = await Sailboat.findAll({
+        attributes: ['id'],
+        include: [{
+          model: User,
+          required: false,
+          through: { attributes: [] },
+        }],
+        where: {
+          '$users.id$': null,
+        },
+        transaction: options.transaction,
+      });
+      await Sailboat.destroy({
+        where: {
+          id: { [Op.in]: relatedSailboats.map(b => b.id) }
+        },
+        transaction: options.transaction,
+      });
+    },
+    afterDestroy: async (instance, options) => {
+      const relatedSailboatsCount = await UserSailboats.count({
+        where: { sailboatId: instance.sailboatId },
+        transaction: options.transaction,
+      });
+
+      if (relatedSailboatsCount === 0) {
+        await Sailboat.destroy({
+          where: { id: instance.sailboatId },
+          transaction: options.transaction,
+        });
+      }
     },
   },
-}, {
   sequelize,
   modelName: USER_SAILBOATS_CONSTANTS.MODEL_NAME,
-  paranoid: true,
+  paranoid: false,
   timestamps: true,
   underscored: true,
 });

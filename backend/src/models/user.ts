@@ -13,6 +13,7 @@ import {
 
 import Sailboat from './sailboat';
 import { USER_CONSTANTS } from '../constants';
+import UserSailboats from './userSailboats';
 import { sequelize } from '../database';
 
 import { BoatIdentity } from '@common/types/boat';
@@ -135,6 +136,14 @@ User.init({
       disabledAt: {
         [Op.is]: null,
       },
+    },
+  },
+  hooks: {
+    afterDestroy: async (userInstance, options) => {
+      await UserSailboats.destroy({
+        where: { userId: userInstance.id },
+        transaction: options.transaction,
+      });
     },
   },
   scopes: {

@@ -3,6 +3,7 @@ import { type FindOptions, type InferAttributes } from 'sequelize';
 import { Sailboat, User } from '../models';
 import { PermissionForbiddenError } from '../errors/applicationError';
 import type { UserCreationAttributesType } from '../models/user';
+import { sequelize } from '../database';
 
 const userDetailsDataQueryOpts: FindOptions<InferAttributes<User, { omit: never; }>> = {
   attributes: ['id', 'displayName', 'email', 'firebaseUid', 'lastseenAt'],
@@ -27,16 +28,22 @@ const deleteUser = async (
   userId: User['id'],
   userToDeleteId: User['id']
 ): Promise<void> => {
-  const user = await User.findByPk(userToDeleteId);
+  await sequelize.transaction(async (transaction) => {
+    // NOTE: If transaction fails => sequelize will rollback the transaction and throw
+    const user = await User.findByPk(userToDeleteId, {
+      attributes: ['id'],
+      transaction,
+    });
 
-  if (!user) {
-    return;
-  }
-  if (user.id !== userId) {
-    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to delete this user');
-  }
+    if (!user) {
+      return;
+    }
+    if (user.id !== userId) {
+      throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to delete this user');
+    }
 
-  await user.destroy();
+    await user.destroy({ transaction });
+  });
 };
 
 const getUserByFirebaseUid = async (firebaseUid: string): Promise<User | null> => {

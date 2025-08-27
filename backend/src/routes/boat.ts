@@ -4,7 +4,11 @@ import express, {
 } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 
-import { APIRequestError, AuthError } from '../errors/applicationError';
+import {
+  APIRequestError,
+  AuthError,
+  PermissionForbiddenError,
+} from '../errors/applicationError';
 import { newBoatParser, updateBoatParser } from './parsers/boatParsers';
 import boatService from '../services/boatService';
 import middleware from '../utils/middleware';
@@ -63,6 +67,30 @@ router.patch('/:id', [middleware.userExtractor, updateBoatParser], async (
     req.body.data
   );
   res.status(200).json(updatedBoat);
+});
+
+router.delete('/:id/users/:userId', [middleware.userExtractor], async (
+  req: Request,
+  res: Response
+) => {
+  const boatId = parseInt(req.params.id, 10);
+  if (isNaN(boatId) || boatId === 0) {
+    throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
+  }
+  const userId = parseInt(req.params.userId, 10);
+  if (isNaN(userId) || userId === 0) {
+    throw new APIRequestError(`Invalid user ID '${req.params.userId}' for boat '${req.params.id}'`);
+  }
+
+  if (!req.user) {
+    throw new AuthError('Forbidden: invalid user', 403);
+  }
+  if (req.user.id !== userId) {
+    throw new PermissionForbiddenError();
+  }
+
+  await boatService.deleteUserSailboats(userId, boatId);
+  res.status(204).end();
 });
 
 export default router;

@@ -6,8 +6,8 @@ import UserSailboats, * as UserSailboatsModule from './userSailboats';
 User.hasMany(Race);
 Race.belongsTo(User);
 
-User.belongsToMany(Sailboat, { through: UserSailboats });
-Sailboat.belongsToMany(User, { through: UserSailboats });
+User.belongsToMany(Sailboat, { through: UserSailboats, hooks: true });
+Sailboat.belongsToMany(User, { through: UserSailboats, hooks: true });
 
 export {
   Race,

@@ -1434,6 +1434,164 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
 
     }); // Updating boats
 
+    describe('Deleting UserBoats', () => {
+
+      let boatWithOneOwnerInDb: {
+        user: User,
+        credentials: UserCredential,
+        sailboat: Sailboat,
+        userSailboats: UserSailboats | undefined,
+      } | undefined = undefined;
+      let boatWithSeveralOwnersInDb: {
+        user: User[],
+        credentials: UserCredential[],
+        sailboat: Sailboat,
+      } | undefined = undefined;
+
+      beforeEach(async () => {
+        const users = await Promise.all([
+          userUtils.createSignedInUser(),
+          userUtils.createSignedInUser(),
+          userUtils.createSignedInUser()
+        ]);
+        const boatWithOneOwner = await boatUtils.createBoatForUser(users[0].user);
+        const boatWithSeveralOwners = await boatUtils.createBoatForUser(users[1].user);
+        await testDatabase.insertUserSailboats(users[2].user.id, boatWithSeveralOwners.sailboat.id);
+
+        boatWithOneOwnerInDb = {
+          ...users[0],
+          ...boatWithOneOwner,
+        };
+
+        boatWithSeveralOwnersInDb = {
+          sailboat: boatWithSeveralOwners.sailboat,
+          credentials: [users[1].credentials, users[2].credentials],
+          user: [users[1].user, users[2].user],
+        };
+      });
+
+      describe('Succeeds', () => {
+
+        test('and also deletes the boat when authorized user deletes a relation that is the only row in the junction table', async () => {
+          if (!boatWithOneOwnerInDb) {
+            throw new Error('Internal test error: No boatWithOneOwner in DB');
+          }
+
+          const idToken = await boatWithOneOwnerInDb.credentials.user.getIdToken();
+          const boatId = boatWithOneOwnerInDb.sailboat.id;
+          const userId = boatWithOneOwnerInDb.user.id;
+
+          const sailboatDbInitial = await testDatabase.getSailboatByPk(boatId);
+          if (sailboatDbInitial === null) {
+            throw new Error('Internal test error: sailboatDbInitial should not be null');
+          }
+          const userSailboatsDbInitial = await testDatabase.getUserSailboats(userId, boatId);
+          expect(sailboatDbInitial.deletedAt).toBeNull();
+          expect(userSailboatsDbInitial).not.toBeNull();
+
+          const res = await api
+            .delete(`${baseUrl}/${boatId}/users/${userId}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(204);
+
+          expect(res.body).toStrictEqual({});
+
+          const sailboatDbFinal = await testDatabase.getSailboatByPk(boatId, false);
+          const userSailboatsDbFinal = await testDatabase.getUserSailboats(userId, boatId);
+          expect(sailboatDbFinal?.deletedAt).not.toBeNull();
+          expect(userSailboatsDbFinal).toBeNull();
+        });
+
+        test('and does not delete the boat when authorized user deletes a relation when there are other userId\'s mapped to the boatId', async () => {
+          if (!boatWithSeveralOwnersInDb) {
+            throw new Error('Internal test error: No boatWithSeveralOwners in DB');
+          }
+
+          const idToken = await boatWithSeveralOwnersInDb.credentials[0].user.getIdToken();
+          const boatId = boatWithSeveralOwnersInDb.sailboat.id;
+          const userId = boatWithSeveralOwnersInDb.user[0].id;
+
+          const sailboatDbInitial = await testDatabase.getSailboatByPk(boatId);
+          if (sailboatDbInitial === null) {
+            throw new Error('Internal test error: sailboatDbInitial should not be null');
+          }
+          const initialUserSailboatsCount = await testDatabase.userSailboatsCount();
+          const userSailboatsDbInitial = await testDatabase.getUserSailboats(userId, boatId);
+          expect(sailboatDbInitial.deletedAt).toBeNull();
+          expect(userSailboatsDbInitial).not.toBeNull();
+
+          const res = await api
+            .delete(`${baseUrl}/${boatId}/users/${userId}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(204);
+
+          expect(res.body).toStrictEqual({});
+
+          const sailboatDbFinal = await testDatabase.getSailboatByPk(boatId, false);
+          expect(sailboatDbFinal).not.toBeNull();
+          expect(sailboatDbFinal?.deletedAt).toBeNull();
+          expect(await testDatabase.getUserSailboats(userId, boatId)).toBeNull();
+          expect(await testDatabase.userSailboatsCount()).toBe(initialUserSailboatsCount - 1);
+        });
+
+      }); // Succeeds
+
+      describe('Fails', () => {
+
+        test('without authorization', async () => {
+          if (!boatWithOneOwnerInDb) {
+            throw new Error('Internal test error: No boatWithOneOwner in DB');
+          }
+
+          const boatId = boatWithOneOwnerInDb.sailboat.id;
+          const userId = boatWithOneOwnerInDb.user.id;
+          const res = await api
+            .delete(`${baseUrl}/${boatId}/users/${userId}`)
+            .expect(401)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toStrictEqual({
+            status: 401,
+            error: { message: 'Unauthorized' },
+          });
+
+          const sailboatInDbFinal = await testDatabase.getSailboatByPk(boatId, false);
+          const userSailboatInDbFinal = await testDatabase.getUserSailboats(userId, boatId);
+          expect(sailboatInDbFinal).not.toBeNull();
+          expect(sailboatInDbFinal?.deletedAt).toBeNull();
+          expect(userSailboatInDbFinal).not.toBeNull();
+        });
+
+        test('when authorized user does not have a relation to the boat in the junction table', async () => {
+          if (!boatWithOneOwnerInDb) {
+            throw new Error('Internal test error: No boatWithOneOwner in DB');
+          }
+
+          const user = await userUtils.createSignedInUser();
+          expect(await testDatabase.getUserSailboats(user.user.id, boatWithOneOwnerInDb.sailboat.id)).toBeNull();
+
+          const idToken = await user.credentials.user.getIdToken();
+          const boatId = boatWithOneOwnerInDb.sailboat.id;
+          const res = await api
+            .delete(`${baseUrl}/${boatId}/users/${user.user.id}`)
+            .set('Authorization', `Bearer ${idToken}`)
+            .expect(403)
+            .expect('Content-Type', /application\/json/);
+
+          expect(res.body).toStrictEqual({
+            status: 403,
+            error: { message: 'Forbidden: insufficient rights to perform the requested action' },
+          });
+
+          const sailboatInDbFinal = await testDatabase.getSailboatByPk(boatId, false);
+          expect(sailboatInDbFinal).not.toBeNull();
+          expect(sailboatInDbFinal!.deletedAt).toBeNull();
+        });
+
+      }); // Fails
+
+    }); // Deleting boats
+
   }); // When boats exist
 
 }); // '/boat'

@@ -14,16 +14,14 @@ module.exports = {
         allowNull: false,
         references: { model: USER_CONSTANTS.SQL_TABLE_NAME, key: 'id' },
         primaryKey: true,
-        //onUpdate: 'CASCADE', ???
-        //onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       sailboat_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: SAILBOAT_CONSTANTS.SQL_TABLE_NAME, key: 'id' },
         primaryKey: true,
-        //onUpdate: 'CASCADE', ???
-        //onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       created_at: {
         type: DataTypes.DATE,
@@ -32,11 +30,6 @@ module.exports = {
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-      },
-      deleted_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
       },
     });
   },

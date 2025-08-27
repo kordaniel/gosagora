@@ -78,6 +78,12 @@ const insertSailboat = async (
   return { sailboat, userSailboats };
 };
 
+const insertUserSailboats = async (userId: number, sailboatId: number) => {
+  return await UserSailboats.create({
+    userId, sailboatId,
+  });
+};
+
 const insertUser = async (attributes: UserCreationAttributesType) => {
   return await User.create(attributes);
 };
@@ -98,8 +104,8 @@ const sailboatCount = async () => {
   return await Sailboat.count({});
 };
 
-const userSailboatsCount = async () => {
-  return await UserSailboats.count({});
+const userSailboatsCount = async (where?: { userId?: number, sailboatId?: number }) => {
+  return await UserSailboats.count(!where || Object.keys(where).length === 0 ? {} : { where });
 };
 
 //const getUsers = async () => {
@@ -124,12 +130,11 @@ const getSailboatByPk = async (id: number, paranoid: boolean = true) => {
   return await Sailboat.findByPk(id, { paranoid });
 };
 
-const getUserSailboats = async (userId: number, sailboatId: number, paranoid: boolean = true) => {
+const getUserSailboats = async (userId: number, sailboatId: number) => {
   return await UserSailboats.findOne({
     where: {
       userId, sailboatId,
     },
-    paranoid,
   });
 };
 
@@ -153,6 +158,7 @@ export default {
   dropSailboats,
   dropUserSailboats,
   insertSailboat,
+  insertUserSailboats,
   insertUser,
   insertUsers,
   userCount,
