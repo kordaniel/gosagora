@@ -22,13 +22,12 @@ import type {
 
 const router = express.Router();
 
-router.get('/:id', async (req: Request, res: Response<SailboatData>) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
+router.get('/:id', middleware.idExtractorInt, async (req: Request, res: Response<SailboatData>) => {
+  if (!req.id) {
     throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
   }
 
-  const boat = await boatService.getOne(boatId);
+  const boat = await boatService.getOne(req.id);
   res.json(boat);
 });
 
@@ -49,12 +48,15 @@ router.post('/', [middleware.userExtractor, newBoatParser], async (
   res.status(201).json(newBoat);
 });
 
-router.patch('/:id', [middleware.userExtractor, updateBoatParser], async (
+router.patch('/:id', [
+  middleware.idExtractorInt,
+  middleware.userExtractor,
+  updateBoatParser
+], async (
   req: Request<ParamsDictionary, unknown, APIBoatRequest<'update', Partial<CreateSailboatArguments>>>,
   res: Response<BoatCreateResponseData>
 ) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
+  if (!req.id) {
     throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
   }
   if (!req.user) {
@@ -63,18 +65,20 @@ router.patch('/:id', [middleware.userExtractor, updateBoatParser], async (
 
   const updatedBoat = await boatService.updateBoat(
     req.user.id,
-    boatId,
+    req.id,
     req.body.data
   );
   res.status(200).json(updatedBoat);
 });
 
-router.delete('/:id/users/:userId', [middleware.userExtractor], async (
+router.delete('/:id/users/:userId', [
+  middleware.idExtractorInt,
+  middleware.userExtractor
+], async (
   req: Request,
   res: Response
 ) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
+  if (!req.id) {
     throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
   }
   const userId = parseInt(req.params.userId, 10);
@@ -89,7 +93,7 @@ router.delete('/:id/users/:userId', [middleware.userExtractor], async (
     throw new PermissionForbiddenError();
   }
 
-  await boatService.deleteUserSailboats(userId, boatId);
+  await boatService.deleteUserSailboats(userId, req.id);
   res.status(204).end();
 });
 

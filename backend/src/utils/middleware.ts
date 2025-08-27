@@ -218,8 +218,26 @@ const userExtractor = async (
   next();
 };
 
+const idExtractorInt = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  if (!req.params.id) {
+    throw new APIRequestError('Invalid request for target path: missing ID');
+  }
+
+  const parsedId = parseInt(req.params.id, 10);
+  if (!isNaN(parsedId) && parsedId > 0) {
+    req.id = parsedId;
+  }
+
+  next();
+};
+
 export default {
   errorHandler,
   unknownEndpoint,
   userExtractor,
+  idExtractorInt,
 };
