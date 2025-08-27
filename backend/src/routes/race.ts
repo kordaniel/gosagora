@@ -39,38 +39,42 @@ router.get('/', async (_req: Request, res: Response<RaceListingData[]>) => {
   res.json(races);
 });
 
-router.get('/:id', async (req: Request, res: Response<RaceData>) => {
-  const raceId = parseInt(req.params.id, 10);
-  if (isNaN(raceId) || raceId === 0) {
+router.get('/:id', middleware.idExtractorInt(), async (req: Request, res: Response<RaceData>) => {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
 
-  const race = await raceService.getOne(raceId);
+  const race = await raceService.getOne(req.parsedIds?.id);
   res.json(race);
 });
 
-router.delete('/:id', middleware.userExtractor, async (
+router.delete('/:id', [
+  middleware.idExtractorInt(),
+  middleware.userExtractor
+], async (
   req: Request,
   res: Response
 ) => {
-  const raceId = parseInt(req.params.id, 10);
-  if (isNaN(raceId) || raceId === 0) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
   if (!req.user) {
     throw new AuthError('Forbidden: invalid user', 403);
   }
 
-  await raceService.deleteOne(req.user.id, raceId);
+  await raceService.deleteOne(req.user.id, req.parsedIds.id);
   res.status(204).end();
 });
 
-router.patch('/:id', [middleware.userExtractor, updateRaceParser], async (
+router.patch('/:id', [
+  middleware.idExtractorInt(),
+  middleware.userExtractor,
+  updateRaceParser
+], async (
   req: Request<ParamsDictionary, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
   res: Response<RacePatchResponseData>
 ) => {
-  const raceId = parseInt(req.params.id, 10);
-  if (isNaN(raceId) || raceId === 0) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
   if (!req.user) {
@@ -79,7 +83,7 @@ router.patch('/:id', [middleware.userExtractor, updateRaceParser], async (
 
   const updatedRace = await raceService.updateRace(
     req.user.id,
-    raceId,
+    req.parsedIds.id,
     req.body.data
   );
   res.status(200).json(updatedRace);

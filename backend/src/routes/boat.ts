@@ -22,13 +22,12 @@ import type {
 
 const router = express.Router();
 
-router.get('/:id', async (req: Request, res: Response<SailboatData>) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
+router.get('/:id', middleware.idExtractorInt(), async (req: Request, res: Response<SailboatData>) => {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
   }
 
-  const boat = await boatService.getOne(boatId);
+  const boat = await boatService.getOne(req.parsedIds.id);
   res.json(boat);
 });
 
@@ -49,12 +48,15 @@ router.post('/', [middleware.userExtractor, newBoatParser], async (
   res.status(201).json(newBoat);
 });
 
-router.patch('/:id', [middleware.userExtractor, updateBoatParser], async (
+router.patch('/:id', [
+  middleware.idExtractorInt(),
+  middleware.userExtractor,
+  updateBoatParser
+], async (
   req: Request<ParamsDictionary, unknown, APIBoatRequest<'update', Partial<CreateSailboatArguments>>>,
   res: Response<BoatCreateResponseData>
 ) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
   }
   if (!req.user) {
@@ -63,33 +65,35 @@ router.patch('/:id', [middleware.userExtractor, updateBoatParser], async (
 
   const updatedBoat = await boatService.updateBoat(
     req.user.id,
-    boatId,
+    req.parsedIds.id,
     req.body.data
   );
   res.status(200).json(updatedBoat);
 });
 
-router.delete('/:id/users/:userId', [middleware.userExtractor], async (
+router.delete('/:boatId/users/:userId', [
+  middleware.idExtractorInt(['boatId', 'userId']),
+  middleware.userExtractor
+], async (
   req: Request,
   res: Response
 ) => {
-  const boatId = parseInt(req.params.id, 10);
-  if (isNaN(boatId) || boatId === 0) {
-    throw new APIRequestError(`Invalid ID for boat: '${req.params.id}'`);
+  if (!req.parsedIds?.boatId) {
+    throw new APIRequestError(`Invalid ID for boat: '${req.params.boatId}'`);
   }
-  const userId = parseInt(req.params.userId, 10);
-  if (isNaN(userId) || userId === 0) {
-    throw new APIRequestError(`Invalid user ID '${req.params.userId}' for boat '${req.params.id}'`);
+
+  if (!req.parsedIds?.userId) {
+    throw new APIRequestError(`Invalid user ID '${req.params.userId}' for boat '${req.params.boatId}'`);
   }
 
   if (!req.user) {
     throw new AuthError('Forbidden: invalid user', 403);
   }
-  if (req.user.id !== userId) {
+  if (req.user.id !== req.parsedIds.userId) {
     throw new PermissionForbiddenError();
   }
 
-  await boatService.deleteUserSailboats(userId, boatId);
+  await boatService.deleteUserSailboats(req.parsedIds.userId, req.parsedIds.boatId);
   res.status(204).end();
 });
 

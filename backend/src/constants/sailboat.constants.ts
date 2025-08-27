@@ -1,4 +1,6 @@
-export const SAILBOAT_CONSTANTS = {
+import type { ConstantsModelObj } from '../types';
+
+export const SAILBOAT_CONSTANTS: ConstantsModelObj = {
   MODEL_NAME: 'sailboat',
   SQL_TABLE_NAME: 'sailboats',
   VALIDATION: {
