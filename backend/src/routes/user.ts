@@ -10,20 +10,20 @@ import userService from '../services/userService';
 const router = express.Router();
 
 router.delete('/:id', [
-  middleware.idExtractorInt,
+  middleware.idExtractorInt(),
   middleware.userExtractor
 ], async (
   req: Request,
   res: Response
 ) => {
-  if (!req.id) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for user: '${req.params.id}'`);
   }
   if (!req.user) {
     throw new AuthError('Forbidden: invalid user', 403);
   }
 
-  await userService.deleteUser(req.user.id, req.id);
+  await userService.deleteUser(req.user.id, req.parsedIds.id);
   res.status(204).end();
 });
 

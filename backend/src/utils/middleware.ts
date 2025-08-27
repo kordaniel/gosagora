@@ -218,19 +218,26 @@ const userExtractor = async (
   next();
 };
 
-const idExtractorInt = (
+const idExtractorInt = (idNames: string[] = ['id']) => (
   req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!req.params.id) {
-    throw new APIRequestError('Invalid request for target path: missing ID');
-  }
 
-  const parsedId = parseInt(req.params.id, 10);
-  if (!isNaN(parsedId) && parsedId > 0) {
-    req.id = parsedId;
-  }
+  idNames.forEach(idName => {
+    if (!req.params[idName]) {
+      throw new APIRequestError(`Invalid request for target path: missing ${idName}`);
+    }
+
+    const parsedId = parseInt(req.params[idName], 10);
+    if (!isNaN(parsedId) && parsedId > 0) {
+      if (!req.parsedIds) {
+        req.parsedIds = { [idName]: parsedId };
+      } else {
+        req.parsedIds[idName] = parsedId;
+      }
+    }
+  });
 
   next();
 };

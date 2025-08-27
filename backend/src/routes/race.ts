@@ -39,42 +39,42 @@ router.get('/', async (_req: Request, res: Response<RaceListingData[]>) => {
   res.json(races);
 });
 
-router.get('/:id', middleware.idExtractorInt, async (req: Request, res: Response<RaceData>) => {
-  if (!req.id) {
+router.get('/:id', middleware.idExtractorInt(), async (req: Request, res: Response<RaceData>) => {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
 
-  const race = await raceService.getOne(req.id);
+  const race = await raceService.getOne(req.parsedIds?.id);
   res.json(race);
 });
 
 router.delete('/:id', [
-  middleware.idExtractorInt,
+  middleware.idExtractorInt(),
   middleware.userExtractor
 ], async (
   req: Request,
   res: Response
 ) => {
-  if (!req.id) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
   if (!req.user) {
     throw new AuthError('Forbidden: invalid user', 403);
   }
 
-  await raceService.deleteOne(req.user.id, req.id);
+  await raceService.deleteOne(req.user.id, req.parsedIds.id);
   res.status(204).end();
 });
 
 router.patch('/:id', [
-  middleware.idExtractorInt,
+  middleware.idExtractorInt(),
   middleware.userExtractor,
   updateRaceParser
 ], async (
   req: Request<ParamsDictionary, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
   res: Response<RacePatchResponseData>
 ) => {
-  if (!req.id) {
+  if (!req.parsedIds?.id) {
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
   if (!req.user) {
@@ -83,7 +83,7 @@ router.patch('/:id', [
 
   const updatedRace = await raceService.updateRace(
     req.user.id,
-    req.id,
+    req.parsedIds.id,
     req.body.data
   );
   res.status(200).json(updatedRace);
