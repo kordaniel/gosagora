@@ -181,11 +181,10 @@ export const newRaceParser = (
 };
 
 export const updateRaceParser = (
-  req: Request<unknown, unknown, Partial<APIRaceRequest<'update', Partial<NewRaceAttributes>>>>,
+  req: Request<unknown, unknown, APIRaceRequest<'update', Partial<NewRaceAttributes>>>,
   _res: Response,
   next: NextFunction
 ) => {
-  // TODO: type req.body correctly
   if (req.body instanceof Object) {
     if (!('type' in req.body)) {
       throw new APIRequestError('Patch request must contain a type', 400, { type: { _errors: ['Required'] } });
@@ -194,7 +193,6 @@ export const updateRaceParser = (
 
   try {
     req.body = UpdateRaceSchema.parse(req.body);
-    // req.body.type === 'update' && req.body.data is now defined
     if (isEmptyObject(req.body.data)) {
       throw new APIRequestError(
         'Patch request must contain data',
