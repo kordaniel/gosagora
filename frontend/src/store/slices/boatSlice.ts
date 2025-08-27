@@ -6,6 +6,7 @@ import {
 import type { AppAsyncThunk, RootState } from '../index';
 import {
   authSliceAddUserBoatIdentity,
+  authSliceRemoveUserBoatIdentity,
   authSliceUpdateUserBoatIdentity
 } from './authSlice';
 import { ApplicationError } from '../../errors/applicationError';
@@ -148,6 +149,29 @@ export const submitPatchBoat = (boatId: number, values: NewSailboatValuesType): 
       } else {
         console.error('updating boat:', error);
         return 'Unknown error happened when updating boat';
+      }
+    }
+  };
+};
+
+export const deleteAuthorizedUsersUserSailboats = (boatId: number): AppAsyncThunk<string | null> => {
+  return async (dispatch, getState) => {
+    const stateAuth = getState().auth;
+    if (!stateAuth.isInitialized || !stateAuth.user) {
+      return 'Please Sign In to perform this action';
+    }
+    try {
+      console.log('delete PAATTI:', boatId, stateAuth.user.id);
+      await boatService.deleteOneUserSailboats(boatId.toString(), stateAuth.user.id.toString());
+      dispatch(setSelectedBoat(null));
+      dispatch(authSliceRemoveUserBoatIdentity({ id: boatId }));
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof ApplicationError) {
+        return error.message;
+      } else {
+        console.log('deleting userSailboats:', error);
+        return 'Unknown error happened when deleting boat';
       }
     }
   };

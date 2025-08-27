@@ -4,6 +4,7 @@ import { ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Form, { type FormProps } from '../../components/Form';
+import Button from '../../components/Button';
 import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
 import Modal from '../../components/Modal';
 import StyledText from '../../components/StyledText';
@@ -11,6 +12,7 @@ import StyledText from '../../components/StyledText';
 import type { AppTheme, SceneMapRouteProps } from '../../types';
 import {
   SelectSelectedBoat,
+  deleteAuthorizedUsersUserSailboats,
   submitPatchBoat,
 } from '../../store/slices/boatSlice';
 import {
@@ -19,6 +21,7 @@ import {
 } from '../../schemas/boat';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { NewSailboatValuesType } from '../../models/boat';
+import { askConfirmation } from '../../helpers/askConfirmation';
 
 import type { SailboatData } from '@common/types/rest_api';
 
@@ -37,16 +40,40 @@ const BoatEditor = ({ boat, jumpTo }: BoatEditorProps) => {
     description: boat.description ?? '',
   });
 
+  const isSoleOwner = boat.users.length < 2;
+
   const handleUpdateSubmit = async (values: NewSailboatValuesType): Promise<boolean> => {
     const errorString = await dispatch(submitPatchBoat(boat.id, values));
     setError(errorString === null ? '' : errorString);
     return errorString === null;
   };
 
-  // TODO:
-  //const handleDeletion = () => {
-  //  jumpTo();
-  // };
+  const handleDeleteCb = (deletionConfirmation: boolean) => {
+    if (!deletionConfirmation) {
+      return;
+    }
+    dispatch(deleteAuthorizedUsersUserSailboats(boat.id))
+      .then(errorString => {
+        if (errorString === null) {
+          setError('');
+          jumpTo('boatsList');
+        } else {
+          setError(errorString);
+        }
+      })
+      .catch(err => {
+        console.error('error deleting userBoats:', err);
+      });
+  };
+
+  const onDeletePress = () => {
+    askConfirmation(
+      isSoleOwner
+        ? `Are you sure you want to delete the boat '${boat.name}'?`
+        : `Are you sure you want to resign as an owner from the boat '${boat.name}'?`,
+      handleDeleteCb
+    );
+  };
 
   return (
     <Modal
@@ -64,6 +91,7 @@ const BoatEditor = ({ boat, jumpTo }: BoatEditorProps) => {
           validationSchema={newSailboatValidationSchema}
         />
         <LoadingOrErrorRenderer error={error} />
+        <Button onPress={onDeletePress}>{isSoleOwner ? "Delete boat" : "Resign from owners"}</Button>
       </View>
     </Modal>
   );

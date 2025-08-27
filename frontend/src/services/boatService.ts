@@ -24,6 +24,10 @@ const createSailboat = async (boatDetails: CreateSailboatArguments): Promise<Boa
   return data;
 };
 
+const deleteOneUserSailboats = async (boatId: string, userId: string): Promise<void> => {
+  await axiosInstance.delete(`${apiBasePath}/${boatId}/users/${userId}`);
+};
+
 const getOne = async (boatId: string): Promise<SailboatData> => {
   const { data } = await axiosInstance.get<SailboatData>(`${apiBasePath}/${boatId}`);
   return await validateResponse<SailboatData>(
@@ -52,6 +56,7 @@ const updateOne = async (
 
 export default {
   createSailboat,
+  deleteOneUserSailboats,
   getOne,
   updateOne,
 };

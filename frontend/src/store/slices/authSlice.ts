@@ -45,6 +45,13 @@ export const authSlice = createSlice({
         state.user.boatIdentities = state.user.boatIdentities.concat(action.payload);
       }
     },
+    removeUserBoatIdentity: (state, action: PayloadAction<{ id: number }>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.filter(
+          bi => bi.id !== action.payload.id
+        );
+      }
+    },
     setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
@@ -69,6 +76,7 @@ export const authSlice = createSlice({
 
 export const {
   addUserBoatIdentity: authSliceAddUserBoatIdentity,
+  removeUserBoatIdentity: authSliceRemoveUserBoatIdentity,
   setUser: authSliceSetUser,
   setError: authSliceSetError,
   setIsInitialized: authSliceSetIsInitialized,

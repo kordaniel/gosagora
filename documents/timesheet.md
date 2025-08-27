@@ -113,4 +113,5 @@
 | 2025.08.24 | 2.5 | BACKEND: Add userIdentities virtual property to Sailboat model, implement POST /boat/:id endpoint with tests |
 | 2025.08.24 | 1   | FRONTEND: Add BoatEditor, feature for users to edit their boats |
 | 2025.08.27 | 4   | BACKEND: Add API DELETE /boat:id/users/:userID, removes user from userSailboats and orphan sailboats. Refactor userSailboats soft->hard deletion and set onDelete CASCADE. Add deletion hooks to models |
-| Total | 172 | |
+| 2025.08.27 | 1   | FRONTEND: Add resign from boat owners/delete boat to BoatEditor, implement logic |
+| Total | 173 | |
