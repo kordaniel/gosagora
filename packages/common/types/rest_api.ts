@@ -1,4 +1,6 @@
+import type { BoatIdentity, BoatType } from './boat';
 import type { RaceType } from './race';
+import type { UserIdentity } from './user';
 
 export interface APIAuthRequest<
   REQT extends 'signup' | 'login',
@@ -22,6 +24,7 @@ export interface UserDetailsData {
   email: string;
   firebaseUid: string;
   lastseenAt: string | null;
+  boatIdentities: BoatIdentity[];
 }
 
 export interface SignUpArguments {
@@ -67,10 +70,7 @@ export interface RaceListingData {
   description: string;
   dateFrom: string;
   dateTo: string;
-  user: {
-    id: number;
-    displayName: string;
-  };
+  user: UserIdentity;
 }
 
 export interface RaceData {
@@ -85,13 +85,39 @@ export interface RaceData {
   dateTo: string;
   registrationOpenDate: string;
   registrationCloseDate: string;
-  user: {
-    id: number;
-    displayName: string;
-  }
+  user: UserIdentity;
 };
 
 export interface RacePatchResponseData {
   raceData: RaceData;
   raceListingData: RaceListingData;
+};
+
+export interface APIBoatRequest<
+  REQT extends 'create' | 'update',
+  DT
+> {
+  type: REQT;
+  boatType: BoatType;
+  data: DT;
+};
+
+export interface CreateSailboatArguments {
+  name: string;
+  sailNumber: string | null;
+  description: string | null;
+};
+
+export interface SailboatData {
+  id: number;
+  boatType: BoatType.Sailboat;
+  name: string;
+  sailNumber: string | null;
+  description: string | null;
+  userIdentities: UserIdentity[];
+}
+
+export interface BoatCreateResponseData {
+  boat: SailboatData;
+  boatIdentity: BoatIdentity;
 };

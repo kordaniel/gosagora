@@ -1,28 +1,87 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+import {
+  type NavigationState,
+  type Route,
+  SceneMap,
+  type SceneRendererProps,
+  TabBar,
+  type TabDescriptor,
+  TabView,
+} from 'react-native-tab-view';
+import { ScrollView, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import Authentication from '../../components/Authentication';
+import BoatView from './BoatView';
+import BoatsList from './BoatsList';
 import SignedInView from './SignedInView';
 
 import { type AppTheme } from '../../types';
 import { SelectAuth } from '../../store/slices/authSlice';
 import { useAppSelector } from '../../store/hooks';
 
+const routes: Route[] = [
+  { key: 'userProfile', title: 'My Profile' },
+  { key: 'boatsList', title: 'My Boats' },
+  { key: 'boatView', title: 'Boat' },
+];
+
+// NOTE: Do not pass inline functions to SceneMap!
+//       If additional props are required, use a custom renderScene function
+//       and also memoize the rendered components!
+const renderScene = SceneMap({
+  userProfile: SignedInView,
+  boatsList: BoatsList,
+  boatView: BoatView,
+});
+
+const createRenderTabBar = (theme: AppTheme) =>
+  // NOTE: Returned function should be a named function (eslint), helps debugging tools
+  function renderTabBar(props: SceneRendererProps & {
+    navigationState: NavigationState<Route>;
+    options: Record<string, TabDescriptor<Route>> | undefined;
+  }) {
+    return (
+      <TabBar
+        indicatorStyle={{ backgroundColor: theme.colors.primary }}
+        activeColor={theme.colors.primary}
+        inactiveColor={theme.colors.onPrimary}
+        style={{ backgroundColor: theme.colors.inversePrimary }}
+        scrollEnabled={false}
+        {...props}
+      />
+    );
+  };
+
 const UserProfile = () => {
   const theme = useTheme<AppTheme>();
   const { isAuthenticated } = useAppSelector(SelectAuth);
+  const [tabViewIndex, setTabViewIndex] = useState<number>(0);
+  const layout = useWindowDimensions();
 
   return (
     <SafeAreaView style={theme.styles.safeAreaView}>
-      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
-        {isAuthenticated
-          ? <SignedInView />
-          : <Authentication />
-        }
-      </ScrollView>
+      {!isAuthenticated
+        ? <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
+            <Authentication />
+          </ScrollView>
+        : <TabView
+            animationEnabled={true}
+            initialLayout={{
+              height: 0,
+              width: layout.width
+            }}
+            lazy={({ route }) => route.key === 'boatsList' || route.key === 'boatView' }
+            navigationState={{ index: tabViewIndex, routes }}
+            onIndexChange={setTabViewIndex}
+            renderScene={renderScene}
+            renderTabBar={createRenderTabBar(theme)}
+            swipeEnabled={true}
+            tabBarPosition="top"
+          />
+      }
     </SafeAreaView>
   );
 };

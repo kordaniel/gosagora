@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 
 import authRouter from './routes/auth';
+import boatRouter from './routes/boat';
 import raceRouter from './routes/race';
 import userRouter from './routes/user';
 
@@ -21,6 +22,7 @@ app.get('/healthcheck', (_req, res) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/boat', boatRouter);
 app.use('/api/v1/race', raceRouter);
 app.use('/api/v1/user', userRouter);
 

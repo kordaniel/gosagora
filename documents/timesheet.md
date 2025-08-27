@@ -95,4 +95,24 @@
 | 2025.08.13 | 2   | FRONTEND: Add password confirmation to user profile deletion |
 | 2025.08.18 | 0.5 | BACKEND: Refactor userExtractor to not throw if firebase token user uid was not found in local DB |
 | 2025.08.18 | 0.5 | BACKEND: Delete RequestUserExtended interface and augment @types/express Request type with optional user field |
-| Total | 149 | |
+| 2025.08.19 | 1   | BACKEND: Add interface for objects holding constants, refactor sql table- and model names into constants |
+| 2025.08.19 | 1   | BACKEND: Add migrations and models for Sailboat and UserSailboat junction table |
+| 2025.08.21 | 0.5 | BACKEND: Add BoatType enum, extend sailboat model, refactor |
+| 2025.08.21 | 0.5 | COMMON: Add interface UserIdentity. BACKEND: Rename UserSailboat => UserSailboats |
+| 2025.08.21 | 1   | BACKEND: Add API /boats router, service. Implement POST new sailboat. COMMON: Add related types |
+| 2025.08.21 | 1   | BACKEND: Refactor tests, clear DB for every test suite. Add first test for /boats API |
+| 2025.08.21 | 2   | BACKEND: Add newBoatParser to API /boat POST. Implement tests for creating new sailboat |
+| 2025.08.22 | 2   | BACKEND: Add fields boatType to Sailboat, sailboats to User. Add boats to UserDetailsData interface with required refactoring |
+| 2025.08.22 | 0   | BACKEND: Add boats: BoatIdentity[] field to User model, refactor UserDetailsData.boats -> boatIdentities |
+| 2025.08.22 | 0.5 | BACKEND: Add /auth integration test that asserts that Users boatIdentities are returned after login |
+| 2025.08.22 | 1   | FRONTEND: Add boatIdentities to userDetailsDataSchema, tab-view to user profile and render users boats |
+| 2025.08.23 | 1.5 | FRONTEND: Add boatService, boat schemas, boatSlice to store. BoatView to user profile page, rename UserBoats -> BoatsList |
+| 2025.08.23 | 0.5 | BACKEND: Add API endpoint to query boat by id, return BoatCreateResponseData instead of SailboatData after POST new sailboat |
+| 2025.08.23 | 2.5 | FRONTEND: Extend Modal component, implement creation of new boats for user |
+| 2025.08.23 | 0.5 | BACKEND: Add tests for GET /boat/:id, fix return message for NotFoundError |
+| 2025.08.24 | 2.5 | BACKEND: Add userIdentities virtual property to Sailboat model, implement POST /boat/:id endpoint with tests |
+| 2025.08.24 | 1   | FRONTEND: Add BoatEditor, feature for users to edit their boats |
+| 2025.08.27 | 4   | BACKEND: Add API DELETE /boat:id/users/:userID, removes user from userSailboats and orphan sailboats. Refactor userSailboats soft->hard deletion and set onDelete CASCADE. Add deletion hooks to models |
+| 2025.08.27 | 1   | FRONTEND: Add resign from boat owners/delete boat to BoatEditor, implement logic |
+| 2025.08.27 | 0   | COMMON: Rename users -> userIdentities in interface SailboatData, refactor back- and frontend |
+| Total | 173 | |

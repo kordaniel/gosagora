@@ -209,7 +209,7 @@ const userExtractor = async (
 
   const fbIdToken = authorization.slice(7);
   const decodedIdToken = await authService.verifyIdToken(fbIdToken);
-  const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
+  const user = await userService.getUserByFirebaseUid(decodedIdToken.uid);
 
   if (user) {
     req.user = user;

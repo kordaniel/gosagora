@@ -18,6 +18,7 @@ const toUserDetailsData = (user: User): UserDetailsData => ({
   email: user.email,
   firebaseUid: user.firebaseUid,
   lastseenAt: user.lastseenAt ? user.lastseenAt.toISOString() : null,
+  boatIdentities: user.boatIdentities,
 });
 
 const createNewUser = async (newUserArguments: SignUpArguments): Promise<UserDetailsData> => {
@@ -53,7 +54,7 @@ const loginUser = async (credentials: SignInArguments): Promise<UserDetailsData>
     throw new AuthError();
   }
 
-  const user = await userService.getUserBy({ firebaseUid: decodedIdToken.uid });
+  const user = await userService.getUserDetailsDataByFirebaseUid(decodedIdToken.uid);
   if (!user) {
     throw new AuthError('Forbidden: invalid user', 403);
   }

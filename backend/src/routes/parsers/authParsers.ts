@@ -16,9 +16,20 @@ const SignUpUserSchema = matchingZodSchema<APIAuthRequest<'signup', SignUpArgume
   z.object({
     type: z.literal('signup'),
     data: z.object({
-      email: z.string().trim().toLowerCase().min(USER_CONSTANTS.EMAIL_LEN.MIN).max(USER_CONSTANTS.EMAIL_LEN.MAX).email(),
-      password: z.string().trim().min(USER_CONSTANTS.PASSWORD_LEN.MIN).max(USER_CONSTANTS.PASSWORD_LEN.MAX),
-      displayName: z.string().trim().min(USER_CONSTANTS.DISPLAY_NAME_LEN.MIN).max(USER_CONSTANTS.DISPLAY_NAME_LEN.MAX),
+      email: z.string()
+        .trim()
+        .toLowerCase()
+        .min(USER_CONSTANTS.VALIDATION.EMAIL_LEN.MIN)
+        .max(USER_CONSTANTS.VALIDATION.EMAIL_LEN.MAX)
+        .email(),
+      password: z.string()
+        .trim()
+        .min(USER_CONSTANTS.VALIDATION.PASSWORD_LEN.MIN)
+        .max(USER_CONSTANTS.VALIDATION.PASSWORD_LEN.MAX),
+      displayName: z.string()
+        .trim()
+        .min(USER_CONSTANTS.VALIDATION.DISPLAY_NAME_LEN.MIN)
+        .max(USER_CONSTANTS.VALIDATION.DISPLAY_NAME_LEN.MAX),
     }).strict(),
   }).strict() // strict => throws when parsing if object contains additional fields
 );
@@ -27,7 +38,12 @@ const SignInUserSchema = matchingZodSchema<APIAuthRequest<'login', SignInArgumen
   z.object({
     type: z.literal('login'),
     data: z.object({
-      email: z.string().trim().toLowerCase().min(USER_CONSTANTS.EMAIL_LEN.MIN).max(USER_CONSTANTS.EMAIL_LEN.MAX).email(),
+      email: z.string()
+        .trim()
+        .toLowerCase()
+        .min(USER_CONSTANTS.VALIDATION.EMAIL_LEN.MIN)
+        .max(USER_CONSTANTS.VALIDATION.EMAIL_LEN.MAX)
+        .email(),
       firebaseUid: z.string().trim(),
       firebaseIdToken: z.string().trim(),
     }).strict(),

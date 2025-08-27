@@ -1,5 +1,8 @@
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+import type { Route, SceneRendererProps } from 'react-native-tab-view';
 import type { MD3Theme } from 'react-native-paper';
+
+export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: Route; };
 
 export type NonNullableFields<T> = {
   [K in keyof T]: Exclude<T[K], null>;

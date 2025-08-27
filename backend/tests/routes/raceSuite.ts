@@ -23,15 +23,7 @@ import { RaceType } from '@common/types/race';
 export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
   const baseUrl = '/api/v1/race';
 
-  beforeAll(async () => {
-    await testFirebase.dropUsers();
-    await testDatabase.dropUsers();
-  });
-
   describe('When no races exist', () => {
-    beforeAll(async () => {
-      await testDatabase.dropRaces();
-    });
 
     describe('Listing races', () => {
 

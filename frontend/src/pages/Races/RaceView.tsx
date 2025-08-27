@@ -10,6 +10,7 @@ import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
 import Modal from '../../components/Modal';
 import StyledText from '../../components/StyledText';
 
+import { type AppTheme, type SceneMapRouteProps } from '../../types';
 import {
   type NewRaceValuesType,
   RaceTypeReverseMap,
@@ -22,8 +23,6 @@ import {
   deleteRace,
   submitPatchRace,
 } from '../../store/slices/raceSlice';
-import { type AppTheme } from '../../types';
-import { type SceneMapRouteProps } from './index';
 import { askConfirmation } from '../../helpers/askConfirmation';
 import { clampString } from '../../utils/helpers';
 import config from '../../utils/config';

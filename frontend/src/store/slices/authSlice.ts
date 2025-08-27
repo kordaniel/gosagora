@@ -12,7 +12,8 @@ import authService from '../../services/authService';
 import firebase from '../../modules/firebase';
 import userService from '../../services/userService';
 
-import { type UserDetailsData } from '@common/types/rest_api';
+import type { BoatIdentity } from '@common/types/boat';
+import type { UserDetailsData } from '@common/types/rest_api';
 
 /**
  * !!! NOTE: The possible error strings that are set in the
@@ -39,6 +40,18 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    addUserBoatIdentity: (state, action: PayloadAction<BoatIdentity>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.concat(action.payload);
+      }
+    },
+    removeUserBoatIdentity: (state, action: PayloadAction<{ id: number }>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.filter(
+          bi => bi.id !== action.payload.id
+        );
+      }
+    },
     setUser: (state, action: PayloadAction<UserDetailsData | null>) => {
       state.user = action.payload;
     },
@@ -51,14 +64,24 @@ export const authSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    updateUserBoatIdentity: (state, action: PayloadAction<BoatIdentity>) => {
+      if (state.user) {
+        state.user.boatIdentities = state.user.boatIdentities.map(
+          bi => bi.id === action.payload.id ? action.payload : bi
+        );
+      }
+    },
   },
 });
 
 export const {
+  addUserBoatIdentity: authSliceAddUserBoatIdentity,
+  removeUserBoatIdentity: authSliceRemoveUserBoatIdentity,
   setUser: authSliceSetUser,
   setError: authSliceSetError,
   setIsInitialized: authSliceSetIsInitialized,
   setLoading: authSliceSetLoading,
+  updateUserBoatIdentity: authSliceUpdateUserBoatIdentity,
 } = authSlice.actions;
 
 export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
