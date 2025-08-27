@@ -60,7 +60,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
             ...sailboatData,
             sailNumber: 'FIN-123',
             boatType: 'SAILBOAT',
-            users: [{
+            userIdentities: [{
               id: user.user.id,
               displayName: user.user.displayName,
             }]
@@ -114,7 +114,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
           expect(restBoat).toStrictEqual({
             ...sailboatData,
             boatType: 'SAILBOAT',
-            users: [{
+            userIdentities: [{
               id: user.user.id,
               displayName: user.user.displayName,
             }]
@@ -169,7 +169,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
             ...sailboatData,
             sailNumber: 'SWE-99999',
             boatType: 'SAILBOAT',
-            users: [{
+            userIdentities: [{
               id: user.user.id,
               displayName: user.user.displayName,
             }]
@@ -791,7 +791,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
           name: userBoatInDb.sailboat.name,
           description: userBoatInDb.sailboat.description,
           sailNumber: userBoatInDb.sailboat.sailNumber?.toUpperCase(),
-          users: [{
+          userIdentities: [{
             id: userBoatInDb.user.id,
             displayName: userBoatInDb.user.displayName
           }],
@@ -885,7 +885,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
                 name: updatedName,
                 sailNumber: userBoatInDb.sailboat.sailNumber,
                 description: userBoatInDb.sailboat.description,
-                users: [{
+                userIdentities: [{
                   id: userBoatInDb.user.id,
                   displayName: userBoatInDb.user.displayName,
                 }],
@@ -930,7 +930,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
                 name: userBoatInDb.sailboat.name,
                 sailNumber: updatedSailNumber.toUpperCase(),
                 description: userBoatInDb.sailboat.description,
-                users: [{
+                userIdentities: [{
                   id: userBoatInDb.user.id,
                   displayName: userBoatInDb.user.displayName,
                 }],
@@ -976,7 +976,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
                 name: userBoatInDb.sailboat.name,
                 sailNumber: null,
                 description: userBoatInDb.sailboat.description,
-                users: [{
+                userIdentities: [{
                   id: userBoatInDb.user.id,
                   displayName: userBoatInDb.user.displayName,
                 }],
@@ -1022,7 +1022,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
                 name: userBoatInDb.sailboat.name,
                 sailNumber: userBoatInDb.sailboat.sailNumber,
                 description: updatedDescription,
-                users: [{
+                userIdentities: [{
                   id: userBoatInDb.user.id,
                   displayName: userBoatInDb.user.displayName,
                 }],
@@ -1068,7 +1068,7 @@ export const boatTestSuite = (api: TestAgent) => describe('/boat', () => {
                 name: userBoatInDb.sailboat.name,
                 sailNumber: userBoatInDb.sailboat.sailNumber,
                 description: null,
-                users: [{
+                userIdentities: [{
                   id: userBoatInDb.user.id,
                   displayName: userBoatInDb.user.displayName,
                 }],

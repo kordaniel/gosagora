@@ -25,7 +25,7 @@ export const sailboatDataSchema: Yup.Schema<SailboatData> = Yup.object().shape({
   description: Yup.string()
     .nullable()
     .defined(),
-  users: Yup.array().of(
+  userIdentities: Yup.array().of(
     Yup.object().shape({
       id: Yup.number()
         .required(),

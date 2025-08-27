@@ -40,7 +40,7 @@ const BoatEditor = ({ boat, jumpTo }: BoatEditorProps) => {
     description: boat.description ?? '',
   });
 
-  const isSoleOwner = boat.users.length < 2;
+  const isSoleOwner = boat.userIdentities.length < 2;
 
   const handleUpdateSubmit = async (values: NewSailboatValuesType): Promise<boolean> => {
     const errorString = await dispatch(submitPatchBoat(boat.id, values));
@@ -140,9 +140,9 @@ const BoatView = ({ jumpTo }: SceneMapRouteProps) => {
         </View>
         <View style={theme.styles.tableColumn}>
           <StyledText variant="title" style={theme.styles.tableCellData}>Owners list</StyledText>
-          {boat.users.length === 0
+          {boat.userIdentities.length === 0
             ? <StyledText style={theme.styles.tableCellData}>No owners</StyledText>
-            : boat.users.map((({ id, displayName }) =>
+            : boat.userIdentities.map((({ id, displayName }) =>
               <StyledText key={id} style={theme.styles.tableCellData}>{displayName}</StyledText>
             ))}
         </View>

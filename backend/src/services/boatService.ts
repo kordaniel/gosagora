@@ -26,7 +26,7 @@ const toSailboatData = (sailboat: Sailboat): SailboatData => ({
   name: sailboat.name,
   description: sailboat.description,
   sailNumber: sailboat.sailNumber,
-  users: sailboat.userIdentities,
+  userIdentities: sailboat.userIdentities,
 });
 
 const toBoatIdentity = (sailboat: Sailboat): BoatIdentity => ({

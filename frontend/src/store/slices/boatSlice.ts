@@ -161,7 +161,6 @@ export const deleteAuthorizedUsersUserSailboats = (boatId: number): AppAsyncThun
       return 'Please Sign In to perform this action';
     }
     try {
-      console.log('delete PAATTI:', boatId, stateAuth.user.id);
       await boatService.deleteOneUserSailboats(boatId.toString(), stateAuth.user.id.toString());
       dispatch(setSelectedBoat(null));
       dispatch(authSliceRemoveUserBoatIdentity({ id: boatId }));

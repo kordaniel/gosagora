@@ -114,7 +114,7 @@ export interface SailboatData {
   name: string;
   sailNumber: string | null;
   description: string | null;
-  users: UserIdentity[];
+  userIdentities: UserIdentity[];
 }
 
 export interface BoatCreateResponseData {
