@@ -6,6 +6,7 @@ import { type NewSailboatValuesType } from '../models/boat';
 import config from '../utils/config';
 
 import {
+  BoatCreateResponseData,
   type CreateSailboatArguments,
   type SailboatData
 } from '@common/types/rest_api';
@@ -33,6 +34,19 @@ export const sailboatDataSchema: Yup.Schema<SailboatData> = Yup.object().shape({
         .required(),
     }),
   ).required(),
+});
+
+export const boatCreateResponseDataSchema: Yup.Schema<BoatCreateResponseData> = Yup.object().shape({
+  boat: sailboatDataSchema,
+  boatIdentity: Yup.object().shape({
+    id: Yup.number()
+      .required(),
+    boatType: Yup.mixed<BoatType>()
+      .oneOf([BoatType.Sailboat])
+      .required(),
+    name: Yup.string()
+      .required(),
+  })
 });
 
 export const newSailboatValidationSchema: Yup.Schema<NewSailboatValuesType> = Yup.object().shape({

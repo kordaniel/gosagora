@@ -1,5 +1,8 @@
+import {
+  boatCreateResponseDataSchema,
+  sailboatDataSchema
+} from '../schemas/boat';
 import axiosInstance from '../modules/axiosInstance';
-import { sailboatDataSchema } from '../schemas/boat';
 import { validateResponse } from './validators';
 
 import type {
@@ -19,9 +22,13 @@ const createSailboat = async (boatDetails: CreateSailboatArguments): Promise<Boa
     data: boatDetails,
   };
 
-  // TODO: Validate response
   const { data } = await axiosInstance.post<BoatCreateResponseData>(apiBasePath, postData);
-  return data;
+
+  return await validateResponse<BoatCreateResponseData>(
+    data,
+    boatCreateResponseDataSchema,
+    'We encountered a problem creating the boat for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 const deleteOneUserSailboats = async (boatId: string, userId: string): Promise<void> => {
@@ -30,6 +37,7 @@ const deleteOneUserSailboats = async (boatId: string, userId: string): Promise<v
 
 const getOne = async (boatId: string): Promise<SailboatData> => {
   const { data } = await axiosInstance.get<SailboatData>(`${apiBasePath}/${boatId}`);
+
   return await validateResponse<SailboatData>(
     data,
     sailboatDataSchema,
@@ -50,8 +58,12 @@ const updateOne = async (
   const { data } = await axiosInstance.patch<BoatCreateResponseData>(
     `${apiBasePath}/${boatId}`, patchData
   );
-  // TODO: Validate response
-  return data;
+
+  return validateResponse<BoatCreateResponseData>(
+    data,
+    boatCreateResponseDataSchema,
+    'We encountered a problem updating this boat for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 export default {

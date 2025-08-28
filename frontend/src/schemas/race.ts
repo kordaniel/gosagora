@@ -16,11 +16,36 @@ import config from '../utils/config';
 import {
   type CreateRaceArguments,
   type RaceData,
+  type RaceListingData,
   type RacePatchResponseData,
 } from '@common/types/rest_api';
 import { RaceType } from '@common/types/race';
 
-export const raceSchema: Yup.Schema<RaceData> = Yup.object().shape({
+export const raceListingDataSchema: Yup.Schema<RaceListingData> = Yup.object().shape({
+  id: Yup.number()
+    .required(),
+  name: Yup.string()
+    .required(),
+  type: Yup.mixed<RaceType>()
+    .oneOf(Object.values(RaceType))
+    .required(),
+  description: Yup.string()
+    .required(),
+  dateFrom: Yup.string()
+    .required(),
+  dateTo: Yup.string()
+    .required(),
+  user: Yup.object({
+    id: Yup.number().required(),
+    displayName: Yup.string().required()
+  }).required()
+});
+
+export const raceListingDataArraySchema: Yup.Schema<RaceListingData[]> = Yup.array().of(
+  raceListingDataSchema
+).required();
+
+export const raceDataSchema: Yup.Schema<RaceData> = Yup.object().shape({
   id: Yup.number()
     .required(),
   public: Yup.boolean()
@@ -135,7 +160,7 @@ export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object
 });
 
 export const patchRaceSchema: Yup.Schema<RacePatchResponseData> = Yup.object().shape({
-  raceData: raceSchema,
+  raceData: raceDataSchema,
   raceListingData: Yup.object().shape({
     id: Yup.number()
       .required(),
