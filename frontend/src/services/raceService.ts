@@ -1,4 +1,9 @@
-import { patchRaceSchema, raceSchema } from '../schemas/race';
+import {
+  patchRaceSchema,
+  raceDataSchema,
+  raceListingDataArraySchema,
+  raceListingDataSchema,
+} from '../schemas/race';
 import axiosInstance from '../modules/axiosInstance';
 import { validateResponse } from './validators';
 
@@ -18,28 +23,37 @@ const create = async (raceDetails: CreateRaceArguments): Promise<RaceListingData
     data: raceDetails
   };
 
-  // TODO: Validate response
   const { data } = await axiosInstance.post<RaceListingData>(
     `${apiBasePath}`, postData
   );
-  return data;
+
+  return await validateResponse<RaceListingData>(
+    data,
+    raceListingDataSchema,
+    'We encountered a problem creating the race for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 const deleteOne = async (raceId: string): Promise<void> => {
   await axiosInstance.delete(`${apiBasePath}/${raceId}`);
 };
 
-const getAll = async () => {
-  // TODO: Validate response
+const getAll = async (): Promise<RaceListingData[]> => {
   const { data } = await axiosInstance.get<RaceListingData[]>(apiBasePath);
-  return data;
+
+  return await validateResponse<RaceListingData[]>(
+    data,
+    raceListingDataArraySchema,
+    'We encountered a problem loading the races for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 const getOne = async (raceId: string): Promise<RaceData> => {
   const { data } = await axiosInstance.get<RaceData>(`${apiBasePath}/${raceId}`);
+
   return await validateResponse<RaceData>(
     data,
-    raceSchema,
+    raceDataSchema,
     'We encountered a problem loading this race for you. Please try again, or contact our support team if the problem persists'
   );
 };

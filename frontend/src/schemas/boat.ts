@@ -1,15 +1,22 @@
 import * as Yup from 'yup';
 
+import {
+  boatIdentitySchema,
+  userIdentitySchema,
+} from './identities';
 import { FormInputType } from '../components/Form/enums';
 import { type FormProps } from '../components/Form';
 import { type NewSailboatValuesType } from '../models/boat';
 import config from '../utils/config';
 
 import {
+  type BoatCreateResponseData,
   type CreateSailboatArguments,
   type SailboatData
 } from '@common/types/rest_api';
 import { BoatType } from '@common/types/boat';
+
+
 
 export const sailboatDataSchema: Yup.Schema<SailboatData> = Yup.object().shape({
   id: Yup.number()
@@ -26,13 +33,13 @@ export const sailboatDataSchema: Yup.Schema<SailboatData> = Yup.object().shape({
     .nullable()
     .defined(),
   userIdentities: Yup.array().of(
-    Yup.object().shape({
-      id: Yup.number()
-        .required(),
-      displayName: Yup.string()
-        .required(),
-    }),
+    userIdentitySchema
   ).required(),
+});
+
+export const boatCreateResponseDataSchema: Yup.Schema<BoatCreateResponseData> = Yup.object().shape({
+  boat: sailboatDataSchema,
+  boatIdentity: boatIdentitySchema,
 });
 
 export const newSailboatValidationSchema: Yup.Schema<NewSailboatValuesType> = Yup.object().shape({

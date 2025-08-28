@@ -12,15 +12,38 @@ import { type DateRange } from '../types';
 import { FormInputType } from '../components/Form/enums';
 import { type FormProps } from '../components/Form';
 import config from '../utils/config';
+import { userIdentitySchema } from './identities';
 
 import {
   type CreateRaceArguments,
   type RaceData,
+  type RaceListingData,
   type RacePatchResponseData,
 } from '@common/types/rest_api';
 import { RaceType } from '@common/types/race';
 
-export const raceSchema: Yup.Schema<RaceData> = Yup.object().shape({
+export const raceListingDataSchema: Yup.Schema<RaceListingData> = Yup.object().shape({
+  id: Yup.number()
+    .required(),
+  name: Yup.string()
+    .required(),
+  type: Yup.mixed<RaceType>()
+    .oneOf(Object.values(RaceType))
+    .required(),
+  description: Yup.string()
+    .required(),
+  dateFrom: Yup.string()
+    .required(),
+  dateTo: Yup.string()
+    .required(),
+  user: userIdentitySchema
+});
+
+export const raceListingDataArraySchema: Yup.Schema<RaceListingData[]> = Yup.array().of(
+  raceListingDataSchema
+).required();
+
+export const raceDataSchema: Yup.Schema<RaceData> = Yup.object().shape({
   id: Yup.number()
     .required(),
   public: Yup.boolean()
@@ -46,10 +69,7 @@ export const raceSchema: Yup.Schema<RaceData> = Yup.object().shape({
     .required(),
   registrationCloseDate: Yup.string()
     .required(),
-  user: Yup.object({
-    id: Yup.number().required(),
-    displayName: Yup.string().required()
-  }).required()
+  user: userIdentitySchema
 });
 
 export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object().shape({
@@ -135,28 +155,8 @@ export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object
 });
 
 export const patchRaceSchema: Yup.Schema<RacePatchResponseData> = Yup.object().shape({
-  raceData: raceSchema,
-  raceListingData: Yup.object().shape({
-    id: Yup.number()
-      .required(),
-    name: Yup.string()
-      .required(),
-    type: Yup.mixed<RaceType>()
-      .oneOf(Object.values(RaceType))
-      .required(),
-    description: Yup.string()
-      .required(),
-    dateFrom: Yup.string()
-      .required(),
-    dateTo: Yup.string()
-      .required(),
-    user: Yup.object().shape({
-      id: Yup.number()
-        .required(),
-      displayName: Yup.string()
-        .required(),
-    })
-  })
+  raceData: raceDataSchema,
+  raceListingData: raceListingDataSchema
 });
 
 interface RaceFormFieldsInitialValues {

@@ -116,4 +116,5 @@
 | 2025.08.27 | 1   | FRONTEND: Add resign from boat owners/delete boat to BoatEditor, implement logic |
 | 2025.08.27 | 0   | COMMON: Rename users -> userIdentities in interface SailboatData, refactor back- and frontend |
 | 2025.08.27 | 1   | BACKEND: Add id (multiple, named) extractor middleware |
-| Total | 174 | |
+| 2025.08.28 | 1   | FRONTEND: Add missing, restructure validators for API responses |
+| Total | 175 | |
