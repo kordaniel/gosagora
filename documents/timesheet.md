@@ -117,4 +117,6 @@
 | 2025.08.27 | 0   | COMMON: Rename users -> userIdentities in interface SailboatData, refactor back- and frontend |
 | 2025.08.27 | 1   | BACKEND: Add id (multiple, named) extractor middleware |
 | 2025.08.28 | 1   | FRONTEND: Add missing, restructure validators for API responses |
-| Total | 175 | |
+| 2025.08.29 | 0.5 | FRONTEND: Add expo-location, expo-task-manager packages. Update app.config.js configuration and add configuration for location permissions |
+| 2025.09.04 | 0.5 | FRONTEND: Add Location Dashboard, render current location |
+| Total | 176 | |

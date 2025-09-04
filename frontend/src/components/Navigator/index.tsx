@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import TabBar from './TabBar';
 
+import Dashboard from '../../pages/Dashboard';
 import Home from '../../pages/Home';
 import Races from '../../pages/Races';
 import UserProfile from '../../pages/UserProfile';
@@ -20,9 +21,10 @@ import { useAppSelector } from '../../store/hooks';
 // It also shouldn't extend ParamListBase (e.g. interface
 // RootStackParamList extends ParamListBase { ... }).
 type RootStackParamList = {
-  Home: undefined;
-  Races: undefined;
   UserProfile: undefined;
+  Races: undefined;
+  Home: undefined;
+  Dashboard: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -40,9 +42,9 @@ const Navigator = () => {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{ title: "Home" }}
+        name="UserProfile"
+        component={UserProfile}
+        options={{ title: isAuthenticated ? user?.displayName : "Sign In" }}
       />
       <Tab.Screen
         name="Races"
@@ -50,9 +52,14 @@ const Navigator = () => {
         options={{ title: "Races" }}
       />
       <Tab.Screen
-        name="UserProfile"
-        component={UserProfile}
-        options={{ title: isAuthenticated ? user?.displayName : "Sign In" }}
+        name="Home"
+        component={Home}
+        options={{ title: "Home" }}
+      />
+      <Tab.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{ title: "Dashboard" }}
       />
     </Tab.Navigator>
   );
