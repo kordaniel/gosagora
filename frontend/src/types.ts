@@ -22,3 +22,12 @@ export interface DateRange {
   startDate: Date;
   endDate: Date;
 }
+
+export interface GeoPos {
+  timestamp: number;
+  lat: number;
+  lon: number;
+  acc: number | null;
+  hdg: number | null;
+  vel: number | null;
+}
