@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import * as Location from 'expo-location';
 import {
   type NavigationState,
   type Route,
@@ -18,8 +17,9 @@ import Separator from '../../components/Separator';
 import StyledText from '../../components/StyledText';
 
 import type { AppTheme, GeoPos } from '../../types';
-import { SelectLocation, addLocation } from '../../store/slices/locationSlice';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { SelectLocation } from '../../store/slices/locationSlice';
+import { useAppSelector } from '../../store/hooks';
+import useLocation from '../../hooks/useLocation';
 
 
 const Map = () => {
@@ -45,47 +45,13 @@ const LocationView = ({ loc }: { loc: GeoPos }) => {
 };
 
 const Gps = () => {
-  const dispatch = useAppDispatch();
+  const { isInitialized } = useLocation();
   const { current, history } = useAppSelector(SelectLocation);
-
-  useEffect(() => {
-    let subscription: Location.LocationSubscription | null = null;
-
-    const subscribeWatchPosition = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== Location.PermissionStatus.GRANTED) {
-        console.error('Permission to access location was denied');
-        return;
-      }
-
-      subscription = await Location.watchPositionAsync({
-        accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 1000,
-        distanceInterval: 3,
-      }, (loc) => {
-        dispatch(addLocation({
-          timestamp: loc.timestamp,
-          lat: loc.coords.latitude,
-          lon: loc.coords.longitude,
-          acc: loc.coords.accuracy,
-          hdg: loc.coords.heading,
-          vel: loc.coords.speed,
-        }));
-      });
-    };
-
-    void subscribeWatchPosition();
-
-    return () => {
-      if (subscription) {
-        subscription.remove();
-      }
-    };
-  }, [dispatch]);
 
   return (
     <ScrollView>
       <StyledText variant="headline">Geolocation</StyledText>
+      <StyledText>{isInitialized ? 'subscribed' : 'waiting'}</StyledText>
       {current === null
         ? <StyledText variant="title">No current location..</StyledText>
         : <LocationView loc={current} />

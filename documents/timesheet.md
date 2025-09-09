@@ -119,4 +119,6 @@
 | 2025.08.28 | 1   | FRONTEND: Add missing, restructure validators for API responses |
 | 2025.08.29 | 0.5 | FRONTEND: Add expo-location, expo-task-manager packages. Update app.config.js configuration and add configuration for location permissions |
 | 2025.09.04 | 0.5 | FRONTEND: Add Location Dashboard, render current location |
-| Total | 176 | |
+| 2025.09.05 | 0.5 | FRONTEND: Add locationSlice, watchPosition from Component |
+| 2025.09.09 | 0.5 | FRONTEND: Add useLocation hook |
+| Total | 177 | |
