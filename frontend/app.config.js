@@ -49,6 +49,9 @@ export default {
     favicon: './assets/favicon.png',
   },
   extra: {
+    eas: {
+      projectId: 'c91e78a0-c464-4f71-8300-a3134ced9531',
+    },
     ENV: process.env.ENV || 'production',
     BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
     FIREBASE_AUTH_EMULATOR_HOST: process.env.FIREBASE_AUTH_EMULATOR_HOST || undefined,

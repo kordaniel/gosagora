@@ -6,6 +6,10 @@ firebaseConfig.json
 # dependencies
 node_modules/
 
+# EAS
+android/
+ios/
+
 # Expo
 .expo/
 dist/
