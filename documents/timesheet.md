@@ -122,4 +122,5 @@
 | 2025.09.05 | 0.5 | FRONTEND: Add locationSlice, watchPosition from Component |
 | 2025.09.09 | 0.5 | FRONTEND: Add useLocation hook |
 | 2025.09.11 | 3   | FRONTEND: Configure and document EAS Development build process, fix package versions |
-| Total | 180 | |
+| 2025.09.12 | 2   | FRONTEND: Add (background) taskManager, track location in background |
+| Total | 182 | |
