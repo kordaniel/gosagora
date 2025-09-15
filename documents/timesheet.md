@@ -124,4 +124,5 @@
 | 2025.09.11 | 3   | FRONTEND: Configure and document EAS Development build process, fix package versions |
 | 2025.09.12 | 2.5 | FRONTEND: Add (background) taskManager, location module, implement background location tracking |
 | 2025.09.15 | 2.5 | FRONTEND: Refactor location module, backgroundTasks, useLocation hook, add foreground watchPosition subscription (when running in on web) |
-| Total | 185 | |
+| 2025.09.15 | 2   | FRONTEND: Add more helpers and typeguards, unitConverter and stringTools modules |
+| Total | 187 | |
