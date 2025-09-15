@@ -7,8 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import TabBar from './TabBar';
 
-import Dashboard from '../../pages/Dashboard';
 import Home from '../../pages/Home';
+import Navigation from '../../pages/Navigation';
 import Races from '../../pages/Races';
 import UserProfile from '../../pages/UserProfile';
 
@@ -24,7 +24,7 @@ type RootStackParamList = {
   UserProfile: undefined;
   Races: undefined;
   Home: undefined;
-  Dashboard: undefined;
+  Navigation: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -57,9 +57,9 @@ const Navigator = () => {
         options={{ title: "Home" }}
       />
       <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{ title: "Dashboard" }}
+        name="Navigation"
+        component={Navigation}
+        options={{ title: "Navigation" }}
       />
     </Tab.Navigator>
   );

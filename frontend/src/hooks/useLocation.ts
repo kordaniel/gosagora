@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import type { LocationSubscription } from 'expo-location';
 
 import config from '../utils/config';
 import location from '../modules/location';
+import { setLocationStatus } from '../store/slices/locationSlice';
 import { useAppDispatch } from '../store/hooks';
 
 const useLocation = () => {
-  const [isTracking, setIsTracking] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -26,16 +26,16 @@ const useLocation = () => {
         if (!isTrackingLocation) {
           console.error('TODO HANDLE: NOT tracking...');
         }
-        setIsTracking(isTrackingLocation);
+        dispatch(setLocationStatus(isTrackingLocation ? 'background' : 'idle'));
       } else {
         console.log('is NOT mobile');
         fgWatchPositionSubscription = await location.subscribeToFgWatchPosition();
-        setIsTracking(fgWatchPositionSubscription !== null);
+        dispatch(setLocationStatus(fgWatchPositionSubscription !== null ? 'foreground' : 'idle'));
       }
     };
 
     const stopTracking = () => {
-      setIsTracking(false);
+      dispatch(setLocationStatus('idle'));
       if (config.IS_MOBILE) {
         void location.stopBgLocationUpdates();
       }
@@ -48,8 +48,6 @@ const useLocation = () => {
 
     return stopTracking;
   }, [dispatch]);
-
-  return { isInitialized: isTracking };
 };
 
 export default useLocation;
