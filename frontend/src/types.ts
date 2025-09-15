@@ -24,6 +24,7 @@ export interface DateRange {
 }
 
 export interface GeoPos {
+  id: string;
   timestamp: number;
   lat: number;
   lon: number;
