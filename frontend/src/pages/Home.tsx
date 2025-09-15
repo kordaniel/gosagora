@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 
-import Button from 'src/components/Button';
+import Button from '../components/Button';
 import Separator from '../components/Separator';
 import StyledText from '../components/StyledText';
 
