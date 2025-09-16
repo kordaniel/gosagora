@@ -14,10 +14,16 @@ export interface LocationTaskExecutorBody {
   locations: Location.LocationObject[];
 }
 
+const MIN_ACC_TRESHOLD = config.IS_DEVELOPMENT_ENV ? 100.0 : 12.0; // meters, "signal quality" = 0%. Positions with lower accuracy are discarded
+
 const locationAccuracyOptions = {
   accuracy: Location.Accuracy.BestForNavigation,
   timeInterval: 1000,  // emit at least every second
   distanceInterval: 2, // or when moved 2 meters
+};
+
+const isValidLocationObj = (pos: Location.LocationObject): boolean => {
+  return pos.coords.accuracy !== null && pos.coords.accuracy < MIN_ACC_TRESHOLD;
 };
 
 const locObjToGeoPos = (pos: Location.LocationObject | null): GeoPos | null => {
@@ -38,7 +44,9 @@ export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecut
   } else if (data) {
     console.log('bgLocationTaskExecutor executor data:', data);
     data.locations.forEach(loc => {
-      store.dispatch(addLocation(locObjToGeoPos(loc)));
+      if (isValidLocationObj(loc)) {
+        store.dispatch(addLocation(locObjToGeoPos(loc)));
+      }
     });
   }
 
@@ -46,10 +54,21 @@ export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecut
 };
 
 const fgWatchPositionCb: Location.LocationCallback = (loc) => {
-  store.dispatch(addLocation(locObjToGeoPos(loc)));
+  if (isValidLocationObj(loc)) {
+    store.dispatch(addLocation(locObjToGeoPos(loc)));
+  }
 };
 
 const requestPermissions = async (includeBgPermissions: boolean = true): Promise<boolean> => {
+  const fgPermsGranted = (await Location.getForegroundPermissionsAsync()).granted;
+  const bgPermsGranted = includeBgPermissions
+    ? (await Location.getBackgroundPermissionsAsync()).granted
+    : true;
+
+  if (fgPermsGranted && bgPermsGranted) {
+    return true;
+  }
+
   const foregroundPermission = await Location.requestForegroundPermissionsAsync();
   if (foregroundPermission.status !== Location.PermissionStatus.GRANTED) {
     console.error('Permission to access foreground location was denied');
@@ -80,9 +99,11 @@ const startBgLocationUpdates = async (): Promise<boolean> => {
 
   await Location.startLocationUpdatesAsync(BG_TASK.Location, {
     ...locationAccuracyOptions,
-    pausesUpdatesAutomatically: false,           // ios only? if true, behaviour depends on activityType
-    activityType: Location.ActivityType.Fitness, // ios only?
-    showsBackgroundLocationIndicator: true,
+    deferredUpdatesDistance: 0,
+    deferredUpdatesInterval: 5000,
+    pausesUpdatesAutomatically: false,           // ios only
+    activityType: Location.ActivityType.Fitness, // ios only
+    showsBackgroundLocationIndicator: true,      // ios only
     foregroundService: { // android requires for background location
       notificationTitle: 'Location tracking',
       notificationBody: 'Tracking your location in the background',
