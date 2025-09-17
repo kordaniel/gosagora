@@ -17,7 +17,6 @@ import Dashboard from './Dashboard';
 import Map from './Map';
 
 import type { AppTheme } from '../../types';
-import useLocation from '../../hooks/useLocation';
 
 const routes: Route[] = [
   { key: 'dashboard', title: 'Dashboard' },
@@ -51,7 +50,6 @@ const Navigation = () => {
   const theme = useTheme<AppTheme>();
   const [tabViewIndex, setTabViewIndex] = useState<number>(0);
   const layout = useWindowDimensions();
-  useLocation();
 
   return (
     <SafeAreaView style={theme.styles.safeAreaView}>

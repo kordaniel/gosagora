@@ -126,4 +126,5 @@
 | 2025.09.15 | 2.5 | FRONTEND: Refactor location module, backgroundTasks, useLocation hook, add foreground watchPosition subscription (when running in on web) |
 | 2025.09.15 | 1.5 | FRONTEND: Add more helpers and typeguards, unitConverter and stringTools modules |
 | 2025.09.15 | 1.5 | FRONTEND: Extend locationSlice, refactor useLocation hook. Rename and refactor, stylize page Dashboard -> Navigation |
-| Total | 188 | |
+| 2025.09.17 | 6   | FRONTEND: Add Location foreground WatchPosition simulation (for app development). Refactor, extend useLocation hook. Implement a sliding location buffer and smooth the current location by averaging x positions with an ovelap y<x between each position |
+| Total | 194 | |

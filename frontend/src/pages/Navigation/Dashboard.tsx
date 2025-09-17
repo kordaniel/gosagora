@@ -17,6 +17,7 @@ import {
 } from '../../utils/stringTools';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { DistanceUnits } from '../../utils/unitConverter';
+import useLocation from '../../hooks/useLocation';
 
 const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
   const theme = useTheme<AppTheme>();
@@ -72,6 +73,7 @@ const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
 const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { current, history, historyMaxLen, status } = useAppSelector(SelectLocation);
+  const { startTracking, stopTracking } = useLocation();
 
   return (
     <ScrollView>
@@ -88,6 +90,8 @@ const Dashboard = () => {
       >
         Shorten history max len
       </Button>
+      <Button onPress={startTracking as () => void} disabled={status !== 'idle'}>Start tracking</Button>
+      <Button onPress={stopTracking} disabled={status === 'idle'}>Stop tracking</Button>
       <StyledText variant="title">Current position</StyledText>
       <GeoPosView pos={current} />
       <StyledText variant="title">History</StyledText>

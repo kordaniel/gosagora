@@ -28,7 +28,7 @@ export interface GeoPos {
   timestamp: number;
   lat: number;
   lon: number;
-  acc: number | null;
+  acc: number;
   hdg: number | null;
   vel: number | null;
 }
