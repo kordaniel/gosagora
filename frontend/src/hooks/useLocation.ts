@@ -2,10 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import type { LocationSubscription } from 'expo-location';
 
-import location, {
-  subscribeToSimulatedFgWatchPosition
-} from '../modules/location';
 import config from '../utils/config';
+import location from '../modules/location';
 import { setLocationTrackingStatus } from '../store/slices/locationSlice';
 import { useAppDispatch } from '../store/hooks';
 
@@ -34,7 +32,7 @@ const useLocation = () => {
         return;
       }
       fgWatchPositionSubscriptionRef.current = config.IS_DEVELOPMENT_ENV
-        ? subscribeToSimulatedFgWatchPosition()
+        ? location.subscribeToSimulatedFgWatchPosition()
         : await location.subscribeToFgWatchPosition();
       dispatch(setLocationTrackingStatus(fgWatchPositionSubscriptionRef.current !== null ? 'foreground' : 'idle'));
     }

@@ -1,43 +1,24 @@
 import * as Location from 'expo-location';
 
-import { randRange, randUnitRangeFrom } from '../utils/helpers';
+import { randRange, randUnitRangeFrom } from '../../utils/helpers';
 import taskManager, {
   BG_TASK,
   type LocationTaskExecutorType
-} from '../backgroundTasks/taskManager';
-import type { GeoPos } from '../types';
-import config from '../utils/config';
-import { generateIdFromTimestamp } from '../utils/idGenerator';
-import { handleNewLocation } from '../store/slices/locationSlice';
-import store from '../store';
-import unitConverter from '../utils/unitConverter';
+} from '../../backgroundTasks/taskManager';
+import config from '../../utils/config';
+import { handleNewLocation } from '../../store/slices/locationSlice';
+import { locObjToGeoPos } from './helpers';
+import store from '../../store';
+import unitConverter from '../../utils/unitConverter';
 
 export interface LocationTaskExecutorBody {
   locations: Location.LocationObject[];
 }
 
-const MIN_ACC_TRESHOLD = config.IS_DEVELOPMENT_ENV ? 100.0 : 12.0; // meters, "signal quality" = 0%. Positions with lower accuracy are discarded
-
 const locationAccuracyOptions = {
   accuracy: Location.Accuracy.BestForNavigation,
   timeInterval: 1000,  // emit at least every second
   distanceInterval: 2, // or when moved 2 meters
-};
-
-const isValidLocationObj = (pos: Location.LocationObject): boolean => {
-  return pos.coords.accuracy !== null && pos.coords.accuracy < MIN_ACC_TRESHOLD;
-};
-
-const locObjToGeoPos = (pos: Location.LocationObject | null): GeoPos | null => {
-  return pos === null || pos.coords.accuracy === null ? null : {
-    id: generateIdFromTimestamp(pos.timestamp),
-    timestamp: pos.timestamp,
-    lat: pos.coords.latitude,
-    lon: pos.coords.longitude,
-    acc: pos.coords.accuracy,
-    hdg: pos.coords.heading,
-    vel: pos.coords.speed,
-  };
 };
 
 export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecutorBody> = async ({ data, error }) => {
@@ -46,9 +27,7 @@ export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecut
   } else if (data) {
     console.log('bgLocationTaskExecutor executor data, locations.length =', data.locations.length);
     data.locations.forEach(loc => {
-      if (isValidLocationObj(loc)) {
-        store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
-      }
+      store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
     });
   }
 
@@ -56,9 +35,7 @@ export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecut
 };
 
 const fgWatchPositionCb: Location.LocationCallback = (loc) => {
-  if (isValidLocationObj(loc)) {
-    store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
-  }
+  store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
 };
 
 const requestPermissions = async (includeBgPermissions: boolean = true): Promise<boolean> => {
@@ -135,14 +112,7 @@ const subscribeToFgWatchPosition = async (): Promise<Location.LocationSubscripti
   );
 };
 
-export default {
-  requestPermissions,
-  startBgLocationUpdates,
-  stopBgLocationUpdates,
-  subscribeToFgWatchPosition,
-};
-
-export const subscribeToSimulatedFgWatchPosition = (): Location.LocationSubscription => {
+const subscribeToSimulatedFgWatchPosition = (): Location.LocationSubscription => {
   const EARTH_RADIUS = 6371009; // meters
   const FREQ = 3;               // update frequency, seconds
   const COURSE_MIN_STEPS = 30;  // minimum amount of updates before possible direction change
@@ -205,7 +175,7 @@ export const subscribeToSimulatedFgWatchPosition = (): Location.LocationSubscrip
       coords: {
         latitude: lat,
         longitude: lon,
-        accuracy: acc,
+        accuracy: Math.random() < 0.05 ? null : acc,
         altitude: null,
         altitudeAccuracy: null,
         heading: course,
@@ -219,4 +189,13 @@ export const subscribeToSimulatedFgWatchPosition = (): Location.LocationSubscrip
       clearInterval(intervalId);
     },
   };
+};
+
+
+export default {
+  requestPermissions,
+  startBgLocationUpdates,
+  stopBgLocationUpdates,
+  subscribeToFgWatchPosition,
+  subscribeToSimulatedFgWatchPosition,
 };

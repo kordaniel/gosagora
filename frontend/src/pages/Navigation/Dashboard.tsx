@@ -13,6 +13,7 @@ import {
   decimalCoordsToDMSString,
   distanceToString,
   headingToString,
+  percentageToString,
   velocityToString,
 } from '../../utils/stringTools';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -72,13 +73,19 @@ const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { current, history, historyMaxLen, trackingStatus } = useAppSelector(SelectLocation);
+  const {
+    current,
+    history,
+    historyMaxLen,
+    trackingStatus,
+    signalQuality
+  } = useAppSelector(SelectLocation);
   const { startTracking, stopTracking } = useLocation();
 
   return (
     <ScrollView>
       <StyledText variant="headline">GosaGora Dashboard</StyledText>
-      <StyledText>Status: {trackingStatus}</StyledText>
+      <StyledText>Status: {trackingStatus}. Signal: {percentageToString(signalQuality)}</StyledText>
       <StyledText>History max length: {historyMaxLen}, current length: {history.length}</StyledText>
       <Button
         onPress={() => dispatch(setLocationHistoryMaxLen(2 * historyMaxLen))}
