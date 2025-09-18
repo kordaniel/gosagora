@@ -13,7 +13,7 @@ const HISTORY_MAX_LEN = HISTORY_MAX_AGE_MIN * 60;
 const LOCATION_WINDOW_LEN = 3;
 const LOCATION_WINDOW_OVERLAP = 2;
 
-type LocationStatus = 'idle' | 'background' | 'foreground';
+type TrackingStatus = 'idle' | 'background' | 'foreground';
 
 interface LocationWindow {
   buffer: GeoPos[];
@@ -21,15 +21,15 @@ interface LocationWindow {
   length: number;
 }
 
-export interface LocationSlice {
+export interface LocationState {
   current: GeoPos | null;
   history: Array<GeoPos | null>;
   historyMaxLen: number;
   locationWindow: LocationWindow;
-  status: LocationStatus
+  trackingStatus: TrackingStatus;
 }
 
-const initialState: LocationSlice = {
+const initialState: LocationState = {
   current: null,
   history: [],
   historyMaxLen: HISTORY_MAX_LEN,
@@ -38,7 +38,7 @@ const initialState: LocationSlice = {
     idxNext: 0,
     length: LOCATION_WINDOW_LEN,
   },
-  status: 'idle',
+  trackingStatus: 'idle',
 };
 
 const locationSlice = createSlice({
@@ -62,22 +62,27 @@ const locationSlice = createSlice({
     setLocationWindow: (state, action: PayloadAction<LocationWindow>) => {
       state.locationWindow = action.payload;
     },
-    setStatus: (state, action: PayloadAction<LocationStatus>) => {
-      state.status = action.payload;
+    setTrackingStatus: (state, action: PayloadAction<TrackingStatus>) => {
+      state.trackingStatus = action.payload;
     }
   },
 });
 
 export const {
   setHistoryMaxLen: setLocationHistoryMaxLen,
-  setStatus: setLocationStatus,
+  setTrackingStatus: setLocationTrackingStatus,
 } = locationSlice.actions;
 const {
   addLocation,
   setLocationWindow
 } = locationSlice.actions;
 
-export const SelectLocation = (state: RootState) => state.location;
+export const SelectLocation = (state: RootState): Omit<LocationState, 'locationWindow'> => ({
+  current: state.location.current,
+  history: state.location.history,
+  historyMaxLen: state.location.historyMaxLen,
+  trackingStatus: state.location.trackingStatus,
+});
 
 const computeAveragedPosition = (buffer: GeoPos[]): GeoPos => {
   if (buffer.length !== LOCATION_WINDOW_LEN) {

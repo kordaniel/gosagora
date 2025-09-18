@@ -6,7 +6,7 @@ import location, {
   subscribeToSimulatedFgWatchPosition
 } from '../modules/location';
 import config from '../utils/config';
-import { setLocationStatus } from '../store/slices/locationSlice';
+import { setLocationTrackingStatus } from '../store/slices/locationSlice';
 import { useAppDispatch } from '../store/hooks';
 
 const useLocation = () => {
@@ -26,7 +26,7 @@ const useLocation = () => {
       if (!isTrackingLocation) {
         console.error('TODO HANDLE: NOT tracking...');
       }
-      dispatch(setLocationStatus(isTrackingLocation ? 'background' : 'idle'));
+      dispatch(setLocationTrackingStatus(isTrackingLocation ? 'background' : 'idle'));
     } else {
       console.log('is NOT mobile');
       if (fgWatchPositionSubscriptionRef.current !== null) {
@@ -36,12 +36,12 @@ const useLocation = () => {
       fgWatchPositionSubscriptionRef.current = config.IS_DEVELOPMENT_ENV
         ? subscribeToSimulatedFgWatchPosition()
         : await location.subscribeToFgWatchPosition();
-      dispatch(setLocationStatus(fgWatchPositionSubscriptionRef.current !== null ? 'foreground' : 'idle'));
+      dispatch(setLocationTrackingStatus(fgWatchPositionSubscriptionRef.current !== null ? 'foreground' : 'idle'));
     }
   }, [dispatch]);
 
   const stopTracking = useCallback(() => {
-    dispatch(setLocationStatus('idle'));
+    dispatch(setLocationTrackingStatus('idle'));
     if (config.IS_MOBILE) {
       void location.stopBgLocationUpdates();
     }

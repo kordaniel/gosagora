@@ -72,13 +72,13 @@ const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { current, history, historyMaxLen, status } = useAppSelector(SelectLocation);
+  const { current, history, historyMaxLen, trackingStatus } = useAppSelector(SelectLocation);
   const { startTracking, stopTracking } = useLocation();
 
   return (
     <ScrollView>
       <StyledText variant="headline">GosaGora Dashboard</StyledText>
-      <StyledText>Status: {status}</StyledText>
+      <StyledText>Status: {trackingStatus}</StyledText>
       <StyledText>History max length: {historyMaxLen}, current length: {history.length}</StyledText>
       <Button
         onPress={() => dispatch(setLocationHistoryMaxLen(2 * historyMaxLen))}
@@ -90,8 +90,8 @@ const Dashboard = () => {
       >
         Shorten history max len
       </Button>
-      <Button onPress={startTracking as () => void} disabled={status !== 'idle'}>Start tracking</Button>
-      <Button onPress={stopTracking} disabled={status === 'idle'}>Stop tracking</Button>
+      <Button onPress={startTracking as () => void} disabled={trackingStatus !== 'idle'}>Start tracking</Button>
+      <Button onPress={stopTracking} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
       <StyledText variant="title">Current position</StyledText>
       <GeoPosView pos={current} />
       <StyledText variant="title">History</StyledText>
