@@ -18,7 +18,6 @@ const VEL_SUFFIXES: { [K in VelocityUnits]: string } = {
   [VelocityUnits.KilometersPerHour]: 'km/h',
 } as const;
 
-
 export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'>, arcSecPrecision: number = 2) => {
   if (coords.lat < -90 || coords.lat > 90) {
     throw new RangeError('latitutde value must be between -90 and 90');
@@ -76,6 +75,16 @@ export const headingToString = (
     return '-';
   }
   return `${heading.toFixed(decimals).padStart(4 + decimals, '0')}°`;
+};
+
+export const percentageToString = (
+  percentage: number | null,
+  decimals: number = 0
+): string => {
+  if (percentage === null) {
+    return '- %';
+  }
+  return `${percentage.toFixed(decimals)}%`;
 };
 
 export const velocityToString = (
