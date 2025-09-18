@@ -7,6 +7,8 @@ export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: R
 export type NonNullableFields<T> = {
   [K in keyof T]: Exclude<T[K], null>;
 };
+export type NonNullableFieldsUnion<T, K extends keyof T>
+  = Omit<T, K> & { [P in K]: NonNullable<T[P]> };
 
 export type ReplaceField<T, K extends keyof T, V> = Omit<T, K> & { [P in K]: V };
 
