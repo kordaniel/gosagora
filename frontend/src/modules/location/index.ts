@@ -38,31 +38,28 @@ const fgWatchPositionCb: Location.LocationCallback = (loc) => {
   store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
 };
 
-const requestPermissions = async (includeBgPermissions: boolean = true): Promise<boolean> => {
+const requestPermissions = async (includeBgPermissions: boolean = true): Promise<{
+  backgroundPermission: boolean;
+  foregroundPermission: boolean;
+}> => {
   const fgPermsGranted = (await Location.getForegroundPermissionsAsync()).granted;
   const bgPermsGranted = includeBgPermissions
     ? (await Location.getBackgroundPermissionsAsync()).granted
-    : true;
+    : false;
 
-  if (fgPermsGranted && bgPermsGranted) {
-    return true;
+  if (fgPermsGranted && (!includeBgPermissions || bgPermsGranted)) {
+    return {
+      backgroundPermission: bgPermsGranted,
+      foregroundPermission: true
+    };
   }
 
-  const foregroundPermission = await Location.requestForegroundPermissionsAsync();
-  if (foregroundPermission.status !== Location.PermissionStatus.GRANTED) {
-    console.error('Permission to access foreground location was denied');
-    return false;
-  }
-  if (includeBgPermissions) {
-    const backgroundPermission = await Location.requestBackgroundPermissionsAsync();
-    if (backgroundPermission.status !== Location.PermissionStatus.GRANTED) {
-      console.error('Permission to access background location was denied');
-      return false;
-    }
-  }
+  const foregroundPermission = (await Location.requestForegroundPermissionsAsync()).granted;
+  const backgroundPermission = includeBgPermissions
+    ? (await Location.requestBackgroundPermissionsAsync()).granted
+    : false;
 
-  console.log('Permission to access location was granted!');
-  return true;
+  return { backgroundPermission, foregroundPermission };
 };
 
 const startBgLocationUpdates = async (): Promise<boolean> => {

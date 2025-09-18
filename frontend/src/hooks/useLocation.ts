@@ -12,26 +12,31 @@ const useLocation = () => {
   const fgWatchPositionSubscriptionRef = useRef<LocationSubscription | null>(null);
 
   const startTracking = useCallback(async () => {
-    const permissionsGranted = await location.requestPermissions(config.IS_MOBILE);
-    if (!permissionsGranted) {
-      console.error('TODO HANDLE: No permissions to track location');
+    const { backgroundPermission, foregroundPermission } = await location.requestPermissions(config.IS_MOBILE);
+
+    if (!foregroundPermission) {
+      console.error('no permissions');
       return;
     }
+    //if (config.IS_MOBILE && !backgroundPermission) {
+    // => show user a notification that she has to grant background (always) permissions
+    // => instead of only when in use permissions for the full gosagora features
+    //}
 
-    if (config.IS_MOBILE) {
-      console.log('is mobile');
+    if (config.IS_MOBILE && backgroundPermission) {
+      console.log('is mobile, bgPerm/fgPerm:', backgroundPermission, foregroundPermission);
       const isTrackingLocation = await location.startBgLocationUpdates();
       if (!isTrackingLocation) {
         console.error('TODO HANDLE: NOT tracking...');
       }
       dispatch(setLocationTrackingStatus(isTrackingLocation ? 'background' : 'idle'));
     } else {
-      console.log('is NOT mobile');
+      console.log('is NOT mobile, bgPerm/fgPerm:', backgroundPermission, foregroundPermission);
       if (fgWatchPositionSubscriptionRef.current !== null) {
         console.log('subscription current was not null......');
         return;
       }
-      fgWatchPositionSubscriptionRef.current = config.IS_DEVELOPMENT_ENV
+      fgWatchPositionSubscriptionRef.current = config.IS_DEVELOPMENT_ENV && !config.IS_MOBILE // NOTE: use simulated geopos on web in dev env
         ? location.subscribeToSimulatedFgWatchPosition()
         : await location.subscribeToFgWatchPosition();
       dispatch(setLocationTrackingStatus(fgWatchPositionSubscriptionRef.current !== null ? 'foreground' : 'idle'));
