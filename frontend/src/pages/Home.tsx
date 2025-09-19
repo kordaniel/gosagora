@@ -11,6 +11,7 @@ import StyledText from '../components/StyledText';
 
 import type { AppTheme } from '../types';
 import type { NavigationProps } from '../components/Navigator';
+import config from '../utils/config';
 
 const Home = () => {
   const theme = useTheme<AppTheme>();
@@ -20,8 +21,12 @@ const Home = () => {
     <SafeAreaView style={theme.styles.safeAreaView}>
       <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
         <StyledText variant="headline">GosaGora</StyledText>
-        <Separator />
         <StyledText variant="title">Welcome to GosaGora!</StyledText>
+        {config.IS_DEVELOPMENT_ENV && config.IS_MOBILE && <>
+          <Separator />
+          <StyledText variant="small">DEV comment: Toggle between real background / simulated foreground location tracking by setting GosaGora location permissions to &quot;allow always&quot; or &quot;when in use&quot; under System Settings</StyledText>
+          <Separator />
+        </>}
         <Button onPress={() => navigation.navigate('UserProfile')}>
             Profile
         </Button>

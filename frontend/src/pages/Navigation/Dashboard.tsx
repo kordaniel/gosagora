@@ -18,7 +18,6 @@ import {
 } from '../../utils/stringTools';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { DistanceUnits } from '../../utils/unitConverter';
-import config from '../../utils/config'
 import useLocation from '../../hooks/useLocation';
 
 const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
@@ -87,9 +86,6 @@ const Dashboard = () => {
   return (
     <ScrollView>
       <StyledText variant="headline">GosaGora Dashboard</StyledText>
-      {config.IS_DEVELOPMENT_ENV && config.IS_MOBILE &&
-        <StyledText variant="small">DEV comment: Toggle between real background and simulated foreground location tracking by altering GosaGora location permissions between allow always and when in use in System Settings</StyledText>
-      }
       <StyledText>Status: {trackingStatus}. Signal: {percentageToString(signalQuality)}</StyledText>
       <StyledText>History max length: {historyMaxLen}, current length: {history.length}</StyledText>
       <StyledText>ERROR: {error ?? '-'}</StyledText>
@@ -104,14 +100,13 @@ const Dashboard = () => {
         Shorten history max len
       </Button>
       <Button onPress={startTracking as () => void} disabled={trackingStatus !== 'idle'}>Start tracking</Button>
-      <Button onPress={stopTracking} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
+      <Button onPress={() => stopTracking(true)} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
       <StyledText variant="title">Current position</StyledText>
       <GeoPosView pos={current} />
       <StyledText variant="title">History</StyledText>
       {history
-        .slice(-50)
         .reduceRight<Array<GeoPos | null>>((acc, cur) => acc.concat(cur), [])
-        .map(pos => pos ? <GeoPosView key={pos.id} pos={pos} /> : null)
+        .map((pos, i) => <GeoPosView key={pos?.id ?? i.toString()} pos={pos} />)
       }
     </ScrollView>
   );

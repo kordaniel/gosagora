@@ -10,8 +10,8 @@ import {
 } from '../../modules/location/helpers';
 import type { GeoPos } from '../../types';
 
-const HISTORY_MAX_AGE_MIN = 10; // TODO: Cut history by MAX(minutes, array length)
-const HISTORY_MAX_LEN = HISTORY_MAX_AGE_MIN * 60;
+// TODO: Cut history by MAX(minutes, array length)
+const HISTORY_MAX_LEN = 100;
 const LOCATION_WINDOW_LEN = 3;
 const LOCATION_WINDOW_OVERLAP = 2; // must be integer in [0, LOCATION_WINDOW_LEN-1]
 
@@ -64,6 +64,9 @@ const locationSlice = createSlice({
       state.current = action.payload.current;
       state.signalQuality = action.payload.signalQuality;
     },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
     setHistoryMaxLen: (state, action: PayloadAction<number>) => {
       state.historyMaxLen = action.payload;
       if (state.history.length > action.payload) {
@@ -76,14 +79,17 @@ const locationSlice = createSlice({
         ...action.payload,
       };
     },
-    setTrackingAndErrorStatus: (state, action: PayloadAction<{ trackingStatus: TrackingStatus; error: string | null; }>) => {
+    setTrackingAndErrorStatus: (state, action: PayloadAction<{ trackingStatus: TrackingStatus; error?: string | null; }>) => {
       state.trackingStatus = action.payload.trackingStatus;
-      state.error = action.payload.error;
+      if (action.payload.error !== undefined) {
+        state.error = action.payload.error;
+      }
     }
   },
 });
 
 export const {
+  setError: setLocationError,
   setHistoryMaxLen: setLocationHistoryMaxLen,
   setTrackingAndErrorStatus: setLocationTrackingAndErrorStatus,
 } = locationSlice.actions;

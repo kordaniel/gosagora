@@ -11,6 +11,22 @@ const useLocation = () => {
   const dispatch = useAppDispatch();
   const fgWatchPositionSubscriptionRef = useRef<LocationSubscription | null>(null);
 
+  const stopTracking = useCallback((clearErrors: boolean) => {
+    if (clearErrors) {
+      dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle', error: null }));
+    } else {
+      dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle' }));
+    }
+
+    if (config.IS_MOBILE) {
+      void location.stopBgLocationUpdates();
+    }
+    if (fgWatchPositionSubscriptionRef.current !== null) {
+      fgWatchPositionSubscriptionRef.current.remove();
+      fgWatchPositionSubscriptionRef.current = null;
+    }
+  }, [dispatch]);
+
   const startTracking = useCallback(async () => {
     const errorMessages: string[] = [];
     const { backgroundPermission, foregroundPermission } = await location.requestPermissions(config.IS_MOBILE);
@@ -44,8 +60,7 @@ const useLocation = () => {
       }));
     } else {
       if (fgWatchPositionSubscriptionRef.current !== null) {
-        console.log('subscription current was not null......');
-        return;
+        stopTracking(false);
       }
 
       // NOTE: use simulated geopos on web in dev env
@@ -59,22 +74,11 @@ const useLocation = () => {
         error: errorMessages.length === 0 ? null : errorMessages.join('\n'),
       }));
     }
-  }, [dispatch]);
-
-  const stopTracking = useCallback(() => {
-    dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle', error: null }));
-    if (config.IS_MOBILE) {
-      void location.stopBgLocationUpdates();
-    }
-    if (fgWatchPositionSubscriptionRef.current !== null) {
-      fgWatchPositionSubscriptionRef.current.remove();
-      fgWatchPositionSubscriptionRef.current = null;
-    }
-  }, [dispatch]);
+  }, [dispatch, stopTracking]);
 
   useEffect(() => {
     void startTracking();
-    return stopTracking;
+    return () => stopTracking(true);
   }, [startTracking, stopTracking]);
 
   return { startTracking, stopTracking };

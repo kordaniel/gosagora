@@ -1,11 +1,14 @@
 import * as Location from 'expo-location';
 
-import { randRange, randUnitRangeFrom } from '../../utils/helpers';
-import taskManager, {
+import {
   BG_TASK,
   type LocationTaskExecutorType
 } from '../../backgroundTasks/taskManager';
-import { handleNewLocation } from '../../store/slices/locationSlice';
+import {
+  handleNewLocation,
+  setLocationError
+} from '../../store/slices/locationSlice';
+import { randRange, randUnitRangeFrom } from '../../utils/helpers';
 import { locObjToGeoPos } from './helpers';
 import store from '../../store';
 import unitConverter from '../../utils/unitConverter';
@@ -17,14 +20,13 @@ export interface LocationTaskExecutorBody {
 const locationAccuracyOptions = {
   accuracy: Location.Accuracy.BestForNavigation,
   timeInterval: 1000,  // emit at least every second
-  distanceInterval: 2, // or when moved 2 meters
+  distanceInterval: 1, // or when moved 2 meters
 };
 
 export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecutorBody> = async ({ data, error }) => {
   if (error) {
-    console.error('bgLocationTaskExecutor executor error:', error);
+    store.dispatch(setLocationError(error.message));
   } else if (data) {
-    console.log('bgLocationTaskExecutor executor data, locations.length =', data.locations.length);
     data.locations.forEach(loc => {
       store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
     });
@@ -62,16 +64,14 @@ const requestPermissions = async (includeBgPermissions: boolean = true): Promise
 };
 
 const startBgLocationUpdates = async (): Promise<boolean> => {
-  const isLocationUpdatesTaskDefined = await Location.hasStartedLocationUpdatesAsync(BG_TASK.Location);
-  console.log('isLocationUpdatesTaskDefined:', isLocationUpdatesTaskDefined);
-  if (isLocationUpdatesTaskDefined) {
-    return isLocationUpdatesTaskDefined;
+  if (await Location.hasStartedLocationUpdatesAsync(BG_TASK.Location)) {
+    return true;
   }
 
   await Location.startLocationUpdatesAsync(BG_TASK.Location, {
     ...locationAccuracyOptions,
-    deferredUpdatesDistance: 0,
-    deferredUpdatesInterval: 1000,
+    deferredUpdatesDistance: 1,                  // applies only when the app is in the background
+    deferredUpdatesInterval: 30 * 1000,          // applies only when the app is in the background
     pausesUpdatesAutomatically: false,           // ios only
     activityType: Location.ActivityType.Fitness, // ios only
     showsBackgroundLocationIndicator: true,      // ios only
@@ -81,25 +81,19 @@ const startBgLocationUpdates = async (): Promise<boolean> => {
     }
   });
 
-  const success = await Location.hasStartedLocationUpdatesAsync(BG_TASK.Location);
-  console.log('isLocationUpdatesTaskDefined success:', success);
-  return success;
+  return await Location.hasStartedLocationUpdatesAsync(BG_TASK.Location);
 };
 
 const stopBgLocationUpdates = async (): Promise<void> => {
-  const isLocationTaskRegistered = await taskManager.isTaskRegistered(BG_TASK.Location);
-  if (isLocationTaskRegistered) {
-    // TODO: Do we need this check?
-    await Location.stopLocationUpdatesAsync(BG_TASK.Location);
-  }
+  await Location.stopLocationUpdatesAsync(BG_TASK.Location);
 };
 
 const subscribeToFgWatchPosition = async (): Promise<Location.LocationSubscription> => {
   return await Location.watchPositionAsync(
     locationAccuracyOptions,
     fgWatchPositionCb,
-    (errorReason: string) => {
-      console.error('Location.watchPositionAsync:', errorReason);
+    (error: string) => {
+      store.dispatch(setLocationError(error));
     }
   );
 };

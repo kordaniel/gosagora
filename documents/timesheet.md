@@ -128,5 +128,5 @@
 | 2025.09.15 | 1.5 | FRONTEND: Extend locationSlice, refactor useLocation hook. Rename and refactor, stylize page Dashboard -> Navigation |
 | 2025.09.17 | 6   | FRONTEND: Add Location foreground WatchPosition simulation (for app development). Refactor, extend useLocation hook. Implement a sliding location buffer and smooth the current location by averaging x positions with an ovelap y<x between each position |
 | 2025.09.18 | 2   | FRONTNEND: Refactor and extend functionality of location module, locationSlice |
-| 2025.09.19 | 1.5 | FRONTEND: Handle and render location permissions, always use simulated location in dev env on web |
-| Total | 197.5 | |
+| 2025.09.19 | 2   | FRONTEND: Handle and render location permissions, always use simulated location in dev env on web |
+| Total | 198 | |
