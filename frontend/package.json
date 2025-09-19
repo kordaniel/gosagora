@@ -10,6 +10,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "test": "jest",
+    "test:cc": "jest --clearCache",
     "test:watch": "jest --watchAll",
     "typeCheck": "tsc --noEmit"
   },
