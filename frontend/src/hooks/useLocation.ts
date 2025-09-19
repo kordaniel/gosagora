@@ -4,7 +4,7 @@ import type { LocationSubscription } from 'expo-location';
 
 import config from '../utils/config';
 import location from '../modules/location';
-import { setLocationTrackingStatus } from '../store/slices/locationSlice';
+import { setLocationTrackingAndErrorStatus } from '../store/slices/locationSlice';
 import { useAppDispatch } from '../store/hooks';
 
 const useLocation = () => {
@@ -12,39 +12,57 @@ const useLocation = () => {
   const fgWatchPositionSubscriptionRef = useRef<LocationSubscription | null>(null);
 
   const startTracking = useCallback(async () => {
+    const errorMessages: string[] = [];
     const { backgroundPermission, foregroundPermission } = await location.requestPermissions(config.IS_MOBILE);
 
     if (!foregroundPermission) {
-      console.error('no permissions');
+      dispatch(setLocationTrackingAndErrorStatus({
+        trackingStatus: 'idle',
+        error: 'GosaGora Navigation needs to access your location. Please enable location permissions in system settings',
+      }));
       return;
     }
-    //if (config.IS_MOBILE && !backgroundPermission) {
-    // => show user a notification that she has to grant background (always) permissions
-    // => instead of only when in use permissions for the full gosagora features
-    //}
+    if (config.IS_MOBILE && !backgroundPermission) {
+      errorMessages.push([
+        'GosaGora Navigation needs background access to your location for continuous tracking.',
+        'Please enable background location permissions in system settings. Without it, many features won\'t work properly'
+      ].join(' '));
+    }
 
     if (config.IS_MOBILE && backgroundPermission) {
-      console.log('is mobile, bgPerm/fgPerm:', backgroundPermission, foregroundPermission);
       const isTrackingLocation = await location.startBgLocationUpdates();
       if (!isTrackingLocation) {
-        console.error('TODO HANDLE: NOT tracking...');
+        errorMessages.push([
+          'We weren\'t able to access your location for Navigation.',
+          'This might be due to battery saver mode, system restrictions or app settings.',
+          'Please check your settings and restart GosaGora if the issue continues, and contact our support team if the problem persists'
+        ].join(' '));
       }
-      dispatch(setLocationTrackingStatus(isTrackingLocation ? 'background' : 'idle'));
+      dispatch(setLocationTrackingAndErrorStatus({
+        trackingStatus: isTrackingLocation ? 'background' : 'idle',
+        error: errorMessages.length === 0 ? null : errorMessages.join('\n'),
+      }));
     } else {
-      console.log('is NOT mobile, bgPerm/fgPerm:', backgroundPermission, foregroundPermission);
       if (fgWatchPositionSubscriptionRef.current !== null) {
         console.log('subscription current was not null......');
         return;
       }
-      fgWatchPositionSubscriptionRef.current = config.IS_DEVELOPMENT_ENV && !config.IS_MOBILE // NOTE: use simulated geopos on web in dev env
+
+      // NOTE: use simulated geopos on web in dev env
+      const useSimulatedLocation = config.IS_DEVELOPMENT_ENV && !config.IS_MOBILE;
+      fgWatchPositionSubscriptionRef.current = useSimulatedLocation
         ? location.subscribeToSimulatedFgWatchPosition()
         : await location.subscribeToFgWatchPosition();
-      dispatch(setLocationTrackingStatus(fgWatchPositionSubscriptionRef.current !== null ? 'foreground' : 'idle'));
+
+      dispatch(setLocationTrackingAndErrorStatus({
+        trackingStatus: useSimulatedLocation ? 'foreground-simulated' : 'foreground',
+        error: errorMessages.length === 0 ? null : errorMessages.join('\n'),
+      }));
     }
   }, [dispatch]);
 
   const stopTracking = useCallback(() => {
-    dispatch(setLocationTrackingStatus('idle'));
+    dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle', error: null }));
     if (config.IS_MOBILE) {
       void location.stopBgLocationUpdates();
     }

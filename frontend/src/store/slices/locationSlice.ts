@@ -19,7 +19,7 @@ if (LOCATION_WINDOW_OVERLAP < 0 || LOCATION_WINDOW_OVERLAP >= LOCATION_WINDOW_LE
   throw new Error('GeoPosition smoothing window size and/or overlap misconfiguration');
 }
 
-type TrackingStatus = 'idle' | 'background' | 'foreground';
+type TrackingStatus = 'idle' | 'background' | 'foreground' | 'foreground-simulated';
 
 interface LocationWindow {
   buffer: GeoPos[];
@@ -64,9 +64,6 @@ const locationSlice = createSlice({
       state.current = action.payload.current;
       state.signalQuality = action.payload.signalQuality;
     },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
-    },
     setHistoryMaxLen: (state, action: PayloadAction<number>) => {
       state.historyMaxLen = action.payload;
       if (state.history.length > action.payload) {
@@ -79,16 +76,16 @@ const locationSlice = createSlice({
         ...action.payload,
       };
     },
-    setTrackingStatus: (state, action: PayloadAction<TrackingStatus>) => {
-      state.trackingStatus = action.payload;
+    setTrackingAndErrorStatus: (state, action: PayloadAction<{ trackingStatus: TrackingStatus; error: string | null; }>) => {
+      state.trackingStatus = action.payload.trackingStatus;
+      state.error = action.payload.error;
     }
   },
 });
 
 export const {
-  setError: setLocationError,
   setHistoryMaxLen: setLocationHistoryMaxLen,
-  setTrackingStatus: setLocationTrackingStatus,
+  setTrackingAndErrorStatus: setLocationTrackingAndErrorStatus,
 } = locationSlice.actions;
 const {
   addLocation,

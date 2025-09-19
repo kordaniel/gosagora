@@ -5,7 +5,6 @@ import taskManager, {
   BG_TASK,
   type LocationTaskExecutorType
 } from '../../backgroundTasks/taskManager';
-import config from '../../utils/config';
 import { handleNewLocation } from '../../store/slices/locationSlice';
 import { locObjToGeoPos } from './helpers';
 import store from '../../store';
@@ -63,10 +62,6 @@ const requestPermissions = async (includeBgPermissions: boolean = true): Promise
 };
 
 const startBgLocationUpdates = async (): Promise<boolean> => {
-  if (!config.IS_MOBILE) {
-    return false;
-  }
-
   const isLocationUpdatesTaskDefined = await Location.hasStartedLocationUpdatesAsync(BG_TASK.Location);
   console.log('isLocationUpdatesTaskDefined:', isLocationUpdatesTaskDefined);
   if (isLocationUpdatesTaskDefined) {
@@ -76,7 +71,7 @@ const startBgLocationUpdates = async (): Promise<boolean> => {
   await Location.startLocationUpdatesAsync(BG_TASK.Location, {
     ...locationAccuracyOptions,
     deferredUpdatesDistance: 0,
-    deferredUpdatesInterval: 5000,
+    deferredUpdatesInterval: 1000,
     pausesUpdatesAutomatically: false,           // ios only
     activityType: Location.ActivityType.Fitness, // ios only
     showsBackgroundLocationIndicator: true,      // ios only

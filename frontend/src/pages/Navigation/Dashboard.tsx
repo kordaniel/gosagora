@@ -18,6 +18,7 @@ import {
 } from '../../utils/stringTools';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { DistanceUnits } from '../../utils/unitConverter';
+import config from '../../utils/config'
 import useLocation from '../../hooks/useLocation';
 
 const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
@@ -75,6 +76,7 @@ const Dashboard = () => {
   const dispatch = useAppDispatch();
   const {
     current,
+    error,
     history,
     historyMaxLen,
     trackingStatus,
@@ -85,8 +87,12 @@ const Dashboard = () => {
   return (
     <ScrollView>
       <StyledText variant="headline">GosaGora Dashboard</StyledText>
+      {config.IS_DEVELOPMENT_ENV && config.IS_MOBILE &&
+        <StyledText variant="small">DEV comment: Toggle between real background and simulated foreground location tracking by altering GosaGora location permissions between allow always and when in use in System Settings</StyledText>
+      }
       <StyledText>Status: {trackingStatus}. Signal: {percentageToString(signalQuality)}</StyledText>
       <StyledText>History max length: {historyMaxLen}, current length: {history.length}</StyledText>
+      <StyledText>ERROR: {error ?? '-'}</StyledText>
       <Button
         onPress={() => dispatch(setLocationHistoryMaxLen(2 * historyMaxLen))}
       >
