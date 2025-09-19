@@ -12,6 +12,7 @@ import DeveloperView from './src/components/DeveloperView';
 import Navigator from './src/components/Navigator';
 
 import { SelectAuth } from './src/store/slices/authSlice';
+import { defineBackgroundTasks } from './src/backgroundTasks/initialize';
 import store from './src/store';
 import { useAppSelector } from './src/store/hooks';
 import useAppTheme from './src/hooks/useAppTheme';
@@ -21,6 +22,8 @@ import useAuthInit from './src/hooks/useAuthInit';
 // NOTE: 'main' must be registered when translations are registered => don't run from index.ts
 // https://web-ridge.github.io/react-native-paper-dates/docs/intro#register-translation
 registerTranslation('en', en);
+
+defineBackgroundTasks();
 
 const AppRenderer = () => {
   const theme = useAppTheme();
@@ -40,7 +43,6 @@ const AppRenderer = () => {
 const AuthWrapper = () => {
   useAuthInit();
   const { isInitialized } = useAppSelector(SelectAuth);
-
   if (isInitialized) {
     return <AppRenderer/>;
   }

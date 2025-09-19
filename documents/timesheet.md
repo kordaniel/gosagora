@@ -117,4 +117,16 @@
 | 2025.08.27 | 0   | COMMON: Rename users -> userIdentities in interface SailboatData, refactor back- and frontend |
 | 2025.08.27 | 1   | BACKEND: Add id (multiple, named) extractor middleware |
 | 2025.08.28 | 1   | FRONTEND: Add missing, restructure validators for API responses |
-| Total | 175 | |
+| 2025.08.29 | 0.5 | FRONTEND: Add expo-location, expo-task-manager packages. Update app.config.js configuration and add configuration for location permissions |
+| 2025.09.04 | 0.5 | FRONTEND: Add Location Dashboard, render current location |
+| 2025.09.05 | 0.5 | FRONTEND: Add locationSlice, watchPosition from Component |
+| 2025.09.09 | 0.5 | FRONTEND: Add useLocation hook |
+| 2025.09.11 | 3   | FRONTEND: Configure and document EAS Development build process, fix package versions |
+| 2025.09.12 | 2.5 | FRONTEND: Add (background) taskManager, location module, implement background location tracking |
+| 2025.09.15 | 2.5 | FRONTEND: Refactor location module, backgroundTasks, useLocation hook, add foreground watchPosition subscription (when running in on web) |
+| 2025.09.15 | 1.5 | FRONTEND: Add more helpers and typeguards, unitConverter and stringTools modules |
+| 2025.09.15 | 1.5 | FRONTEND: Extend locationSlice, refactor useLocation hook. Rename and refactor, stylize page Dashboard -> Navigation |
+| 2025.09.17 | 6   | FRONTEND: Add Location foreground WatchPosition simulation (for app development). Refactor, extend useLocation hook. Implement a sliding location buffer and smooth the current location by averaging x positions with an ovelap y<x between each position |
+| 2025.09.18 | 2   | FRONTNEND: Refactor and extend functionality of location module, locationSlice |
+| 2025.09.19 | 2   | FRONTEND: Handle and render location permissions, always use simulated location in dev env on web |
+| Total | 198 | |

@@ -7,6 +7,8 @@ export type SceneMapRouteProps = Omit<SceneRendererProps, 'layout'> & { route: R
 export type NonNullableFields<T> = {
   [K in keyof T]: Exclude<T[K], null>;
 };
+export type NonNullableFieldsUnion<T, K extends keyof T>
+  = Omit<T, K> & { [P in K]: NonNullable<T[P]> };
 
 export type ReplaceField<T, K extends keyof T, V> = Omit<T, K> & { [P in K]: V };
 
@@ -21,4 +23,14 @@ export interface AppTheme extends MD3Theme {
 export interface DateRange {
   startDate: Date;
   endDate: Date;
+}
+
+export interface GeoPos {
+  id: string;
+  timestamp: number;
+  lat: number;
+  lon: number;
+  acc: number;
+  hdg: number | null;
+  vel: number | null;
 }
