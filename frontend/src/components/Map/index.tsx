@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
-import HtmlRenderer from '../../components/HtmlRenderer';
-import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
+import HtmlRenderer from '../HtmlRenderer';
+import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
 import { loadAsset } from '../../modules/assetManager';
 
-
 const Map = () => {
-  const [html, setHtml] = useState<string | null>(null);
+  const [leafletHtml, setLeafletHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadLeafletHtml = async () => {
-      const leafletHtml = await loadAsset('leafletHtml');
-      if (leafletHtml) {
-        setHtml(leafletHtml);
+      const loadedLeaflet = await loadAsset('leafletHtml');
+      if (loadedLeaflet) {
+        setLeafletHtml(loadedLeaflet);
       } else {
         setError('Error loading Map (html)');
       }
@@ -22,7 +21,7 @@ const Map = () => {
     void loadLeafletHtml();
   }, []);
 
-  if (!html || error) {
+  if (!leafletHtml || error) {
     return (
       <LoadingOrErrorRenderer
         loading={!error}
@@ -32,7 +31,7 @@ const Map = () => {
     );
   }
 
-  return <HtmlRenderer html={html} />;
+  return <HtmlRenderer html={leafletHtml} />;
 };
 
 export default Map;
