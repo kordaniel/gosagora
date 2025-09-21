@@ -1,16 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { ScrollView } from 'react-native';
+import HtmlRenderer from '../../components/HtmlRenderer';
+import LoadingOrErrorRenderer from '../../components/LoadingOrErrorRenderer';
 
-import StyledText from '../../components/StyledText';
+import { loadAsset } from '../../modules/assetManager';
+
 
 const Map = () => {
-  return (
-    <ScrollView>
-      <StyledText variant="headline">Map</StyledText>
-      <StyledText>Filler..</StyledText>
-    </ScrollView>
-  );
+  const [html, setHtml] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadLeafletHtml = async () => {
+      const leafletHtml = await loadAsset('leafletHtml');
+      if (leafletHtml) {
+        setHtml(leafletHtml);
+      } else {
+        setError('Error loading Map (html)');
+      }
+    };
+    void loadLeafletHtml();
+  }, []);
+
+  if (!html || error) {
+    return (
+      <LoadingOrErrorRenderer
+        loading={!error}
+        loadingMessage="Just a moment, we are loading the map for you"
+        error={error}
+      />
+    );
+  }
+
+  return <HtmlRenderer html={html} />;
 };
 
 export default Map;
