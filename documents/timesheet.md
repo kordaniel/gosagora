@@ -129,4 +129,5 @@
 | 2025.09.17 | 6   | FRONTEND: Add Location foreground WatchPosition simulation (for app development). Refactor, extend useLocation hook. Implement a sliding location buffer and smooth the current location by averaging x positions with an ovelap y<x between each position |
 | 2025.09.18 | 2   | FRONTNEND: Refactor and extend functionality of location module, locationSlice |
 | 2025.09.19 | 2   | FRONTEND: Handle and render location permissions, always use simulated location in dev env on web |
-| Total | 198 | |
+| 2025.09.22 | 5 | FRONTEND: Add assetManager and HtmlRenderer component that both supports mobile & web. Add Map component which renders map & openseamap data, follows user location and draws history polyline |
+| Total | 203 | |

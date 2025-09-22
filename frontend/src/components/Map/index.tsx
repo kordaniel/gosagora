@@ -1,13 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import HtmlRenderer from '../HtmlRenderer';
+import HtmlRenderer, { type SendDataToWebType} from '../HtmlRenderer';
 import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
+import { SelectLocation } from '../../store/slices/locationSlice';
 import { loadAsset } from '../../modules/assetManager';
+import { useAppSelector } from '../../store/hooks';
 
 const Map = () => {
+  const { current } = useAppSelector(SelectLocation);
   const [leafletHtml, setLeafletHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const sendDataToWebRef = useRef<SendDataToWebType>(null);
+
+  const handleMessage = (data: string) => {
+    console.log('MSG from web:', data);
+  };
+
+  useEffect(() => {
+    if (current && sendDataToWebRef.current) {
+      sendDataToWebRef.current.sendDataToWeb({
+        command: 'setView',
+        accuracy: current.acc,
+        lat: current.lat,
+        lon: current.lon,
+      });
+    }
+  }, [current]);
 
   useEffect(() => {
     const loadLeafletHtml = async () => {
@@ -31,7 +51,11 @@ const Map = () => {
     );
   }
 
-  return <HtmlRenderer html={leafletHtml} />;
+  return <HtmlRenderer
+    ref={sendDataToWebRef}
+    handleMsgFromWeb={handleMessage}
+    html={leafletHtml}
+  />;
 };
 
 export default Map;
