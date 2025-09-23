@@ -4,6 +4,7 @@ import HtmlRenderer, { type SendDataToWebType} from '../HtmlRenderer';
 import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
 import { SelectLocation } from '../../store/slices/locationSlice';
+import htmlBuilder from '../../modules/htmlBuilder';
 import { loadAsset } from '../../modules/assetManager';
 import { useAppSelector } from '../../store/hooks';
 
@@ -33,7 +34,12 @@ const Map = () => {
     const loadLeafletHtml = async () => {
       const loadedLeaflet = await loadAsset('leafletHtml');
       if (loadedLeaflet) {
-        setLeafletHtml(loadedLeaflet);
+        htmlBuilder.loadHtml(loadedLeaflet);
+        htmlBuilder.injectScriptTagIntoBody(
+          'messageToRN(JSON.stringify({ type: "debug", raw: "Hello from injected JS!" }));'
+        );
+        setLeafletHtml(htmlBuilder.toString());
+        htmlBuilder.unloadHtml();
       } else {
         setError('Error loading Map (html)');
       }
