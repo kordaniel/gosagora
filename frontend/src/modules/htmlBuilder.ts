@@ -6,6 +6,7 @@ import { parseDocument } from 'htmlparser2';
 const INDENT_SPACING: number = 2;
 const renderOptions: DomSerializerOptions = {
   decodeEntities: false,
+  selfClosingTags: true,
   xmlMode: false,
 };
 
@@ -29,26 +30,35 @@ const getElementDepth = (node: Element) => {
 
 // Default exported functions -------------------------------------------------
 
-const injectScriptTagIntoBody = (scriptContent: string): void => {
+/**
+ * Singleton tag = tag that occurs only once in the HTML document, head, title, body etc.
+ */
+const injectTagIntoSingletonTag = (
+  targetTagName: string,
+  tagNameToInject: string,
+  injectedTagTextContent: string | null,
+  attribs: Element['attribs'] = {}
+): void => {
   if (!dom) {
     throw new Error('No HTML loaded: Unable to inject JS into HTML DOM.');
   }
 
-  const bodyTags = getElementsByTagName('body', dom);
-  if (bodyTags.length !== 1) {
-    throw new Error('Invalid HTML loaded: Document <body> tag count != 1.');
+  const targetTags = getElementsByTagName(targetTagName, dom);
+  if (targetTags.length !== 1) {
+    throw new Error(`Invalid HTML loaded: Document <${targetTagName}> tag count != 1.`);
   }
 
-  const bodyTag = bodyTags[0];
-  const newTagDepth = getElementDepth(bodyTag); // first element (<html>) == 1
-  const scriptTag = new Element('script', {}, [
-    new Text(scriptContent)
-  ]);
+  const targetTag = targetTags[0];
+  const newTagDepth = getElementDepth(targetTag); // first element (<html>) == 1
+  const childTagToInject = new Element(tagNameToInject, attribs, injectedTagTextContent
+    ? [new Text(injectedTagTextContent)]
+    : []
+  );
 
-  appendChild(bodyTag, new Text('  '));
-  appendChild(bodyTag, scriptTag);
-  appendChild(bodyTag, new Text('\n'));
-  appendChild(bodyTag, new Text(' '.repeat(INDENT_SPACING * (newTagDepth-1))));
+  appendChild(targetTag, new Text('  '));
+  appendChild(targetTag, childTagToInject);
+  appendChild(targetTag, new Text('\n'));
+  appendChild(targetTag, new Text(' '.repeat(INDENT_SPACING * (newTagDepth-1))));
 };
 
 const loadHtml = (html: string) => {
@@ -69,7 +79,7 @@ const unloadHtml = () => {
 // Default exported functions -------------------------------------------------
 
 export default {
-  injectScriptTagIntoBody,
+  injectTagIntoSingletonTag,
   loadHtml,
   toString,
   unloadHtml,

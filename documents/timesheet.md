@@ -131,4 +131,5 @@
 | 2025.09.19 | 2   | FRONTEND: Handle and render location permissions, always use simulated location in dev env on web |
 | 2025.09.22 | 5   | FRONTEND: Add assetManager and HtmlRenderer component that both supports mobile & web. Add Map component which renders map & openseamap data, follows user location and draws history polyline |
 | 2025.09.23 | 2   | FRONTEND: Add htmlparser2, domutils, domhandler, dom-serializer. Implement htmlBuilder |
-| Total | 205 | |
+| 2025.09.24 | 2 | FRONTEND: Extend htmlBuilder, extract css&js from html template into own ts-module, refactor Map component, add error messages |
+| Total | 207 | |
