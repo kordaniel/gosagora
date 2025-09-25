@@ -11,7 +11,10 @@ export default {
   plugins: [[
     'expo-asset',
     {
-      'assets': ['./assets/html']
+      'assets': [
+        './assets/bundledJs',
+        './assets/html',
+      ]
     }
   ], [
     'expo-location',

@@ -147,6 +147,9 @@ Make sure that you have these files set up correctly. See the instruction above 
 │   └── .env.<production|development|test> - Required, See backend/.env.example for required variables
 ├── firebase-emulator-data/ - Persistent data directory for the emulator
 ├── frontend/
+│   ├── assets/
+|   │   ├── bundledJs/ - Automatically generated precompiled JS bundles from TS modules (esbuild). Do no place any files here manually
+|   │   └── html/ - HTML documents
 │   ├── firebaseConfig.ts - For production environment, required
 │   ├── firebaseDevConfig.ts - Required for dev env
 │   ├── firebaseTestConfig.ts - Required for test env

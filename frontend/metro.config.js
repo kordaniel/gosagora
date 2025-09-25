@@ -17,4 +17,6 @@ defaultConfig.watchFolders = [
   path.resolve(workspaceRoot, 'packages/common'),
 ];
 
+defaultConfig.resolver.assetExts.push('bundle');
+
 module.exports = defaultConfig;
