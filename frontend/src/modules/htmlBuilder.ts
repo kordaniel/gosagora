@@ -3,6 +3,8 @@ import { appendChild, getElementsByTagName } from 'domutils';
 import render, { type DomSerializerOptions } from 'dom-serializer';
 import { parseDocument } from 'htmlparser2';
 
+type SupportedHtmlTagsName = 'link' | 'style' | 'script';
+
 const INDENT_SPACING: number = 2;
 const renderOptions: DomSerializerOptions = {
   decodeEntities: false,
@@ -35,7 +37,7 @@ const getElementDepth = (node: Element) => {
  */
 const injectTagIntoSingletonTag = (
   targetTagName: string,
-  tagNameToInject: string,
+  tagNameToInject: SupportedHtmlTagsName,
   injectedTagTextContent: string | null,
   attribs: Element['attribs'] = {}
 ): void => {

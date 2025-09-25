@@ -5,6 +5,8 @@
   "scripts": {
     "start": "expo start",
     "start:cc": "expo start --clear",
+    "start:dev": "trap 'kill 0' EXIT; npm run watch:leaflet & npm run start",
+    "start:dev:cc": "trap 'kill 0' EXIT; npm run watch:leaflet & npm run start:cc",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -12,7 +14,9 @@
     "test": "jest",
     "test:cc": "jest --clearCache",
     "test:watch": "jest --watchAll",
-    "typeCheck": "tsc --noEmit"
+    "typeCheck": "tsc --noEmit",
+    "build:leaflet": "esbuild src/bundles/leafletBundle.ts --bundle --minify --target=es2020 --format=iife --outfile=assets/bundledJs/leaflet.js.bundle",
+    "watch:leaflet": "esbuild src/bundles/leafletBundle.ts --watch=forever --bundle --sourcemap --target=es2020 --format=iife --outfile=assets/bundledJs/leaflet.js.bundle"
   },
   "jest": {
     "preset": "jest-expo",

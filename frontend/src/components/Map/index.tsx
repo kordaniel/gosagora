@@ -15,7 +15,6 @@ const Map = () => {
   const [error, setError] = useState<string | null>(null);
 
   const sendDataToWebRef  = useRef<SendDataToWebType>(null);
-  const initialCurrentRef = useRef<typeof current>(current); // use ref to avoid useEffect rerun
 
   const handleMessage = (data: string) => {
     console.log('MSG from web:', data);
@@ -34,32 +33,25 @@ const Map = () => {
 
   useEffect(() => {
     const loadLeafletHtml = async () => {
-      const loadedLeaflet = await loadAsset('leafletHtml');
-      if (!loadedLeaflet) {
+      const loadedLeafletHtml = await loadAsset('leafletHtml');
+      if (!loadedLeafletHtml) {
         setError('We encountered a problem loading the map for you. Please try again, or contact our support team if the problem persists');
         return;
       }
+      const loadedLeafletJs = await loadAsset('leafletJs');
+      if (!loadedLeafletJs) {
+        setError('We encountered a problem loading the map functionality for you. Please try again, or contact our support team if the problem persists');
+      }
 
       try {
-        htmlBuilder.loadHtml(loadedLeaflet);
+        htmlBuilder.loadHtml(loadedLeafletHtml);
 
         htmlBuilder.injectTagIntoSingletonTag('head', 'link', null,
           leafletJavascript.getLeafletStylesheetLinkAttribs());
         htmlBuilder.injectTagIntoSingletonTag('head', 'style',
           leafletJavascript.getDocumentStyleSheet());
 
-        htmlBuilder.injectTagIntoSingletonTag('body', 'script', null,
-          leafletJavascript.getLeafletScriptAttribs());
-        htmlBuilder.injectTagIntoSingletonTag('body', 'script',
-          leafletJavascript.getRNCommunicator());
-        htmlBuilder.injectTagIntoSingletonTag('body', 'script',
-          leafletJavascript.getLeafletMap({
-            lat: initialCurrentRef.current ? initialCurrentRef.current.lat : 0.0,
-            lon: initialCurrentRef.current ? initialCurrentRef.current.lon : 0.0,
-            zoom: 10.0,
-          }));
-        htmlBuilder.injectTagIntoSingletonTag('body', 'script',
-          leafletJavascript.getAddEventListeners());
+        htmlBuilder.injectTagIntoSingletonTag('body', 'script', loadedLeafletJs);
 
         setLeafletHtml(htmlBuilder.toString());
         htmlBuilder.unloadHtml();
