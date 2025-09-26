@@ -1,12 +1,5 @@
-const LEAFLET_VERSION = '1.9.4';
 
-const getLeafletStylesheetLinkAttribs = () => ({
-  rel: 'stylesheet',
-  href: `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.css`,
-  integrity: 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=',
-  crossorigin: '',
-});
-
+// TODO: Delete this before merge commit!
 const getDocumentStyleSheet = () => `
       #map {
         height: 100%;
@@ -22,6 +15,5 @@ const getDocumentStyleSheet = () => `
     `;
 
 export default {
-  getLeafletStylesheetLinkAttribs,
   getDocumentStyleSheet,
 };

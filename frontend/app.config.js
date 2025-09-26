@@ -12,7 +12,7 @@ export default {
     'expo-asset',
     {
       'assets': [
-        './assets/bundledJs',
+        './assets/bundles',
         './assets/html',
       ]
     }

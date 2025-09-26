@@ -148,8 +148,10 @@ Make sure that you have these files set up correctly. See the instruction above 
 ├── firebase-emulator-data/ - Persistent data directory for the emulator
 ├── frontend/
 │   ├── assets/
-|   │   ├── bundledJs/ - Automatically generated precompiled JS bundles from TS modules (esbuild). Do no place any files here manually
+|   │   ├── bundles/ - Automatically generated bundles (esbuild). Do no place any files here manually
 |   │   └── html/ - HTML documents
+│   ├── src/
+|   │   └── bundles/ - Esbuild source directory for ts modules to transpile and bundle into assets/bundles/
 │   ├── firebaseConfig.ts - For production environment, required
 │   ├── firebaseDevConfig.ts - Required for dev env
 │   ├── firebaseTestConfig.ts - Required for test env

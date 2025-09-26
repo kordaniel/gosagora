@@ -8,7 +8,8 @@ const createAssetsMap = <T extends Record<string, number | string>>(map: T) => m
 
 const GOSAGORA_ASSETS = createAssetsMap({
   leafletHtml: require('assets/html/leaflet.html') as number | string,
-  leafletJs: require('assets/bundledJs/leaflet.js.bundle') as number | string,
+  leafletJs: require('assets/bundles/leaflet.js.bundle') as number | string,
+  leafletCss: require('assets/bundles/leaflet.css.bundle') as number | string,
 } as const);
 
 type GosaGoraAssets = keyof typeof GOSAGORA_ASSETS;

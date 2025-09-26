@@ -42,12 +42,14 @@ const Map = () => {
       if (!loadedLeafletJs) {
         setError('We encountered a problem loading the map functionality for you. Please try again, or contact our support team if the problem persists');
       }
+      const loadedLeafletCss = await loadAsset('leafletCss');
+      if (!loadedLeafletCss) {
+        setError('We encountered a problem loading the map style for you. Please try again, or contact our support team if the problem persists');
+      }
 
       try {
         htmlBuilder.loadHtml(loadedLeafletHtml);
-
-        htmlBuilder.injectTagIntoSingletonTag('head', 'link', null,
-          leafletJavascript.getLeafletStylesheetLinkAttribs());
+        htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletCss);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style',
           leafletJavascript.getDocumentStyleSheet());
 
