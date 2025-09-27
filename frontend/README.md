@@ -29,14 +29,12 @@ Note that the development environment is configured for both Expo GO and develop
 ```bash
 npm run start
 npm run start:cc - clears expo cache
-npm run start:dev - runs watch:leaflet and npm run start
-npm run start:dev:cc - runs watch:leaflet and npm run start:cc
+npm run start:dev - runs esbuild in watch mode and npm run start
+npm run start:dev:cc - runs esbuild in watch mode and npm run start:cc
 npm run lint
 npm run test
 npm run test:watch - run tests at every filechange
 npm run typeCheck - compile ts with noEmit
-npm run build:leaflet - transpiles a minified bundled version of leaflet for production
-npm run watch:leaflet - transpiles a bundled version of leaflet in watch mode for dev env
 ```
 Use the script `npm run start:dev` or `npm run start:dev:cc` for normal dev environment. If you already have built the leaflet bundle and don't intend to make any changes to it then you can use the conventional `npm run start` or `npm run start:cc`.
 
