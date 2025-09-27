@@ -5,7 +5,6 @@ import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
 import { SelectLocation } from '../../store/slices/locationSlice';
 import htmlBuilder from '../../modules/htmlBuilder';
-import leafletJavascript from '../../modules/leafletJavascript';
 import { loadAsset } from '../../modules/assetManager';
 import { useAppSelector } from '../../store/hooks';
 
@@ -50,11 +49,7 @@ const Map = () => {
       try {
         htmlBuilder.loadHtml(loadedLeafletHtml);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletCss);
-        htmlBuilder.injectTagIntoSingletonTag('head', 'style',
-          leafletJavascript.getDocumentStyleSheet());
-
         htmlBuilder.injectTagIntoSingletonTag('body', 'script', loadedLeafletJs);
-
         setLeafletHtml(htmlBuilder.toString());
         htmlBuilder.unloadHtml();
       } catch (error: unknown) {
