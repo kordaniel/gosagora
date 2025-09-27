@@ -14,18 +14,18 @@ import { useTheme } from 'react-native-paper';
 import { useWindowDimensions } from 'react-native';
 
 import Dashboard from './Dashboard';
-import Map from './Map';
+import MapView from './MapView';
 
 import type { AppTheme } from '../../types';
 
 const routes: Route[] = [
   { key: 'dashboard', title: 'Dashboard' },
-  { key: 'map', title: 'Map' },
+  { key: 'mapView', title: 'Map' },
 ];
 
 const renderScene = SceneMap({
   dashboard: Dashboard,
-  map: Map,
+  mapView: MapView,
 });
 
 const createRenderTabBar = (theme: AppTheme) =>
@@ -59,12 +59,12 @@ const Navigation = () => {
           height: 0,
           width: layout.width
         }}
-        lazy={({ route }) => route.key === "map" }
+        lazy={({ route }) => route.key === "mapView" }
         navigationState={{ index: tabViewIndex, routes }}
         onIndexChange={setTabViewIndex}
         renderScene={renderScene}
         renderTabBar={createRenderTabBar(theme)}
-        swipeEnabled={true}
+        swipeEnabled={false}
         tabBarPosition="top"
       />
     </SafeAreaView>

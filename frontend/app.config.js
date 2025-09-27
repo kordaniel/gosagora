@@ -9,6 +9,14 @@ export default {
   userInterfaceStyle: 'automatic', // https://docs.expo.dev/develop/user-interface/color-themes/
   newArchEnabled: true,
   plugins: [[
+    'expo-asset',
+    {
+      'assets': [
+        './assets/bundles',
+        './assets/html',
+      ]
+    }
+  ], [
     'expo-location',
     {
       locationAlwaysAndWhenInUsePermission: 'Allow location access so we can provide you insights about your tracks and performance and to be able to deliver reliable race results.',

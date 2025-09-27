@@ -29,11 +29,14 @@ Note that the development environment is configured for both Expo GO and develop
 ```bash
 npm run start
 npm run start:cc - clears expo cache
+npm run start:dev - runs esbuild in watch mode and npm run start
+npm run start:dev:cc - runs esbuild in watch mode and npm run start:cc
 npm run lint
 npm run test
 npm run test:watch - run tests at every filechange
 npm run typeCheck - compile ts with noEmit
 ```
+Use the script `npm run start:dev` or `npm run start:dev:cc` for normal dev environment. If you already have built the leaflet bundle and don't intend to make any changes to it then you can use the conventional `npm run start` or `npm run start:cc`.
 
 ### Run application using Expo GO
 When you have set up the firebase configuration by following the instructions defined in the main [README.md](https://github.com/kordaniel/gosagora/blob/main/README.md) of this repo and set up the `.env` file for the frontend you can run this application using Expo GO by running `npm run start`. This has some limitations, for example background location processes do not work when running the application trough Expo GO.
