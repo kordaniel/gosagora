@@ -3,7 +3,7 @@ import unitConverter, {
   DistanceUnits,
   VelocityUnits,
 } from './unitConverter';
-import type { GeoPos } from '../types';
+import type { GeoPos, TimeDuration } from '../types';
 import { truncateNumber } from './helpers';
 
 const DST_SUFFIXES: { [K in DistanceUnits]: string } = {
@@ -85,6 +85,25 @@ export const percentageToString = (
     return '- %';
   }
   return `${percentage.toFixed(decimals)}%`;
+};
+
+/**
+ * Converts a TimeDuration object into a printable string. This function expects that every
+ * field in the time duration object has a integer value >= 0.
+ * @param alwaysIncludeHours Always include hours in the returned string. Defaults to false.
+ * @returns Time duration string formatted as: \<HH:\>mm:ss\<.SSS\>.
+ */
+export const timeDurationToString = (
+  duration: TimeDuration,
+  alwaysIncludeHours: boolean = false
+): string => {
+  const formattedDuration = duration.minutes !== 0 || duration.hours !== 0
+    ? `${duration.minutes.toString().padStart(2, '0')}:${duration.seconds.toString().padStart(2, '0')}`
+    : `00:${duration.seconds.toString().padStart(2, '0')}.${duration.msecs.toString().padStart(3, '0')}`;
+
+  return alwaysIncludeHours || duration.hours !== 0
+    ? `${duration.hours.toString().padStart(2, '0')}:${formattedDuration}`
+    : formattedDuration;
 };
 
 export const velocityToString = (

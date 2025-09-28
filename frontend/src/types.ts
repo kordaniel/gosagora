@@ -34,3 +34,10 @@ export interface GeoPos {
   hdg: number | null;
   vel: number | null;
 }
+
+export interface TimeDuration {
+  hours: number;
+  minutes: number;
+  seconds: number;
+  msecs: number;
+}
