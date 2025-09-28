@@ -17,7 +17,7 @@ import NewRace from './NewRace';
 import RaceView from './RaceView';
 import RacesList from './RacesList';
 
-import { AppTheme } from '../../types';
+import type { AppTheme } from '../../types';
 
 // react-navigation-tab-view documentation: https://reactnavigation.org/docs/tab-view/
 
