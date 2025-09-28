@@ -9,6 +9,7 @@ import TabBar from './TabBar';
 
 import Home from '../../pages/Home';
 import Navigation from '../../pages/Navigation';
+import Race from '../../pages/Race';
 import Races from '../../pages/Races';
 import UserProfile from '../../pages/UserProfile';
 
@@ -24,6 +25,7 @@ type RootStackParamList = {
   UserProfile: undefined;
   Races: undefined;
   Home: undefined;
+  Race: undefined;
   Navigation: undefined;
 };
 
@@ -55,6 +57,11 @@ const Navigator = () => {
         name="Home"
         component={Home}
         options={{ title: "Home" }}
+      />
+      <Tab.Screen
+        name="Race"
+        component={Race}
+        options={{ title: "Race" }}
       />
       <Tab.Screen
         name="Navigation"
