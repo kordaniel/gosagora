@@ -1,13 +1,25 @@
 import React from 'react';
 
-import { ScrollView, Text, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 
 import Button from '../../components/Button';
 
-import type { AppTheme } from '../../types';
+import type { AppTheme, TimeDuration } from '../../types';
 import { timeDurationToString } from '../../utils/stringTools';
 import useStartTimer from '../../hooks/useStartTimer';
+
+const RenderTimeLeft = ({ timeLeft }: { timeLeft: TimeDuration }) => {
+  const theme = useTheme<AppTheme>();
+  const style = StyleSheet.compose(
+    theme.customFonts.displayHugeBold,
+    { textAlign: 'center' }
+  );
+
+  return (
+    <Text style={style}>{timeDurationToString(timeLeft)}</Text>
+  );
+};
 
 const StartTimer = () => {
   const theme = useTheme<AppTheme>();
@@ -15,9 +27,7 @@ const StartTimer = () => {
 
   return (
     <ScrollView contentContainerStyle={{ flexDirection: 'column' }}>
-      <View>
-        <Text>{timeDurationToString(startTimer.timeLeft)}</Text>
-      </View>
+      <RenderTimeLeft timeLeft={startTimer.timeLeft} />
 
       <View style={{ flexDirection: 'column' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
