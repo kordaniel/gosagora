@@ -1,9 +1,9 @@
+import type { GeoPos, TimeDuration } from '../types';
 import { isNumber, isString } from './typeguards';
 import unitConverter, {
   DistanceUnits,
   VelocityUnits,
 } from './unitConverter';
-import type { GeoPos, TimeDuration } from '../types';
 import { truncateNumber } from './helpers';
 
 const DST_SUFFIXES: { [K in DistanceUnits]: string } = {
