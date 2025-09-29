@@ -1,7 +1,7 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 
 import type { TimeDuration } from '../types';
-//import { assertNever } from '../utils/typeguards';
+import { assertNever } from '../utils/typeguards';
 
 const MSEC_IN_SEC  = 1000;
 const MSEC_IN_MIN  = 60 * MSEC_IN_SEC;
@@ -19,6 +19,7 @@ interface CountdownState {
 }
 
 type CountdownStateAction =
+  | { type: 'addToDuration', payload: Pick<CountdownState, 'duration'> }
   | { type: 'reset', payload: Omit<CountdownState, 'duration'> }
   | { type: 'start', payload: Omit<CountdownState, 'duration'> }
   | { type: 'pause', payload: Pick<CountdownState, 'countdownId' | 'isPaused' | 'tickTime'> }
@@ -29,15 +30,17 @@ const countdownReducer = (
   state: CountdownState,
   action: CountdownStateAction
 ): CountdownState => {
-  //switch (action.type) {
-  //  case 'reset': return { ...state, ...action.payload };
-  //  case 'start': return { ...state, ...action.payload };
-  //  case 'stop':  return { ...state, ...action.payload };
-  //  case 'pause': return { ...state, ...action.payload };
-  //  case 'tick':  return { ...state, ...action.payload };
-  //  default: return assertNever(action);
-  //}
-  return { ...state, ...action.payload };
+  switch (action.type) {
+    case 'addToDuration': return {
+      ...state,
+      duration: Math.max(0, state.duration + action.payload.duration)
+    };
+    case 'reset': return { ...state, ...action.payload };
+    case 'start': return { ...state, ...action.payload };
+    case 'pause': return { ...state, ...action.payload };
+    case 'tick':  return { ...state, ...action.payload };
+    default: return assertNever(action);
+  }
 };
 
 
@@ -61,19 +64,25 @@ const initialCountdownState: CountdownState = {
  */
 const useStartTimer = () => {
   const [countdown, dispatch] = useReducer(countdownReducer, initialCountdownState);
+  const countdownRef = useRef(countdown);
+
+  useEffect(() => {
+    countdownRef.current = countdown;
+  }, [countdown]);
 
   const computeMsecsLeft = (duration: number, tickTime: number, startTime: number): number => {
-    // The remaining time to zero can be negative since the delay of JS setTimeout is not guaranted.
-    // On web (firefox) it might be as long as 15 min in inactive tabs.
+    // NOTE: The remaining time to zero can be negative, delay of JS setTimeout is not guaranted.
     return Math.max(0, duration - (tickTime - startTime));
   };
 
   const msecsLeft = computeMsecsLeft(countdown.duration, countdown.tickTime, countdown.startTime);
 
-  const ticker = (duration: number, startTime: number) => {
+  const ticker = () => {
     const tickTime = Date.now();
 
-    const timeLeft = computeMsecsLeft(duration, tickTime, startTime);
+    const timeLeft = computeMsecsLeft(
+      countdownRef.current.duration, tickTime, countdownRef.current.startTime
+    );
 
     if (timeLeft > 0) {
       const timeoutDelay = timeLeft > MSEC_IN_MIN
@@ -81,12 +90,8 @@ const useStartTimer = () => {
         : timeLeft < UPDATE_HIGH_FREQ
           ? timeLeft
           : UPDATE_HIGH_FREQ;
-      const countdownId = setTimeout(
-        ticker,
-        timeoutDelay,
-        duration,
-        startTime,
-      );
+      const countdownId = setTimeout(ticker, timeoutDelay);
+
       dispatch({
         type: 'tick',
         payload: { countdownId, tickTime },
@@ -97,6 +102,27 @@ const useStartTimer = () => {
         payload: { countdownId: null, tickTime },
       });
     }
+  };
+
+  const addToCountdown = (
+    hours: number,
+    minutes: number = 0,
+    seconds: number = 0
+  ) => {
+    dispatch({
+      type: 'addToDuration',
+      payload: {
+        duration: hours * MSEC_IN_HOUR + minutes * MSEC_IN_MIN + seconds * MSEC_IN_SEC,
+      }
+    });
+  };
+
+  const remainsAtMost = (
+    hours: number,
+    minutes: number = 0,
+    seconds: number = 0
+  ): boolean => {
+    return msecsLeft <= (hours * MSEC_IN_HOUR + minutes * MSEC_IN_MIN + seconds * MSEC_IN_SEC);
   };
 
   const reset = () => {
@@ -127,12 +153,7 @@ const useStartTimer = () => {
         : timeLeft < UPDATE_HIGH_FREQ
           ? timeLeft
           : UPDATE_HIGH_FREQ;
-      const countdownId = setTimeout(
-        ticker,
-        timeoutDelay,
-        countdown.duration,
-        correctedStartTime
-      );
+      const countdownId = setTimeout(ticker, timeoutDelay);
 
       dispatch({
         type: 'start',
@@ -148,9 +169,7 @@ const useStartTimer = () => {
     {
       const countdownId = setTimeout(
         ticker,
-        countdown.duration > MSEC_IN_MIN ? UPDATE_FREQ : UPDATE_HIGH_FREQ,
-        countdown.duration,
-        timeNow
+        countdown.duration > MSEC_IN_MIN ? UPDATE_FREQ : UPDATE_HIGH_FREQ
       );
 
       dispatch({
@@ -184,12 +203,11 @@ const useStartTimer = () => {
     });
   };
 
-  console.assert(msecsLeft >= 0, 'msecsLeft:', msecsLeft, 'countdown:', countdown);
-  if (msecsLeft < 100) console.log('time left:', msecsLeft);
-
   return {
+    addToCountdown,
     isCounting: countdown.countdownId !== null,
     pause,
+    remainsAtMost,
     reset,
     start,
     timeLeft: {

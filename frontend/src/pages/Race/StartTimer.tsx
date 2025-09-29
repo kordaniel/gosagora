@@ -31,8 +31,19 @@ const StartTimer = () => {
 
       <View style={{ flexDirection: 'column' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Button style={{ flexGrow: 1 }} disabled={true}>-1 Min</Button>
-          <Button style={{ flexGrow: 1 }} disabled={true}>+1 Min</Button>
+          <Button
+            style={{ flexGrow: 1 }}
+            disabled={startTimer.remainsAtMost(0, 1)}
+            onPress={() => startTimer.addToCountdown(0, -1)}
+          >
+            -1 Min
+          </Button>
+          <Button
+            style={{ flexGrow: 1 }}
+            onPress={() => startTimer.addToCountdown(0, 1)}
+          >
+            +1 Min
+          </Button>
         </View>
         <Button
           disabled={startTimer.isCounting}

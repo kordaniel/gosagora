@@ -135,5 +135,5 @@
 | 2025.09.25 | 4   | FRONTEND: Add & configure esbuild, implement require .bundle files as strings. Refactor leaflet into a strongly typed ts module that imports leaflet from npm package. Setup dev build scripts to transpile leaflet ts->js |
 | 2025.09.26 | 4   | FRONTEND: Add esbuild.config.mjs, refactor esbuild build scripts. Bundle leaflet CSS & Icon images from npm package. Refactor <assets|src>/bundles and update README |
 | 2025.09.28 | 2   | FRONTEND: Add Page Race, initial version of Start timer view and logic |
-| 2025.09.29 | 2.5 | FRONTEND: Implement useStartTimer hook start/pause/reset functionality. Stylize StartTimer, add custom fonts to AppTheme |
-| Total | 219.5 | |
+| 2025.09.29 | 3   | FRONTEND: Implement useStartTimer hook start/pause/reset/alter time functionality. Stylize StartTimer, add custom fonts to AppTheme |
+| Total | 220 | |
