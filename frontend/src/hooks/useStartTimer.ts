@@ -22,6 +22,7 @@ type CountdownStateAction =
   | { type: 'addToDuration', payload: Pick<CountdownState, 'duration'> }
   | { type: 'reset', payload: Omit<CountdownState, 'duration'> }
   | { type: 'start', payload: Omit<CountdownState, 'duration'> }
+  | { type: 'sync',  payload: Pick<CountdownState, 'countdownId' | 'startTime' | 'tickTime'> }
   | { type: 'pause', payload: Pick<CountdownState, 'countdownId' | 'isPaused' | 'tickTime'> }
   | { type: 'tick',  payload: Pick<CountdownState, 'countdownId' | 'tickTime'> };
 
@@ -37,6 +38,7 @@ const countdownReducer = (
     };
     case 'reset': return { ...state, ...action.payload };
     case 'start': return { ...state, ...action.payload };
+    case 'sync':  return { ...state, ...action.payload };
     case 'pause': return { ...state, ...action.payload };
     case 'tick':  return { ...state, ...action.payload };
     default: return assertNever(action);
@@ -46,8 +48,8 @@ const countdownReducer = (
 
 const initialCountdownState: CountdownState = {
   countdownId: null,
-  duration: 5 * MSEC_IN_MIN,
-  isPaused: false,
+  duration: 1.1 * MSEC_IN_MIN,
+  isPaused: true,
   startTime: 0,
   tickTime: 0,
 };
@@ -56,7 +58,7 @@ const initialCountdownState: CountdownState = {
  * Hook that provides the state and logic for the Start Timer component.
  *
  * Ticks are implemented using JS setTimeout, which delay is not guaranteed to be precise.
- * In most cases the timer finishes with a delay of <~15 ms. When running on web some browsers
+ * In most cases the timer finishes within a delay of <~15 ms. When running on web some browsers
  * might introduce significant delays when running in background tabs. 15 min on firefox,
  * 1 min on chrome.
  *
@@ -69,6 +71,13 @@ const useStartTimer = () => {
   useEffect(() => {
     countdownRef.current = countdown;
   }, [countdown]);
+
+  const computeTimeoutDelay = (msecsLeft: number): number => {
+    if (msecsLeft > MSEC_IN_MIN) {
+      return UPDATE_FREQ;
+    }
+    return msecsLeft < UPDATE_HIGH_FREQ ? msecsLeft : UPDATE_HIGH_FREQ;
+  };
 
   const computeMsecsLeft = (duration: number, tickTime: number, startTime: number): number => {
     // NOTE: The remaining time to zero can be negative, delay of JS setTimeout is not guaranted.
@@ -85,12 +94,7 @@ const useStartTimer = () => {
     );
 
     if (timeLeft > 0) {
-      const timeoutDelay = timeLeft > MSEC_IN_MIN
-        ? UPDATE_FREQ
-        : timeLeft < UPDATE_HIGH_FREQ
-          ? timeLeft
-          : UPDATE_HIGH_FREQ;
-      const countdownId = setTimeout(ticker, timeoutDelay);
+      const countdownId = setTimeout(ticker, computeTimeoutDelay(timeLeft));
 
       dispatch({
         type: 'tick',
@@ -134,7 +138,7 @@ const useStartTimer = () => {
       type: 'reset',
       payload: {
         countdownId: null,
-        isPaused: false,
+        isPaused: true,
         startTime: 0,
         tickTime: 0,
       },
@@ -148,12 +152,7 @@ const useStartTimer = () => {
     {
       const correctedStartTime = countdown.startTime + (timeNow - countdown.tickTime);
       const timeLeft = computeMsecsLeft(countdown.duration, timeNow, correctedStartTime);
-      const timeoutDelay = timeLeft > MSEC_IN_MIN
-        ? UPDATE_FREQ
-        : timeLeft < UPDATE_HIGH_FREQ
-          ? timeLeft
-          : UPDATE_HIGH_FREQ;
-      const countdownId = setTimeout(ticker, timeoutDelay);
+      const countdownId = setTimeout(ticker, computeTimeoutDelay(timeLeft));
 
       dispatch({
         type: 'start',
@@ -167,10 +166,7 @@ const useStartTimer = () => {
     }
     else
     {
-      const countdownId = setTimeout(
-        ticker,
-        countdown.duration > MSEC_IN_MIN ? UPDATE_FREQ : UPDATE_HIGH_FREQ
-      );
+      const countdownId = setTimeout(ticker, computeTimeoutDelay(countdown.duration));
 
       dispatch({
         type: 'start',
@@ -180,6 +176,42 @@ const useStartTimer = () => {
           startTime: timeNow,
           tickTime: timeNow,
         },
+      });
+    }
+  };
+
+  /**
+   * Syncs the remining countdown time to the closest full minute
+   */
+  const sync = () => {
+    const timeNow = Date.now();
+    // If the countdown has not been started, then startTime == 0 && tickTime == 0
+    const timeLeft = computeMsecsLeft(countdown.duration, timeNow, countdown.startTime || timeNow);
+    const minuteRemainderMsecs = timeLeft % MSEC_IN_MIN;
+
+    if (minuteRemainderMsecs === 0 || remainsAtMost(0, 0, 30)) {
+      return;
+    }
+    if (countdown.countdownId) {
+      clearTimeout(countdown.countdownId);
+    }
+
+    const startTimeShift = minuteRemainderMsecs < (0.5 * MSEC_IN_MIN)
+      ? -minuteRemainderMsecs
+      : (MSEC_IN_MIN - minuteRemainderMsecs);
+    const syncedStartTime = (countdown.startTime || timeNow) + startTimeShift;
+
+    if (countdown.isPaused) {
+      dispatch({
+        type: 'sync',
+        payload: { countdownId: null, startTime: syncedStartTime, tickTime: timeNow },
+      });
+    } else {
+      const syncedTimeLeft = computeMsecsLeft(countdown.duration, timeNow, syncedStartTime);
+      const countdownId = setTimeout(ticker, computeTimeoutDelay(syncedTimeLeft));
+      dispatch({
+        type: 'sync',
+        payload: { countdownId, startTime: syncedStartTime, tickTime: timeNow },
       });
     }
   };
@@ -210,6 +242,8 @@ const useStartTimer = () => {
     remainsAtMost,
     reset,
     start,
+    sync,
+    canSync: msecsLeft > (0.5 * MSEC_IN_MIN),
     timeLeft: {
       hours: Math.floor(msecsLeft / MSEC_IN_HOUR),
       minutes: Math.floor((msecsLeft % MSEC_IN_HOUR) / MSEC_IN_MIN),

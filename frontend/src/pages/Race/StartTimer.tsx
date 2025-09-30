@@ -50,7 +50,12 @@ const StartTimer = () => {
           onPress={startTimer.reset}>
             Reset
         </Button>
-        <Button disabled={true}>Sync</Button>
+        <Button
+          disabled={!startTimer.canSync}
+          onPress={startTimer.sync}
+        >
+          Sync
+        </Button>
         {startTimer.isCounting
           ? <Button
               colors={[theme.colors.error, 'white']}

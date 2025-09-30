@@ -136,4 +136,5 @@
 | 2025.09.26 | 4   | FRONTEND: Add esbuild.config.mjs, refactor esbuild build scripts. Bundle leaflet CSS & Icon images from npm package. Refactor <assets|src>/bundles and update README |
 | 2025.09.28 | 2   | FRONTEND: Add Page Race, initial version of Start timer view and logic |
 | 2025.09.29 | 3   | FRONTEND: Implement useStartTimer hook start/pause/reset/alter time functionality. Stylize StartTimer, add custom fonts to AppTheme |
-| Total | 220 | |
+| 2025.09.30 | 1   | FRONTEND: Implement syncing to closest full minute to useStartTimer |
+| Total | 221 | |
