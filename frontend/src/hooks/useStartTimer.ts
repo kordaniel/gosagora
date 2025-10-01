@@ -48,7 +48,7 @@ const countdownReducer = (
 
 const initialCountdownState: CountdownState = {
   countdownId: null,
-  duration: 1.1 * MSEC_IN_MIN,
+  duration: 5 * MSEC_IN_MIN,
   isPaused: true,
   startTime: 0,
   tickTime: 0,
@@ -143,6 +143,10 @@ const useStartTimer = () => {
         tickTime: 0,
       },
     });
+  };
+
+  const setDuration = (hours: number, minutes: number, seconds: number) => {
+    console.log('setDuration: NOT IMPLEMENTED!!'); // TODO: Implement functionality
   };
 
   const start = () => {
@@ -241,6 +245,7 @@ const useStartTimer = () => {
     pause,
     remainsAtMost,
     reset,
+    setDuration,
     start,
     sync,
     canSync: msecsLeft > (0.5 * MSEC_IN_MIN),

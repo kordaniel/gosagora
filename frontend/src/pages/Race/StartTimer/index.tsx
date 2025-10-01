@@ -3,11 +3,12 @@ import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
-import Button from '../../components/Button';
+import Button from '../../../components/Button';
+import TimeSelector from './TimeSelector';
 
-import type { AppTheme, TimeDuration } from '../../types';
-import { timeDurationToString } from '../../utils/stringTools';
-import useStartTimer from '../../hooks/useStartTimer';
+import type { AppTheme, TimeDuration } from '../../../types';
+import { timeDurationToString } from '../../../utils/stringTools';
+import useStartTimer from '../../../hooks/useStartTimer';
 
 const RenderTimeLeft = ({ timeLeft }: { timeLeft: TimeDuration }) => {
   const theme = useTheme<AppTheme>();
@@ -26,11 +27,12 @@ const StartTimer = () => {
   const startTimer = useStartTimer();
 
   return (
-    <ScrollView contentContainerStyle={{ flexDirection: 'column' }}>
+    <ScrollView contentContainerStyle={{ flexDirection: "column" }}>
       <RenderTimeLeft timeLeft={startTimer.timeLeft} />
+      <TimeSelector setDuration={startTimer.setDuration} />
 
-      <View style={{ flexDirection: 'column' }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+      <View style={{ flexDirection: "column" }}>
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <Button
             style={{ flexGrow: 1 }}
             disabled={startTimer.remainsAtMost(0, 1)}
@@ -58,14 +60,14 @@ const StartTimer = () => {
         </Button>
         {startTimer.isCounting
           ? <Button
-              colors={[theme.colors.error, 'white']}
+              colors={[theme.colors.error, "white"]}
               ctxLoading={startTimer.isCounting}
               onPress={startTimer.pause}
             >
               Pause
             </Button>
           : <Button
-              colors={[theme.colors.tertiary, 'white']}
+              colors={[theme.colors.tertiary, "white"]}
               onPress={startTimer.start}
             >
               Start
