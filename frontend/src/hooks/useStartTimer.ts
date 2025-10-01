@@ -21,6 +21,7 @@ interface CountdownState {
 type CountdownStateAction =
   | { type: 'addToDuration', payload: Pick<CountdownState, 'duration'> }
   | { type: 'reset', payload: Omit<CountdownState, 'duration'> }
+  | { type: 'setDuration', payload: Pick<CountdownState, 'duration'> }
   | { type: 'start', payload: Omit<CountdownState, 'duration'> }
   | { type: 'sync',  payload: Pick<CountdownState, 'countdownId' | 'startTime' | 'tickTime'> }
   | { type: 'pause', payload: Pick<CountdownState, 'countdownId' | 'isPaused' | 'tickTime'> }
@@ -37,6 +38,7 @@ const countdownReducer = (
       duration: Math.max(0, state.duration + action.payload.duration)
     };
     case 'reset': return { ...state, ...action.payload };
+    case 'setDuration': return { ...state, ...action.payload };
     case 'start': return { ...state, ...action.payload };
     case 'sync':  return { ...state, ...action.payload };
     case 'pause': return { ...state, ...action.payload };
@@ -145,8 +147,17 @@ const useStartTimer = () => {
     });
   };
 
-  const setDuration = (hours: number, minutes: number, seconds: number) => {
-    console.log('setDuration: NOT IMPLEMENTED!!'); // TODO: Implement functionality
+  const setDuration = ({ hours, minutes, seconds }: Omit<TimeDuration, 'msecs'>) => {
+    if (countdown.countdownId) {
+      return;
+    }
+
+    dispatch({
+      type: 'setDuration',
+      payload: {
+        duration: hours * MSEC_IN_HOUR + minutes * MSEC_IN_MIN + seconds * MSEC_IN_SEC,
+      },
+    });
   };
 
   const start = () => {
@@ -241,6 +252,11 @@ const useStartTimer = () => {
 
   return {
     addToCountdown,
+    duration: {
+      hours: Math.floor(countdown.duration / MSEC_IN_HOUR),
+      minutes: Math.floor((countdown.duration % MSEC_IN_HOUR) / MSEC_IN_MIN),
+      seconds: Math.floor((countdown.duration % MSEC_IN_MIN) / MSEC_IN_SEC),
+    } satisfies Omit<TimeDuration, 'msecs'> as Omit<TimeDuration, 'msecs'>,
     isCounting: countdown.countdownId !== null,
     pause,
     remainsAtMost,

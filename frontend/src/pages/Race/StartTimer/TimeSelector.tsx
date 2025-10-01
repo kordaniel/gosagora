@@ -1,25 +1,80 @@
 import React, { useState } from 'react';
 
-import { IconButton, Text, useTheme } from 'react-native-paper';
-import { StyleSheet, TextInput, type TextStyle, View } from 'react-native';
+import {
+  IconButton,
+  type IconButtonProps,
+  Text,
+  useTheme
+} from 'react-native-paper';
+import {
+  StyleSheet,
+  TextInput,
+  type TextStyle,
+  View,
+  type ViewStyle
+} from 'react-native';
 
-import type { AppTheme } from '../../../types';
+import type { AppTheme, TimeDuration } from '../../../types';
 import { assertNever } from '../../../utils/typeguards';
 import { clampNumber } from '../../../utils/helpers';
 import config from '../../../utils/config';
 
-interface TimeSelectorProps {
-  setDuration: (hours: number, minutes: number, seconds: number) => void;
+type FieldType = 'hours' | 'minutes' | 'seconds';
+
+interface TimeFieldSelectorProps {
+  adjustFieldValue: (field: FieldType, delta: number) => void;
+  field: FieldType;
+  iconSize?: NonNullable<IconButtonProps['size']>;
+  setFieldValue: (field: FieldType, newValue: string) => void;
+  setFocused: React.Dispatch<React.SetStateAction<FieldType | null>>;
+  style: ViewStyle,
+  textInputStyle: TextStyle,
+  value: number;
 }
 
-const TimeSelector = ({ setDuration }: TimeSelectorProps) => {
-  type FocusedFieldType = 'hours' | 'minutes' | 'seconds' | null;
-  const theme = useTheme<AppTheme>();
+const TimeFieldSelector = ({
+  adjustFieldValue,
+  field,
+  iconSize = 24,
+  setFieldValue,
+  setFocused,
+  style,
+  textInputStyle,
+  value,
+}: TimeFieldSelectorProps) => {
+  return (
+    <View style={style}>
+      <IconButton
+        icon="plus"
+        size={iconSize}
+        onPress={() => adjustFieldValue(field, 1)}
+      />
+      <TextInput
+        keyboardType="numeric"
+        onChangeText={(newVal) => setFieldValue(field, newVal)}
+        onFocus={() => setFocused(field)}
+        onBlur={() => setFocused(null)}
+        style={textInputStyle}
+        value={value.toString().padStart(2, "0")}
+      />
+      <Text style={{ textTransform: "capitalize" }} variant="labelMedium">{field}</Text>
+      <IconButton
+        icon="minus"
+        size={iconSize}
+        onPress={() => adjustFieldValue(field, -1)}
+      />
+    </View>
+  );
+};
 
-  const [hours, setHours] = useState<number>(0);
-  const [minutes, setMinutes] = useState<number>(0);
-  const [seconds, setSeconds] = useState<number>(0);
-  const [focused, setFocused] = useState<FocusedFieldType>(null);
+interface TimeSelectorProps {
+  duration: Omit<TimeDuration, 'msecs'>;
+  setDuration: (newDuration: Omit<TimeDuration, 'msecs'>) => void;
+}
+
+const TimeSelector = ({ duration, setDuration }: TimeSelectorProps) => {
+  const theme = useTheme<AppTheme>();
+  const [focused, setFocused] = useState<FieldType | null>(null);
 
   const styles = StyleSheet.create({
     field: {
@@ -35,7 +90,7 @@ const TimeSelector = ({ setDuration }: TimeSelectorProps) => {
     },
   });
 
-  const createTextInputStyle = (field: FocusedFieldType): TextStyle => {
+  const createTextInputStyle = (field: FieldType | null): TextStyle => {
     const isFocused = focused === field;
     const commonStyle: TextStyle = {
       ...theme.fonts.titleLarge,
@@ -60,23 +115,35 @@ const TimeSelector = ({ setDuration }: TimeSelectorProps) => {
     };
   };
 
-  const adjustFieldValue = (field: NonNullable<FocusedFieldType>, delta: number) => {
+  const adjustFieldValue = (field: FieldType, delta: number) => {
     switch (field) {
       case 'hours':
-        setHours(prev => clampNumber(prev + delta, 0, 23));
+        setDuration({
+          hours: clampNumber(duration.hours + delta, 0, 23),
+          minutes: duration.minutes,
+          seconds: duration.seconds
+        });
         break;
       case 'minutes':
-        setMinutes(prev => clampNumber(prev + delta, 0, 59));
+        setDuration({
+          hours: duration.hours,
+          minutes: clampNumber(duration.minutes + delta, 0, 59),
+          seconds: duration.seconds
+        });
         break;
       case 'seconds':
-        setSeconds(prev => clampNumber(prev + delta, 0, 59));
+        setDuration({
+          hours: duration.hours,
+          minutes: duration.minutes,
+          seconds: clampNumber(duration.seconds + delta, 0, 59)
+        });
         break;
       default:
         assertNever(field);
     }
   };
 
-  const setFieldValue = (field: NonNullable<FocusedFieldType>, newValue: string) => {
+  const setFieldValue = (field: FieldType, newValue: string) => {
     const digits = newValue.replace(/[^0-9]/g, '');
     const newIntVal = Number(digits);
 
@@ -87,66 +154,60 @@ const TimeSelector = ({ setDuration }: TimeSelectorProps) => {
 
     switch (field) {
       case 'hours':
-        setHours(clampNumber(newIntVal, 0, 23));
+        setDuration({
+          hours: clampNumber(newIntVal, 0, 23),
+          minutes: duration.minutes,
+          seconds: duration.seconds
+        });
         break;
       case 'minutes':
-        setMinutes(clampNumber(newIntVal, 0, 59));
+        setDuration({
+          hours: duration.hours,
+          minutes: clampNumber(newIntVal, 0, 59),
+          seconds: duration.seconds
+        });
         break;
       case 'seconds':
-        setSeconds(clampNumber(newIntVal, 0, 59));
+        setDuration({
+          hours: duration.hours,
+          minutes: duration.minutes,
+          seconds: clampNumber(newIntVal, 0, 59)
+        });
         break;
       default:
         assertNever(field);
     }
   };
 
-  console.log('focused:', focused);
-
   return (
     <View style={styles.row}>
-      <View style={styles.field}>
-        {/* NOTE: Larger icons TEST */}
-        <IconButton icon="plus" size={24} onPress={() => adjustFieldValue("hours", 1)} />
-        <TextInput
-          keyboardType="numeric"
-          onChangeText={(newVal) => setFieldValue("hours", newVal)}
-          onFocus={() => { console.log('START'); setFocused("hours"); }}
-          onEndEditing={() => { console.log('END'); setFocused(null); }}
-          //onBlur={(e) => console.log('blur')}
-          style={createTextInputStyle("hours")}
-          value={hours.toString().padStart(2, "0")}
-        />
-        <Text variant="labelMedium">Hours</Text>
-        <IconButton icon="minus" size={24} onPress={() => adjustFieldValue("hours", -1)} />
-      </View>
-
-      <View style={styles.field}>
-        <IconButton icon="plus" size={20} onPress={() => adjustFieldValue("minutes", 1)} />
-        <TextInput
-          keyboardType="numeric"
-          onChangeText={(newVal) => setFieldValue("minutes", newVal)}
-          onFocus={() => setFocused("minutes")}
-          onEndEditing={() => setFocused(null)}
-          style={createTextInputStyle("minutes")}
-          value={minutes.toString().padStart(2, "0")}
-        />
-        <Text variant="labelMedium">Minutes</Text>
-        <IconButton icon="minus" size={20} onPress={() => adjustFieldValue("minutes", -1)} />
-      </View>
-
-      <View style={styles.field}>
-        <IconButton icon="plus" size={20} onPress={() => adjustFieldValue("seconds", 1)} />
-        <TextInput
-          keyboardType="numeric"
-          onChangeText={(newVal) => setFieldValue("seconds", newVal)}
-          onFocus={() => setFocused("seconds")}
-          onEndEditing={() => setFocused(null)}
-          style={createTextInputStyle("seconds")}
-          value={seconds.toString().padStart(2, "0")}
-        />
-        <Text variant="labelMedium">Seconds</Text>
-        <IconButton icon="minus" size={20} onPress={() => adjustFieldValue("seconds", -1)} />
-      </View>
+      <TimeFieldSelector
+        adjustFieldValue={adjustFieldValue}
+        field="hours"
+        setFieldValue={setFieldValue}
+        setFocused={setFocused}
+        style={styles.field}
+        textInputStyle={createTextInputStyle("hours")}
+        value={duration.hours}
+      />
+      <TimeFieldSelector
+        adjustFieldValue={adjustFieldValue}
+        field="minutes"
+        setFieldValue={setFieldValue}
+        setFocused={setFocused}
+        style={styles.field}
+        textInputStyle={createTextInputStyle("minutes")}
+        value={duration.minutes}
+      />
+      <TimeFieldSelector
+        adjustFieldValue={adjustFieldValue}
+        field="seconds"
+        setFieldValue={setFieldValue}
+        setFocused={setFocused}
+        style={styles.field}
+        textInputStyle={createTextInputStyle("seconds")}
+        value={duration.seconds}
+      />
     </View>
   );
 };

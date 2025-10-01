@@ -29,7 +29,10 @@ const StartTimer = () => {
   return (
     <ScrollView contentContainerStyle={{ flexDirection: "column" }}>
       <RenderTimeLeft timeLeft={startTimer.timeLeft} />
-      <TimeSelector setDuration={startTimer.setDuration} />
+      <TimeSelector
+        duration={startTimer.duration}
+        setDuration={startTimer.setDuration}
+      />
 
       <View style={{ flexDirection: "column" }}>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
