@@ -1,6 +1,7 @@
 import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import type { ColorSchemeName } from 'react-native';
 import type { MD3Theme } from 'react-native-paper';
+import type { MD3Type } from 'react-native-paper/lib/typescript/types';
 import { StyleSheet } from 'react-native';
 
 import type { AppTheme } from './types';
@@ -96,6 +97,20 @@ const darkTheme: MD3Theme = {
     'backdrop': 'rgba(44, 49, 55, 0.4)'
   }
 };
+
+const customFonts: Record<string, MD3Type> = StyleSheet.create({
+  displayHuge: {
+    ...MD3DarkTheme.fonts.displayLarge,
+    fontSize: 96,
+    lineHeight: 100,
+  },
+  displayHugeBold: {
+    ...MD3DarkTheme.fonts.displayLarge,
+    fontSize: 96,
+    fontWeight: 'bold',
+    lineHeight: 100,
+  },
+});
 
 const styles = StyleSheet.create({
   borderContainer: {
@@ -410,14 +425,17 @@ export const getTheme = (colorScheme?: ColorSchemeName): Omit<AppTheme, 'toggleS
   switch (colorScheme) {
     case 'dark': return {
       ...darkTheme,
+      customFonts,
       styles: darkStyle,
     };
     case 'light': return {
       ...lightTheme,
+      customFonts,
       styles: lightStyle,
     };
     default: return { // NOTE: Do not throw here, OS might return null | undefined colorScheme
       ...darkTheme,
+      customFonts,
       styles: darkStyle,
     };
   }
