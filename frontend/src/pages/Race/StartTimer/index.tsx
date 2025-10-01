@@ -26,37 +26,42 @@ const StartTimer = () => {
   const theme = useTheme<AppTheme>();
   const startTimer = useStartTimer();
 
+  const countdownInitialized = startTimer.isCounting || startTimer.isPaused;
+
   return (
     <ScrollView contentContainerStyle={{ flexDirection: "column" }}>
-      <RenderTimeLeft timeLeft={startTimer.timeLeft} />
-      <TimeSelector
-        duration={startTimer.duration}
-        setDuration={startTimer.setDuration}
-      />
+      {countdownInitialized
+        ? <RenderTimeLeft timeLeft={startTimer.timeLeft} />
+        : <TimeSelector
+            duration={startTimer.duration}
+            setDuration={startTimer.setDuration}
+          />
+      }
 
       <View style={{ flexDirection: "column" }}>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <Button
             style={{ flexGrow: 1 }}
-            disabled={startTimer.remainsAtMost(0, 1)}
+            disabled={!countdownInitialized || startTimer.remainsAtMost(0, 1)}
             onPress={() => startTimer.addToCountdown(0, -1)}
           >
             -1 Min
           </Button>
           <Button
             style={{ flexGrow: 1 }}
+            disabled={!countdownInitialized}
             onPress={() => startTimer.addToCountdown(0, 1)}
           >
             +1 Min
           </Button>
         </View>
         <Button
-          disabled={startTimer.isCounting}
+          disabled={startTimer.isCounting || !startTimer.isPaused}
           onPress={startTimer.reset}>
             Reset
         </Button>
         <Button
-          disabled={!startTimer.canSync}
+          disabled={!countdownInitialized || !startTimer.canSync}
           onPress={startTimer.sync}
         >
           Sync

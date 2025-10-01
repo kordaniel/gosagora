@@ -51,7 +51,7 @@ const countdownReducer = (
 const initialCountdownState: CountdownState = {
   countdownId: null,
   duration: 5 * MSEC_IN_MIN,
-  isPaused: true,
+  isPaused: false,
   startTime: 0,
   tickTime: 0,
 };
@@ -140,7 +140,7 @@ const useStartTimer = () => {
       type: 'reset',
       payload: {
         countdownId: null,
-        isPaused: true,
+        isPaused: false,
         startTime: 0,
         tickTime: 0,
       },
@@ -252,19 +252,20 @@ const useStartTimer = () => {
 
   return {
     addToCountdown,
+    canSync: msecsLeft > (0.5 * MSEC_IN_MIN),
     duration: {
       hours: Math.floor(countdown.duration / MSEC_IN_HOUR),
       minutes: Math.floor((countdown.duration % MSEC_IN_HOUR) / MSEC_IN_MIN),
       seconds: Math.floor((countdown.duration % MSEC_IN_MIN) / MSEC_IN_SEC),
     } satisfies Omit<TimeDuration, 'msecs'> as Omit<TimeDuration, 'msecs'>,
     isCounting: countdown.countdownId !== null,
+    isPaused: countdown.isPaused,
     pause,
     remainsAtMost,
     reset,
     setDuration,
     start,
     sync,
-    canSync: msecsLeft > (0.5 * MSEC_IN_MIN),
     timeLeft: {
       hours: Math.floor(msecsLeft / MSEC_IN_HOUR),
       minutes: Math.floor((msecsLeft % MSEC_IN_HOUR) / MSEC_IN_MIN),

@@ -137,4 +137,5 @@
 | 2025.09.28 | 2   | FRONTEND: Add Page Race, initial version of Start timer view and logic |
 | 2025.09.29 | 3   | FRONTEND: Implement useStartTimer hook start/pause/reset/alter time functionality. Stylize StartTimer, add custom fonts to AppTheme |
 | 2025.09.30 | 1   | FRONTEND: Implement syncing to closest full minute to useStartTimer |
-| Total | 221 | |
+| 2025.10.01 | 4   | FRONTEND: Implement changing useStartTimer duration. Add TimeSelector, TimeFieldSelector components. Refactor & stylize Start Timer |
+| Total | 225 | |
