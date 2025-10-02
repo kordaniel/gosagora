@@ -22,11 +22,14 @@ const Map = () => {
   useEffect(() => {
     if (current && sendDataToWebRef.current) {
       sendDataToWebRef.current.sendDataToWeb({
-        command: 'setView',
+        type: 'command',
         payload: {
-          accuracy: current.acc,
-          lat: current.lat,
-          lon: current.lon,
+          command: 'setPosition',
+          position: {
+            accuracy: current.acc,
+            lat: current.lat,
+            lon: current.lon,
+          },
         },
       });
     }

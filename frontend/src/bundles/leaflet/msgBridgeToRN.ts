@@ -1,23 +1,27 @@
 import type { WebViewMessageEvent } from 'react-native-webview';
 
-export type RNMessage<T = unknown> = {
-  type: string;
-  payload?: T;
-} | {
-  command: 'setView',
-  payload: {
-    lat: number,
-    lon: number,
-    zoom?: number,
-    accuracy?: number;
-  }
-} | {
-  type: 'debug',
-  error?: string;
-  raw?: string;
-};
+export type RNLeafletMessage =
+  | {
+      type: 'debug';
+      payload: {
+        echo?: string;
+        error?: string;
+        msg?: string;
+      };
+    }
+  | {
+    type: 'command',
+    payload: {
+      command: 'setPosition',
+      position: {
+        lat: number;
+        lon: number;
+        accuracy?: number;
+      }
+    }
+  };
 
-export const sendMsg = (data: RNMessage) => {
+export const sendMsg = (data: RNLeafletMessage) => {
   const msg = JSON.stringify(data);
   if (window.ReactNativeWebView) {
     window.ReactNativeWebView.postMessage(msg);
@@ -26,17 +30,19 @@ export const sendMsg = (data: RNMessage) => {
   }
 };
 
-const setOnMsgHandler = (handler: (msg: RNMessage) => void) => {
+const setOnMsgHandler = (handler: (msg: RNLeafletMessage) => void) => {
   return (
     event: MessageEvent<string> | WebViewMessageEvent['nativeEvent'] // iframe contentWindow.postMessage | react-native-webview postMessage event
   ) => {
     try {
-      handler(JSON.parse(event.data) as RNMessage);
-    } catch (error: unknown) {
+      handler(JSON.parse(event.data) as RNLeafletMessage);
+    } catch (err: unknown) {
       handler({
         type: 'debug',
-        error: JSON.stringify(error instanceof Error ? error.message : error),
-        raw: event.data
+        payload: {
+          error: JSON.stringify(err instanceof Error ? err.message : err),
+          echo: event.data,
+        },
       });
     }
   };

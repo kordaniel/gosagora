@@ -1,6 +1,7 @@
 import L from 'leaflet';
 
-import msgBridgeToRN, { type RNMessage } from './msgBridgeToRN';
+import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
+import { assertNever } from '../../utils/typeguards';
 
 // TODO: Replace console.log with message to RN ?
 declare global {
@@ -28,20 +29,27 @@ L.Marker.prototype.options.icon = L.icon({
   shadowSize:    [41, 41]
 });
 
-const handleRNMessage = (msg: RNMessage) => {
-  if ('type' in msg && msg.type === 'debug') {
+const handleRNMessage = (msg: RNLeafletMessage) => {
+  if (msg.type === 'debug') {
+    // NOTE: relay errors back to RN from leaflet msgBridgeToRN setOnMsgHandler's closure try/catch
     msgBridgeToRN.sendMsg(msg);
     return;
   }
 
-  msgBridgeToRN.sendMsg({ type: 'debug', raw: JSON.stringify(msg) });
-  if ('command' in msg && msg.command === 'setView') {
-    setLocation(msg.payload as {
-      lat: number,
-      lon: number,
-      zoom?: number,
-      accuracy?: number
-    });
+  // TODO: Transmit echo debug msg's only in dev env
+  msgBridgeToRN.sendMsg({
+    type: 'debug',
+    payload: {
+      echo: JSON.stringify(msg),
+    },
+  });
+
+  switch (msg.payload.command) {
+    case 'setPosition': {
+      setLocation(msg.payload.position);
+      break;
+    }
+    default: assertNever(msg.payload.command);
   }
 };
 
@@ -71,11 +79,13 @@ L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
-    type: 'mapClick',
+    type: 'debug',
     payload: {
-      lat: event.latlng.lat,
-      lon: event.latlng.lng
-    }
+      msg: JSON.stringify({
+        lat: event.latlng.lat,
+        lon: event.latlng.lng
+      }),
+    },
   });
 });
 
