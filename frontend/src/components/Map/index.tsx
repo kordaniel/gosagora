@@ -25,11 +25,7 @@ const Map = () => {
         type: 'command',
         payload: {
           command: 'setPosition',
-          position: {
-            accuracy: current.acc,
-            lat: current.lat,
-            lon: current.lon,
-          },
+          position: current,
         },
       });
     }

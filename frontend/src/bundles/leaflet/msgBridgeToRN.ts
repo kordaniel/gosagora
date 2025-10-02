@@ -1,5 +1,7 @@
 import type { WebViewMessageEvent } from 'react-native-webview';
 
+import type { GeoPos } from '../../types';
+
 export type RNLeafletMessage =
   | {
       type: 'debug';
@@ -13,12 +15,8 @@ export type RNLeafletMessage =
     type: 'command',
     payload: {
       command: 'setPosition',
-      position: {
-        lat: number;
-        lon: number;
-        accuracy?: number;
-      }
-    }
+      position: GeoPos | null;
+    };
   };
 
 export const sendMsg = (data: RNLeafletMessage) => {

@@ -1,8 +1,13 @@
 import L from 'leaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
+import type { GeoPos } from '../../types';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
+
+interface LatLngType extends Omit<GeoPos, 'lon'> {
+  lng: number;
+}
 
 // TODO: Replace console.log with message to RN ?
 declare global {
@@ -47,7 +52,7 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
 
   switch (msg.payload.command) {
     case 'setPosition': {
-      setLocation(msg.payload.position);
+      setPosition(msg.payload.position);
       break;
     }
     default: assertNever(msg.payload.command);
@@ -57,16 +62,18 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
 document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 
+let currentPosition: LatLngType | null = null;
+const centerMapAtPositionChange: boolean = true;
+
+let userMarker: L.Marker | null = null;
+let userCircleMarker: L.Circle | null = null;
+let userTrack: L.Polyline | null = null;
 
 const map = L.map('map', {
   layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
 }).setView([0.00, 0.00], 10.0);
 
 L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
-
-let userMarker: L.Marker | null = null;
-let userCircleMarker: L.Circle | null = null;
-let userTrack: L.Polyline | null = null;
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
@@ -80,30 +87,46 @@ map.on('click', (event) => {
   });
 });
 
-const setLocation = (loc: {
-  lat: number,
-  lon: number,
-  zoom?: number,
-  accuracy?: number
-}) => {
-  if (loc.zoom) {
-    map.setView([loc.lat, loc.lon], loc.zoom);
-  } else {
-    map.panTo([loc.lat, loc.lon]);
-  }
+const setPosition = (pos: GeoPos | null) => {
+  currentPosition = pos ? {
+    id: pos.id,
+    timestamp: pos.timestamp,
+    lat: pos.lat,
+    lng: pos.lon,
+    acc: pos.acc,
+    hdg: pos.hdg,
+    vel: pos.vel,
+  } : null;
 
-  if (loc.accuracy) {
+  if (!pos)
+  {
     if (userMarker) {
-      userMarker.setLatLng([loc.lat, loc.lon]);
+      if (userCircleMarker) {
+        userCircleMarker.setRadius(500);
+      }
+      if (userMarker) {
+        map.removeLayer(userMarker);
+        userMarker = null;
+      }
+    }
+  }
+  else if (centerMapAtPositionChange)
+  {
+    map.panTo([pos.lat, pos.lon]);
+
+    if (userMarker) {
+      userMarker.setLatLng([pos.lat, pos.lon]);
     } else {
-      userMarker = L.marker([loc.lat, loc.lon]).addTo(map);
+      userMarker = L.marker([pos.lat, pos.lon]).addTo(map);
     }
 
     if (userCircleMarker) {
-      userCircleMarker.setLatLng([loc.lat, loc.lon]);
-      userCircleMarker.setRadius(loc.accuracy);
+      userCircleMarker.setLatLng([pos.lat, pos.lon]);
+      userCircleMarker.setRadius(pos.acc);
     } else {
-      userCircleMarker = L.circle([loc.lat, loc.lon], { radius: loc.accuracy }).addTo(map);
+      userCircleMarker = L.circle([pos.lat, pos.lon], {
+        radius: pos.acc
+      }).addTo(map);
     }
 
     if (userTrack) {
@@ -111,18 +134,26 @@ const setLocation = (loc: {
       if (latLngs.length > 200) {
         userTrack.setLatLngs(latLngs.slice(20));
       }
-      userTrack.addLatLng([loc.lat, loc.lon]);
+      userTrack.addLatLng([pos.lat, pos.lon]);
     } else {
-      userTrack = L.polyline([[loc.lat, loc.lon]], { color: 'blue' }).addTo(map);
+      userTrack = L.polyline([[pos.lat, pos.lon]], {
+        color: 'blue'
+      }).addTo(map);
     }
-  } else {
-    if (userMarker) {
-      map.removeLayer(userMarker);
-      userMarker = null;
+  }
+  else
+  {
+    if (userTrack) {
+      map.removeLayer(userTrack);
+      userTrack = null;
     }
     if (userCircleMarker) {
       map.removeLayer(userCircleMarker);
       userCircleMarker = null;
+    }
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
     }
   }
 };
