@@ -2,6 +2,7 @@ import L from 'leaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import { assertNever } from '../../utils/typeguards';
+import tileLayers from './tileLayers';
 
 // TODO: Replace console.log with message to RN ?
 declare global {
@@ -56,26 +57,16 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
 document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 
-const tileLayerOptions: L.TileLayerOptions = {
-  maxZoom: 19,
-  minZoom: 1,
-};
 
-const map = L.map('map').setView([0.00, 0.00], 10.0);
+const map = L.map('map', {
+  layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
+}).setView([0.00, 0.00], 10.0);
+
+L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
+
 let userMarker: L.Marker | null = null;
 let userCircleMarker: L.Circle | null = null;
 let userTrack: L.Polyline | null = null;
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  ...tileLayerOptions,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
-
-L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-  ...tileLayerOptions,
-  attribution: '&copy; <a href="https://www.openseamap.org">OpenSeaMap</a>',
-}).addTo(map);
-
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
