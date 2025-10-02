@@ -2,6 +2,7 @@ import L from 'leaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
+import { GeoPosToPopupHTML } from './helpers';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
@@ -66,6 +67,7 @@ let currentPosition: LatLngType | null = null;
 const centerMapAtPositionChange: boolean = true;
 
 let userMarker: L.Marker | null = null;
+let userMarkerPopup: L.Popup | null = null;
 let userCircleMarker: L.Circle | null = null;
 let userTrack: L.Polyline | null = null;
 
@@ -74,6 +76,7 @@ const map = L.map('map', {
 }).setView([0.00, 0.00], 10.0);
 
 L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
+L.control.scale().addTo(map);
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
@@ -104,6 +107,10 @@ const setPosition = (pos: GeoPos | null) => {
       if (userCircleMarker) {
         userCircleMarker.setRadius(500);
       }
+      if (userMarkerPopup) {
+        map.removeLayer(userMarkerPopup);
+        userMarkerPopup = null;
+      }
       if (userMarker) {
         map.removeLayer(userMarker);
         userMarker = null;
@@ -118,6 +125,15 @@ const setPosition = (pos: GeoPos | null) => {
       userMarker.setLatLng([pos.lat, pos.lon]);
     } else {
       userMarker = L.marker([pos.lat, pos.lon]).addTo(map);
+    }
+
+    if (userMarkerPopup) {
+      userMarkerPopup.setContent(GeoPosToPopupHTML(pos));
+    } else {
+      userMarkerPopup = L.popup({
+        content: GeoPosToPopupHTML(pos),
+      }).openPopup();
+      userMarker.bindPopup(userMarkerPopup);
     }
 
     if (userCircleMarker) {
