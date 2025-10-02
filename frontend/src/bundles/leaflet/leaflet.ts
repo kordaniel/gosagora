@@ -1,11 +1,6 @@
 import L from 'leaflet';
 
-import type { WebViewMessageEvent } from 'react-native-webview';
-
-import {
-  type RNMessage,
-  default as rnMsgBridge,
-} from './leafletRNMessageBridge';
+import msgBridgeToRN, { type RNMessage } from './msgBridgeToRN';
 
 // TODO: Replace console.log with message to RN ?
 declare global {
@@ -35,11 +30,11 @@ L.Marker.prototype.options.icon = L.icon({
 
 const handleRNMessage = (msg: RNMessage) => {
   if ('type' in msg && msg.type === 'debug') {
-    rnMsgBridge.sendMsg(msg);
+    msgBridgeToRN.sendMsg(msg);
     return;
   }
 
-  rnMsgBridge.sendMsg({ type: 'debug', raw: JSON.stringify(msg) });
+  msgBridgeToRN.sendMsg({ type: 'debug', raw: JSON.stringify(msg) });
   if ('command' in msg && msg.command === 'setView') {
     setLocation(msg.payload as {
       lat: number,
@@ -50,8 +45,8 @@ const handleRNMessage = (msg: RNMessage) => {
   }
 };
 
-document.addEventListener('message', rnMsgBridge.setOnMsgHandler(handleRNMessage));
-window.addEventListener('message', rnMsgBridge.setOnMsgHandler(handleRNMessage));
+document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
+window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 
 const tileLayerOptions: L.TileLayerOptions = {
   maxZoom: 19,
@@ -75,7 +70,7 @@ L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
 
 
 map.on('click', (event) => {
-  rnMsgBridge.sendMsg({
+  msgBridgeToRN.sendMsg({
     type: 'mapClick',
     payload: {
       lat: event.latlng.lat,

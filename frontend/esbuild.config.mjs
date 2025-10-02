@@ -21,7 +21,7 @@ await esbuild.build({
 
 let ctx = await esbuild.context({
   entryPoints: [
-    'src/bundles/leaflet.ts'
+    'src/bundles/leaflet/leaflet.ts'
   ],
   bundle: true,
   sourcemap: true,
