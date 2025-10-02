@@ -16,10 +16,12 @@ import { isString } from '../utils/typeguards';
 export type SendDataToWebType = {
   sendDataToWeb: (data: {
     command: 'setView';
-    accuracy?: number;
-    lat: number;
-    lon: number;
-    zoom?: number;
+    payload: {
+      accuracy?: number;
+      lat: number;
+      lon: number;
+      zoom?: number;
+    },
   }) => void;
 };
 

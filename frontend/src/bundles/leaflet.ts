@@ -2,6 +2,12 @@ import L from 'leaflet';
 
 import type { WebViewMessageEvent } from 'react-native-webview';
 
+import {
+  type RNMessage,
+  default as rnMsgBridge,
+} from './leafletRNMessageBridge';
+
+// TODO: Replace console.log with message to RN ?
 declare global {
   interface Window {
     ReactNativeWebView?: {
@@ -27,34 +33,25 @@ L.Marker.prototype.options.icon = L.icon({
   shadowSize:    [41, 41]
 });
 
-const messageToRN = (data: string) => {
-  if (window.ReactNativeWebView) {
-    window.ReactNativeWebView.postMessage(data);
-  } else if (window.parent) {
-    window.parent.postMessage(data, '*');
+const handleRNMessage = (msg: RNMessage) => {
+  if ('type' in msg && msg.type === 'debug') {
+    rnMsgBridge.sendMsg(msg);
+    return;
+  }
+
+  rnMsgBridge.sendMsg({ type: 'debug', raw: JSON.stringify(msg) });
+  if ('command' in msg && msg.command === 'setView') {
+    setLocation(msg.payload as {
+      lat: number,
+      lon: number,
+      zoom?: number,
+      accuracy?: number
+    });
   }
 };
 
-const onMessage = (
-  event: MessageEvent<string> | WebViewMessageEvent['nativeEvent'] // iframe contentWindow.postMessage | react-native-webview postMessage event
-) => {
-  messageToRN(JSON.stringify({ type: 'debug', raw: event.data }));
-
-  const data = JSON.parse(event.data) as {
-    command: string;
-    lat: number;
-    lon: number;
-    zoom?: number;
-    accuracy?: number
-  };
-  if (data.command === 'setView') {
-    setLocation(data);
-  }
-};
-
-document.addEventListener('message', onMessage); // android!
-window.addEventListener('message', onMessage);   // web!, ios?
-
+document.addEventListener('message', rnMsgBridge.setOnMsgHandler(handleRNMessage));
+window.addEventListener('message', rnMsgBridge.setOnMsgHandler(handleRNMessage));
 
 const tileLayerOptions: L.TileLayerOptions = {
   maxZoom: 19,
@@ -78,11 +75,13 @@ L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
 
 
 map.on('click', (event) => {
-  const message = JSON.stringify({
-    lat: event.latlng.lat,
-    lon: event.latlng.lng,
+  rnMsgBridge.sendMsg({
+    type: 'mapClick',
+    payload: {
+      lat: event.latlng.lat,
+      lon: event.latlng.lng
+    }
   });
-  messageToRN(message);
 });
 
 const setLocation = (loc: {

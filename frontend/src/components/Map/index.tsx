@@ -23,9 +23,11 @@ const Map = () => {
     if (current && sendDataToWebRef.current) {
       sendDataToWebRef.current.sendDataToWeb({
         command: 'setView',
-        accuracy: current.acc,
-        lat: current.lat,
-        lon: current.lon,
+        payload: {
+          accuracy: current.acc,
+          lat: current.lat,
+          lon: current.lon,
+        },
       });
     }
   }, [current]);
