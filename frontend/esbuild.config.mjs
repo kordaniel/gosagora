@@ -6,11 +6,13 @@ const OUT_DIR = 'assets/bundles/';
 // Bundle CSS, once, don't watch for changes since this comes from npm package
 await esbuild.build({
   entryPoints: [
-    'node_modules/leaflet/dist/leaflet.css'
+    'node_modules/leaflet/dist/leaflet.css',
+    'node_modules/leaflet.fullscreen/Control.FullScreen.css',
   ],
   bundle: true,
   loader: {
     '.png': 'dataurl',
+    '.svg': 'base64',
   },
   outdir: OUT_DIR,
   outExtension: {
@@ -27,7 +29,7 @@ let ctx = await esbuild.context({
   sourcemap: true,
   target: ['es2020'],
   format: 'iife',
-  outdir: OUT_DIR,
+  outdir: `${OUT_DIR}leaflet/`,
   outExtension: {
     '.js': `.js${BUNDLED_FILES_EXT}`
   },

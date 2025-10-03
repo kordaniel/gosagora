@@ -46,10 +46,15 @@ const Map = () => {
       if (!loadedLeafletCss) {
         setError('We encountered a problem loading the map style for you. Please try again, or contact our support team if the problem persists');
       }
+      const loadedLeafletFullscreenCss = await loadAsset('leafletFullscreenCss');
+      if (!loadedLeafletFullscreenCss) {
+        setError('We encountered a problem loading the style for the map functionality for you. Please try again, or contact our support team if the problem persists');
+      }
 
       try {
         htmlBuilder.loadHtml(loadedLeafletHtml);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletCss);
+        htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletFullscreenCss);
         htmlBuilder.injectTagIntoSingletonTag('body', 'script', loadedLeafletJs);
         setLeafletHtml(htmlBuilder.toString());
         htmlBuilder.unloadHtml();

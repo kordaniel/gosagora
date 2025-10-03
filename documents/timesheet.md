@@ -138,4 +138,6 @@
 | 2025.09.29 | 3   | FRONTEND: Implement useStartTimer hook start/pause/reset/alter time functionality. Stylize StartTimer, add custom fonts to AppTheme |
 | 2025.09.30 | 1   | FRONTEND: Implement syncing to closest full minute to useStartTimer |
 | 2025.10.01 | 4   | FRONTEND: Implement changing useStartTimer duration. Add TimeSelector, TimeFieldSelector components. Refactor & stylize Start Timer |
-| Total | 225 | |
+| 2025.10.02 | 3   | FRONTEND: Refactor WebView leaflet <-> RN messaging, extend Map functionality |
+| 2025.10.03 | 0.5 | FRONTEND: Add Toggle FullScreen button to Map |
+| Total | 228.5 | |

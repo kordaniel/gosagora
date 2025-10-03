@@ -1,3 +1,4 @@
+import 'leaflet.fullscreen';
 import L from 'leaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
@@ -72,6 +73,10 @@ let userCircleMarker: L.Circle | null = null;
 let userTrack: L.Polyline | null = null;
 
 const map = L.map('map', {
+  fullscreenControl: true,
+  fullscreenControlOptions: {
+    position: 'topleft',
+  },
   layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
 }).setView([0.00, 0.00], 10.0);
 
