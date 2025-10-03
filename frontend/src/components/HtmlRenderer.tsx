@@ -10,17 +10,12 @@ import {
   type WebViewMessageEvent
 } from 'react-native-webview';
 
+import type { RNLeafletMessage } from '../bundles/leaflet/msgBridgeToRN';
 import config from '../utils/config';
 import { isString } from '../utils/typeguards';
 
 export type SendDataToWebType = {
-  sendDataToWeb: (data: {
-    command: 'setView';
-    accuracy?: number;
-    lat: number;
-    lon: number;
-    zoom?: number;
-  }) => void;
+  sendDataToWeb: (data: RNLeafletMessage) => void;
 };
 
 interface HtmlRendererProps {
@@ -61,6 +56,7 @@ const RenderMobile = forwardRef<SendDataToWebType, RenderProps>(function RenderM
       ref={webViewRef}
       source={{ html }}
       style={{ flex: 1 }}
+      allowsFullscreenVideo={true}
     />
   );
 });
@@ -81,7 +77,7 @@ const RenderWeb = forwardRef<SendDataToWebType, RenderProps>(function RenderWeb(
         } else if ('source' in e.data && isString(e.data.source) && e.data.source === 'react-devtools-bridge') {
           return; // Discard message
         } else {
-          console.error('RenderWeb.handleMessage: invalid e.data');
+          console.error('RenderWeb.handleMessage: invalid e.data:', e.data, e.source);
         }
       } else {
         console.error('RenderWeb.handleMessage: invalid event');

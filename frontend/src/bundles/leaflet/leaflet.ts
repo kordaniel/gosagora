@@ -1,7 +1,17 @@
+import 'leaflet.fullscreen';
 import L from 'leaflet';
 
-import type { WebViewMessageEvent } from 'react-native-webview';
+import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
+import type { GeoPos } from '../../types';
+import { GeoPosToPopupHTML } from './helpers';
+import { assertNever } from '../../utils/typeguards';
+import tileLayers from './tileLayers';
 
+interface LatLngType extends Omit<GeoPos, 'lon'> {
+  lng: number;
+}
+
+// TODO: Replace console.log with message to RN ?
 declare global {
   interface Window {
     ReactNativeWebView?: {
@@ -27,88 +37,117 @@ L.Marker.prototype.options.icon = L.icon({
   shadowSize:    [41, 41]
 });
 
-const messageToRN = (data: string) => {
-  if (window.ReactNativeWebView) {
-    window.ReactNativeWebView.postMessage(data);
-  } else if (window.parent) {
-    window.parent.postMessage(data, '*');
+const handleRNMessage = (msg: RNLeafletMessage) => {
+  if (msg.type === 'debug') {
+    // NOTE: relay errors back to RN from leaflet msgBridgeToRN setOnMsgHandler's closure try/catch
+    msgBridgeToRN.sendMsg(msg);
+    return;
+  }
+
+  // TODO: Transmit echo debug msg's only in dev env
+  msgBridgeToRN.sendMsg({
+    type: 'debug',
+    payload: {
+      echo: JSON.stringify(msg),
+    },
+  });
+
+  switch (msg.payload.command) {
+    case 'setPosition': {
+      setPosition(msg.payload.position);
+      break;
+    }
+    default: assertNever(msg.payload.command);
   }
 };
 
-const onMessage = (
-  event: MessageEvent<string> | WebViewMessageEvent['nativeEvent'] // iframe contentWindow.postMessage | react-native-webview postMessage event
-) => {
-  messageToRN(JSON.stringify({ type: 'debug', raw: event.data }));
+document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
+window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 
-  const data = JSON.parse(event.data) as {
-    command: string;
-    lat: number;
-    lon: number;
-    zoom?: number;
-    accuracy?: number
-  };
-  if (data.command === 'setView') {
-    setLocation(data);
-  }
-};
+let currentPosition: LatLngType | null = null;
+const centerMapAtPositionChange: boolean = true;
 
-document.addEventListener('message', onMessage); // android!
-window.addEventListener('message', onMessage);   // web!, ios?
-
-
-const tileLayerOptions: L.TileLayerOptions = {
-  maxZoom: 19,
-  minZoom: 1,
-};
-
-const map = L.map('map').setView([0.00, 0.00], 10.0);
 let userMarker: L.Marker | null = null;
+let userMarkerPopup: L.Popup | null = null;
 let userCircleMarker: L.Circle | null = null;
 let userTrack: L.Polyline | null = null;
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  ...tileLayerOptions,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+const map = L.map('map', {
+  fullscreenControl: true,
+  fullscreenControlOptions: {
+    position: 'topleft',
+  },
+  layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
+}).setView([0.00, 0.00], 10.0);
 
-L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-  ...tileLayerOptions,
-  attribution: '&copy; <a href="https://www.openseamap.org">OpenSeaMap</a>',
-}).addTo(map);
-
+L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
+L.control.scale().addTo(map);
 
 map.on('click', (event) => {
-  const message = JSON.stringify({
-    lat: event.latlng.lat,
-    lon: event.latlng.lng,
+  msgBridgeToRN.sendMsg({
+    type: 'debug',
+    payload: {
+      msg: JSON.stringify({
+        lat: event.latlng.lat,
+        lon: event.latlng.lng
+      }),
+    },
   });
-  messageToRN(message);
 });
 
-const setLocation = (loc: {
-  lat: number,
-  lon: number,
-  zoom?: number,
-  accuracy?: number
-}) => {
-  if (loc.zoom) {
-    map.setView([loc.lat, loc.lon], loc.zoom);
-  } else {
-    map.panTo([loc.lat, loc.lon]);
-  }
+const setPosition = (pos: GeoPos | null) => {
+  currentPosition = pos ? {
+    id: pos.id,
+    timestamp: pos.timestamp,
+    lat: pos.lat,
+    lng: pos.lon,
+    acc: pos.acc,
+    hdg: pos.hdg,
+    vel: pos.vel,
+  } : null;
 
-  if (loc.accuracy) {
+  if (!pos)
+  {
     if (userMarker) {
-      userMarker.setLatLng([loc.lat, loc.lon]);
+      if (userCircleMarker) {
+        userCircleMarker.setRadius(500);
+      }
+      if (userMarkerPopup) {
+        map.removeLayer(userMarkerPopup);
+        userMarkerPopup = null;
+      }
+      if (userMarker) {
+        map.removeLayer(userMarker);
+        userMarker = null;
+      }
+    }
+  }
+  else if (centerMapAtPositionChange)
+  {
+    map.panTo([pos.lat, pos.lon]);
+
+    if (userMarker) {
+      userMarker.setLatLng([pos.lat, pos.lon]);
     } else {
-      userMarker = L.marker([loc.lat, loc.lon]).addTo(map);
+      userMarker = L.marker([pos.lat, pos.lon]).addTo(map);
+    }
+
+    if (userMarkerPopup) {
+      userMarkerPopup.setContent(GeoPosToPopupHTML(pos));
+    } else {
+      userMarkerPopup = L.popup({
+        content: GeoPosToPopupHTML(pos),
+      }).openPopup();
+      userMarker.bindPopup(userMarkerPopup);
     }
 
     if (userCircleMarker) {
-      userCircleMarker.setLatLng([loc.lat, loc.lon]);
-      userCircleMarker.setRadius(loc.accuracy);
+      userCircleMarker.setLatLng([pos.lat, pos.lon]);
+      userCircleMarker.setRadius(pos.acc);
     } else {
-      userCircleMarker = L.circle([loc.lat, loc.lon], { radius: loc.accuracy }).addTo(map);
+      userCircleMarker = L.circle([pos.lat, pos.lon], {
+        radius: pos.acc
+      }).addTo(map);
     }
 
     if (userTrack) {
@@ -116,18 +155,26 @@ const setLocation = (loc: {
       if (latLngs.length > 200) {
         userTrack.setLatLngs(latLngs.slice(20));
       }
-      userTrack.addLatLng([loc.lat, loc.lon]);
+      userTrack.addLatLng([pos.lat, pos.lon]);
     } else {
-      userTrack = L.polyline([[loc.lat, loc.lon]], { color: 'blue' }).addTo(map);
+      userTrack = L.polyline([[pos.lat, pos.lon]], {
+        color: 'blue'
+      }).addTo(map);
     }
-  } else {
-    if (userMarker) {
-      map.removeLayer(userMarker);
-      userMarker = null;
+  }
+  else
+  {
+    if (userTrack) {
+      map.removeLayer(userTrack);
+      userTrack = null;
     }
     if (userCircleMarker) {
       map.removeLayer(userCircleMarker);
       userCircleMarker = null;
+    }
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
     }
   }
 };
