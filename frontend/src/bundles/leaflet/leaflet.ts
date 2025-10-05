@@ -75,13 +75,17 @@ let userTrack: L.Polyline | null = null;
 const map = L.map('map', {
   fullscreenControl: true,
   fullscreenControlOptions: {
-    position: 'topleft',
+    position: 'bottomright',
   },
   layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
 }).setView([0.00, 0.00], 10.0);
 
 L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
-L.control.scale().addTo(map);
+L.control.scale({
+  imperial: false,
+  metric: true,
+  position: 'bottomleft'
+}).addTo(map);
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
