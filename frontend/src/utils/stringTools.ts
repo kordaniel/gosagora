@@ -18,6 +18,20 @@ const VEL_SUFFIXES: { [K in VelocityUnits]: string } = {
   [VelocityUnits.KilometersPerHour]: 'km/h',
 } as const;
 
+export const decimalCoordToDMSString = (axis: 'horizontal' | 'vertical', decimalDegrees: number) => {
+  const suffix = axis === 'horizontal'
+    ? decimalDegrees < 0 ? 'W' : 'E'
+    : decimalDegrees < 0 ? 'S' : 'N';
+
+  const deg = Math.abs(decimalDegrees);
+  const degrees = truncateNumber(deg);
+  const fraction = deg - degrees;
+  const minutes = truncateNumber(fraction * 60);
+  const seconds = (fraction - minutes / 60) * Math.pow(60, 2);
+
+  return `${degrees.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}'${seconds.toFixed(2).padStart(3 + 2, '0')}''${suffix}`;
+};
+
 export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'>, arcSecPrecision: number = 2) => {
   if (coords.lat < -90 || coords.lat > 90) {
     throw new RangeError('latitutde value must be between -90 and 90');
