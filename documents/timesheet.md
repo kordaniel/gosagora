@@ -140,4 +140,6 @@
 | 2025.10.01 | 4   | FRONTEND: Implement changing useStartTimer duration. Add TimeSelector, TimeFieldSelector components. Refactor & stylize Start Timer |
 | 2025.10.02 | 3   | FRONTEND: Refactor WebView leaflet <-> RN messaging, extend Map functionality |
 | 2025.10.03 | 0.5 | FRONTEND: Add Toggle FullScreen button to Map |
-| Total | 228.5 | |
+| 2025.10.05 | 1.5 | FRONTEND: Add leaflet-auto-graticule, patch imported class and create a PR in leadlet-auto-graticule repo |
+| 2025.10.06 | 3   | FRONTEND: Add module to leaflet bundle that initializes and exports patched L. Add VesselMarker Control stub |
+| Total | 233 | |

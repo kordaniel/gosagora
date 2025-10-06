@@ -1,5 +1,4 @@
-import 'leaflet.fullscreen';
-import L from 'leaflet';
+import L, { type LatLngType } from './initPatchedLeaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
@@ -7,22 +6,6 @@ import { GeoPosToPopupHTML } from './helpers';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
-interface LatLngType extends Omit<GeoPos, 'lon'> {
-  lng: number;
-}
-
-// TODO: Replace console.log with message to RN ?
-declare global {
-  interface Window {
-    ReactNativeWebView?: {
-      postMessage: (data: string) => void;
-    };
-  }
-
-  interface DocumentEventMap {
-    message: MessageEvent;
-  }
-}
 
 // Fix marker default icon (not bundled by esbuild), encode png's in base64.
 // NOTE: that even though iconUrl icon is included in bundled CSS, leaflet still loads it separately.
@@ -87,6 +70,10 @@ L.control.scale({
   position: 'bottomleft'
 }).addTo(map);
 
+L.control.vesselMarker({
+  position: 'bottomright',
+}).addTo(map);
+
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
     type: 'debug',
@@ -145,14 +132,14 @@ const setPosition = (pos: GeoPos | null) => {
       userMarker.bindPopup(userMarkerPopup);
     }
 
-    if (userCircleMarker) {
-      userCircleMarker.setLatLng([pos.lat, pos.lon]);
-      userCircleMarker.setRadius(pos.acc);
-    } else {
-      userCircleMarker = L.circle([pos.lat, pos.lon], {
-        radius: pos.acc
-      }).addTo(map);
-    }
+    //if (userCircleMarker) {
+    //  userCircleMarker.setLatLng([pos.lat, pos.lon]);
+    //  userCircleMarker.setRadius(pos.acc);
+    //} else {
+    //  userCircleMarker = L.circle([pos.lat, pos.lon], {
+    //    radius: pos.acc
+    //  }).addTo(map);
+    //}
 
     if (userTrack) {
       const latLngs = userTrack.getLatLngs();
@@ -172,10 +159,10 @@ const setPosition = (pos: GeoPos | null) => {
       map.removeLayer(userTrack);
       userTrack = null;
     }
-    if (userCircleMarker) {
-      map.removeLayer(userCircleMarker);
-      userCircleMarker = null;
-    }
+    //if (userCircleMarker) {
+    //  map.removeLayer(userCircleMarker);
+    //  userCircleMarker = null;
+    //}
     if (userMarker) {
       map.removeLayer(userMarker);
       userMarker = null;
