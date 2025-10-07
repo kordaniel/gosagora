@@ -152,6 +152,7 @@ Make sure that you have these files set up correctly. See the instruction above 
 |   │   └── html/ - HTML documents
 │   ├── src/
 |   │   └── bundles/ - Esbuild source directory for ts modules to transpile and bundle into assets/bundles/
+│   ├── vendor/ - Third-party code and other assets
 │   ├── firebaseConfig.ts - For production environment, required
 │   ├── firebaseDevConfig.ts - Required for dev env
 │   ├── firebaseTestConfig.ts - Required for test env
