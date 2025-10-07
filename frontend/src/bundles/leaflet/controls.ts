@@ -2,17 +2,26 @@
 
 import L from 'leaflet';
 
+import type { MapStateConnection } from './leafletTypes';
+
 declare module 'leaflet' {
+
   export interface VesselMarkerOptions extends L.ControlOptions {}
 
   namespace Control {
     class VesselMarker extends L.Control {
-      constructor(options?: L.VesselMarkerOptions);
+      constructor(
+        mapStateConnection: MapStateConnection,
+        options?: L.VesselMarkerOptions
+      );
     }
   }
 
   namespace control {
-    function vesselMarker(options?: L.VesselMarkerOptions): L.Control.VesselMarker;
+    function vesselMarker(
+      mapStateConnection: MapStateConnection,
+      options?: L.VesselMarkerOptions
+    ): L.Control.VesselMarker;
   }
 }
 
@@ -24,8 +33,11 @@ export default class VesselMarker extends L.Control {
   private _icon?: HTMLSpanElement;
   //private _status: 'requesting' | 'locating' | 'following' | 'idle';
 
-  constructor(options?: L.VesselMarkerOptions) {
+  private _mapStateConnection: MapStateConnection;
+
+  constructor(mapStateConnection: MapStateConnection, options?: L.VesselMarkerOptions) {
     super(options);
+    this._mapStateConnection = mapStateConnection;
     //this._status = 'idle';
   }
 
@@ -45,6 +57,7 @@ export default class VesselMarker extends L.Control {
     return this._container;
   }
 
+  /*
   private _isRequesting() {
     if (!this._icon) {
       return false;
@@ -65,18 +78,37 @@ export default class VesselMarker extends L.Control {
     }
     return this._icon.classList.contains('following');
   }
+  */
 
   private _onClick() {
     console.log('click');
 
+    if (this._mapStateConnection.isTrackingCurrentPosition()) {
+      this._icon?.classList.remove('following');
+      this._mapStateConnection.setIsTrackingCurrentPosition(false);
+    } else {
+      this._icon?.classList.add('following');
+      this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    }
+
+    /*
     if (this._isFollowing()) {
       this._icon?.classList.remove('following');
-    } else if (this._isLocating()) {
+      return;
+    }
+
+    const pos = this._mapStateConnection.getCurrentGeoPos();
+    console.log('pos:', pos);
+
+    if (this._isLocating()) {
       this._icon?.classList.remove('locating');
     } else if (this._isRequesting()) {
       this._icon?.classList.remove('requesting');
+    } else if (pos) {
+      this._icon?.classList.add('following');
     } else {
       this._icon?.classList.add('requesting');
     }
+    */
   }
 }

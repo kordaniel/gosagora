@@ -1,9 +1,9 @@
 import 'leaflet.fullscreen';
 import L, {
-  type VesselMarkerOptions
+  type VesselMarkerOptions,
 } from 'leaflet';
 
-import type { GeoPos } from '../../types';
+import type { MapStateConnection } from './leafletTypes';
 import VesselMarker from './controls';
 
 declare global {
@@ -18,13 +18,12 @@ declare global {
   }
 }
 
-export interface LatLngType extends Omit<GeoPos, 'lon'> {
-  lng: number;
-}
-
 L.Control.VesselMarker = VesselMarker;
-L.control.vesselMarker = function(options?: VesselMarkerOptions) {
-  return new L.Control.VesselMarker(options);
+L.control.vesselMarker = function(
+  mapStateConnection: MapStateConnection,
+  options?: VesselMarkerOptions
+) {
+  return new L.Control.VesselMarker(mapStateConnection, options);
 };
 
 export default L;

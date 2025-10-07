@@ -9,10 +9,10 @@ import {
   headingToString,
   velocityToString
 } from '../../utils/stringTools';
-import type { GeoPos } from '../../types';
+import type { LatLngType } from './leafletTypes';
 
-export const GeoPosToPopupHTML = (pos: GeoPos): string => {
-  const dms = decimalCoordsToDMSString({ lat: pos.lat, lon: pos.lon });
+export const GeoPosToPopupHTML = (pos: LatLngType): string => {
+  const dms = decimalCoordsToDMSString({ lat: pos.lat, lon: pos.lng });
   const fields = [
     `Time: ${dateOrTimestampToString(pos.timestamp)}`,
     `Lat: ${dms.lat}`,
