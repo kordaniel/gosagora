@@ -142,4 +142,6 @@
 | 2025.10.03 | 0.5 | FRONTEND: Add Toggle FullScreen button to Map |
 | 2025.10.05 | 1.5 | FRONTEND: Add leaflet-auto-graticule, patch imported class and create a PR in leadlet-auto-graticule repo |
 | 2025.10.06 | 3   | FRONTEND: Add module to leaflet bundle that initializes and exports patched L. Add VesselMarker Control stub |
-| Total | 233 | |
+| 2025.10.07 | 1   | FRONTEND: Add vendor/ dir, include parts of 3rd party leaflet.boating library |
+| 2025.10.07 | 2   | FRONTEND: Refactor Map state into own class, connect VesselMarker to map state, add leafletTypes |
+| Total | 236 | |
