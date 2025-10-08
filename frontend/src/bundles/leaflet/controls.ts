@@ -2,7 +2,12 @@
 
 import L from 'leaflet';
 
-import type { MapStateConnection } from './leafletTypes';
+import type {
+  ChangedUserGeoPosStatusCallback,
+  MapStateConnection,
+  UserGeoPosStatus,
+} from './leafletTypes';
+import { assertNever } from '../../utils/typeguards';
 
 declare module 'leaflet' {
 
@@ -14,6 +19,8 @@ declare module 'leaflet' {
         getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
         options?: L.ControlOptions
       );
+
+      onUserGeoPosStatusChange: ChangedUserGeoPosStatusCallback;
     }
 
     class VesselMarker extends L.Control {
@@ -37,10 +44,11 @@ declare module 'leaflet' {
   }
 }
 
-class CenterMapToLocation extends L.Control {
+class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLocation {
 
   private _map?: L.Map;
   private _getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'];
+  private _icon?: HTMLSpanElement;
 
   constructor(
     getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
@@ -54,7 +62,7 @@ class CenterMapToLocation extends L.Control {
     this._map = map;
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
-    const icon = L.DomUtil.create('span', 'leaflet-control-center-map-to', link);
+    this._icon = L.DomUtil.create('span', 'leaflet-control-center-map-to disabled', link);
     link.href = '#';
 
     L.DomEvent.on(link, 'click', (e: Event) => {
@@ -62,14 +70,34 @@ class CenterMapToLocation extends L.Control {
       L.DomEvent.preventDefault(e);
       const currentGeoPos = this._getCurrentGeoPos();
       if (this._map && currentGeoPos) {
-        this._map.panTo([currentGeoPos.lat, currentGeoPos.lng]);
-      } // TODO: else => request location, show spinner/err icon
+        this._map.setView(
+          [currentGeoPos.lat, currentGeoPos.lng],
+          Math.max(this._map.getZoom(), 12)
+        );
+      }
     });
     return container;
   }
+
+  onUserGeoPosStatusChange = (newUserGeoPosStatus: UserGeoPosStatus) => {
+    switch (newUserGeoPosStatus) {
+      case 'IS_KNOWN':
+        if (this._icon?.classList.contains('disabled')) {
+          this._icon.classList.remove('disabled');
+        }
+        break;
+      case 'IS_UNKNOWN':
+        if (!this._icon?.classList.contains('disabled')) {
+          this._icon?.classList.add('disabled');
+        }
+        break;
+      default:
+        assertNever(newUserGeoPosStatus);
+    }
+  };
 }
 
-class VesselMarker extends L.Control {
+class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _map?: L.Map;
   private _container?: HTMLDivElement;

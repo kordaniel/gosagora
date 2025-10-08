@@ -9,3 +9,6 @@ export interface MapStateConnection {
   isTrackingCurrentPosition: () => boolean;
   setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
 }
+
+export type UserGeoPosStatus = 'IS_KNOWN' | 'IS_UNKNOWN';
+export type ChangedUserGeoPosStatusCallback = (newUserGeoPosStatus: UserGeoPosStatus) => void;

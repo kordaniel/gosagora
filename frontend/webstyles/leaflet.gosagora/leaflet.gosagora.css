@@ -5,3 +5,8 @@
   display: inline-block;
   background-image: url(assets/icons/center-map-to.svg);
 }
+
+.leaflet-control-center-map-to.disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
