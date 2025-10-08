@@ -12,6 +12,7 @@ const GOSAGORA_ASSETS = createAssetsMap({
   leafletCss: require('assets/bundles/leaflet/dist/leaflet.css.bundle') as number | string,
   leafletFullscreenCss: require('assets/bundles/leaflet.fullscreen/Control.FullScreen.css.bundle') as number | string,
   leafletBoatingCss: require('assets/bundles/leaflet.boating/L.Control.Boating.css.bundle') as number | string,
+  leafletGosagoraCss: require('assets/bundles/leaflet.gosagora/leaflet.gosagora.css.bundle') as number | string,
 } as const);
 
 type GosaGoraAssets = keyof typeof GOSAGORA_ASSETS;

@@ -1,0 +1,7 @@
+.leaflet-control-center-map-to {
+  width: 24px;
+  height: 24px;
+  margin-top: 3px;
+  display: inline-block;
+  background-image: url(assets/icons/center-map-to.svg);
+}

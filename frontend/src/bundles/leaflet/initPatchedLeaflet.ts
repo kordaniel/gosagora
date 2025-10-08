@@ -1,10 +1,8 @@
 import 'leaflet.fullscreen';
-import L, {
-  type VesselMarkerOptions,
-} from 'leaflet';
+import L from 'leaflet';
 
 import type { MapStateConnection } from './leafletTypes';
-import VesselMarker from './controls';
+import controls from './controls';
 
 declare global {
   interface Window {
@@ -31,10 +29,18 @@ L.Marker.prototype.options.icon = L.icon({
   shadowSize:    [41, 41]
 });
 
-L.Control.VesselMarker = VesselMarker;
+L.Control.CenterMaptoLocation = controls.CenterMapToLocation;
+L.control.centerMapToLocation = function(
+  getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+  options?: L.ControlOptions
+) {
+  return new L.Control.CenterMaptoLocation(getCurrentGeoPos, options);
+};
+
+L.Control.VesselMarker = controls.VesselMarker;
 L.control.vesselMarker = function(
   mapStateConnection: MapStateConnection,
-  options?: VesselMarkerOptions
+  options?: L.VesselMarkerOptions
 ) {
   return new L.Control.VesselMarker(mapStateConnection, options);
 };

@@ -54,12 +54,17 @@ const Map = () => {
       if (!loadedLeafletFullscreenCss) {
         setError('We encountered a problem loading the style for the map fullscreen functionality for you. Please try again, or contact our support team if the problem persists');
       }
+      const loadedLeafletGosagoraCss = await loadAsset('leafletGosagoraCss');
+      if (!loadedLeafletGosagoraCss) {
+        setError('We encountered a problem loading the style for the Gosagora functionality of the map for you. Please try again, or contact our support team if the problem persists');
+      }
 
       try {
         htmlBuilder.loadHtml(loadedLeafletHtml);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletCss);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletFullscreenCss);
         htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletBoatingCss);
+        htmlBuilder.injectTagIntoSingletonTag('head', 'style', loadedLeafletGosagoraCss);
 
         htmlBuilder.injectTagIntoSingletonTag('body', 'script', loadedLeafletJs);
 

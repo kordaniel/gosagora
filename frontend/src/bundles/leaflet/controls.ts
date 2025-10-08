@@ -6,9 +6,16 @@ import type { MapStateConnection } from './leafletTypes';
 
 declare module 'leaflet' {
 
-  export interface VesselMarkerOptions extends L.ControlOptions {}
+  interface VesselMarkerOptions extends L.ControlOptions {}
 
   namespace Control {
+    class CenterMaptoLocation extends L.Control {
+      constructor(
+        getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+        options?: L.ControlOptions
+      );
+    }
+
     class VesselMarker extends L.Control {
       constructor(
         mapStateConnection: MapStateConnection,
@@ -18,6 +25,11 @@ declare module 'leaflet' {
   }
 
   namespace control {
+    function centerMapToLocation(
+      getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+      options?: L.ControlOptions
+    ): L.Control.CenterMaptoLocation;
+
     function vesselMarker(
       mapStateConnection: MapStateConnection,
       options?: L.VesselMarkerOptions
@@ -25,7 +37,39 @@ declare module 'leaflet' {
   }
 }
 
-export default class VesselMarker extends L.Control {
+class CenterMapToLocation extends L.Control {
+
+  private _map?: L.Map;
+  private _getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'];
+
+  constructor(
+    getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+    options?: L.ControlOptions
+  ) {
+    super(options);
+    this._getCurrentGeoPos = getCurrentGeoPos;
+  }
+
+  override onAdd(map: L.Map): HTMLElement {
+    this._map = map;
+    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
+    const icon = L.DomUtil.create('span', 'leaflet-control-center-map-to', link);
+    link.href = '#';
+
+    L.DomEvent.on(link, 'click', (e: Event) => {
+      L.DomEvent.stopPropagation(e);
+      L.DomEvent.preventDefault(e);
+      const currentGeoPos = this._getCurrentGeoPos();
+      if (this._map && currentGeoPos) {
+        this._map.panTo([currentGeoPos.lat, currentGeoPos.lng]);
+      } // TODO: else => request location, show spinner/err icon
+    });
+    return container;
+  }
+}
+
+class VesselMarker extends L.Control {
 
   private _map?: L.Map;
   private _container?: HTMLDivElement;
@@ -112,3 +156,8 @@ export default class VesselMarker extends L.Control {
     */
   }
 }
+
+export default {
+  CenterMapToLocation,
+  VesselMarker,
+};

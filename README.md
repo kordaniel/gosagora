@@ -153,6 +153,7 @@ Make sure that you have these files set up correctly. See the instruction above 
 │   ├── src/
 |   │   └── bundles/ - Esbuild source directory for ts modules to transpile and bundle into assets/bundles/
 │   ├── vendor/ - Third-party code and other assets
+│   ├── webstyles/ - Esbuild source directory for web icons and css to transpile and bundle into assets/bundles/
 │   ├── firebaseConfig.ts - For production environment, required
 │   ├── firebaseDevConfig.ts - Required for dev env
 │   ├── firebaseTestConfig.ts - Required for test env

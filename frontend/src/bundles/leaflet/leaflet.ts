@@ -213,6 +213,10 @@ L.control.scale({
   position: 'bottomleft'
 }).addTo(map);
 
+L.control.centerMapToLocation(mapState.getCurrentGeoPos, {
+  position: 'bottomright',
+}).addTo(map);
+
 L.control.vesselMarker({
   getCurrentGeoPos: mapState.getCurrentGeoPos,
   isTrackingCurrentPosition: mapState.isTrackingCurrentPosition,

@@ -144,4 +144,5 @@
 | 2025.10.06 | 3   | FRONTEND: Add module to leaflet bundle that initializes and exports patched L. Add VesselMarker Control stub |
 | 2025.10.07 | 1   | FRONTEND: Add vendor/ dir, include parts of 3rd party leaflet.boating library |
 | 2025.10.07 | 2   | FRONTEND: Refactor Map state into own class, connect VesselMarker to map state, add leafletTypes |
-| Total | 236 | |
+| 2025.10.08 | 2   | FRONTEND: Add CenterMapToLocation control, webstyles/ that contains gosagora map icons & css |
+| Total | 238 | |
