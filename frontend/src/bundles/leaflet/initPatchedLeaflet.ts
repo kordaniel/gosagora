@@ -1,8 +1,8 @@
 import 'leaflet.fullscreen';
 import L from 'leaflet';
 
-import type { MapStateConnection } from './leafletTypes';
 import controls from './controls';
+import markers from './markers';
 
 declare global {
   interface Window {
@@ -30,19 +30,18 @@ L.Marker.prototype.options.icon = L.icon({
 });
 
 L.Control.CenterMaptoLocation = controls.CenterMapToLocation;
-L.control.centerMapToLocation = function(
-  getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-  options?: L.ControlOptions
-) {
+L.control.centerMapToLocation = function(getCurrentGeoPos, options) {
   return new L.Control.CenterMaptoLocation(getCurrentGeoPos, options);
 };
 
 L.Control.VesselMarker = controls.VesselMarker;
-L.control.vesselMarker = function(
-  mapStateConnection: MapStateConnection,
-  options?: L.VesselMarkerOptions
-) {
+L.control.vesselMarker = function(mapStateConnection, options) {
   return new L.Control.VesselMarker(mapStateConnection, options);
+};
+
+L.Marker.VesselMarker = markers.VesselMarker;
+L.marker.vesselMarker = function(latlng, options?) {
+  return new L.Marker.VesselMarker(latlng, options);
 };
 
 export default L;

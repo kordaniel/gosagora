@@ -65,6 +65,9 @@ L.control.vesselMarker({
   position: 'bottomright',
 }).addTo(map);
 
+const vesselMarker = L.marker.vesselMarker([0, 0]).addTo(map);
+vesselMarker.rotate();
+
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
     type: 'debug',
