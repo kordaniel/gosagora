@@ -11,18 +11,6 @@ import { GeoPosToPopupHTML } from './helpers';
 import controls from './controls';
 import markers from './markers';
 
-declare global {
-  interface Window {
-    ReactNativeWebView?: {
-      postMessage: (data: string) => void;
-    };
-  }
-
-  interface DocumentEventMap {
-    message: MessageEvent;
-  }
-}
-
 // Fix marker default icon (not bundled by esbuild), encode png's in base64.
 // NOTE: that even though iconUrl icon is included in bundled CSS, leaflet still loads it separately.
 L.Marker.prototype.options.icon = L.icon({

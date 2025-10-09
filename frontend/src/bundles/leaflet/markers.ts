@@ -1,21 +1,6 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-
 import L from 'leaflet';
 
-declare module 'leaflet' {
-
-  namespace Marker {
-    class VesselMarker extends Marker {
-      constructor(latlng: LatLngExpression, options?: MarkerOptions);
-    }
-  }
-
-  namespace marker {
-    function vesselMarker(latlng: LatLngExpression, options?: MarkerOptions): Marker.VesselMarker;
-  }
-}
-
-class VesselMarker extends L.Marker {
+class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
 
   private _iconSvg?: SVGElement | null;
 

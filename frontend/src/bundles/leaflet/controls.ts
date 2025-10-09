@@ -1,48 +1,10 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-
 import L from 'leaflet';
 
 import type {
-  ChangedUserGeoPosStatusCallback,
   MapStateConnection,
   UserGeoPosStatus,
 } from './leafletTypes';
 import { assertNever } from '../../utils/typeguards';
-
-declare module 'leaflet' {
-
-  interface VesselMarkerOptions extends L.ControlOptions {}
-
-  namespace Control {
-    class CenterMaptoLocation extends L.Control {
-      constructor(
-        getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-        options?: L.ControlOptions
-      );
-
-      onUserGeoPosStatusChange: ChangedUserGeoPosStatusCallback;
-    }
-
-    class VesselMarker extends L.Control {
-      constructor(
-        mapStateConnection: MapStateConnection,
-        options?: L.VesselMarkerOptions
-      );
-    }
-  }
-
-  namespace control {
-    function centerMapToLocation(
-      getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-      options?: L.ControlOptions
-    ): L.Control.CenterMaptoLocation;
-
-    function vesselMarker(
-      mapStateConnection: MapStateConnection,
-      options?: L.VesselMarkerOptions
-    ): L.Control.VesselMarker;
-  }
-}
 
 class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLocation {
 
@@ -76,6 +38,7 @@ class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLoca
         );
       }
     });
+
     return container;
   }
 
