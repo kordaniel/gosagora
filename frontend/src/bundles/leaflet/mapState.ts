@@ -2,15 +2,14 @@ import L from 'leaflet';
 
 import type {
   ChangedUserGeoPosStatusCallback,
+  GeoPosUpdateEvent,
   LatLngType,
   MapStateConnection,
   UserGeoPosStatus,
 } from './leafletTypes';
 import { GeoPosToPopupHTML } from './helpers';
 
-export class MapState implements MapStateConnection {
-
-  private readonly _map: L.Map;
+export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _userGeoPosStatus: UserGeoPosStatus;
   private _userGeoPosStatusChangeCallbacks: Set<ChangedUserGeoPosStatusCallback>;
@@ -26,8 +25,9 @@ export class MapState implements MapStateConnection {
   private _renderUserCircleMarker: boolean;
   private _renderUserTrack: boolean;
 
-  constructor(map: L.Map) {
-    this._map = map;
+  constructor(element: string | HTMLElement, options?: L.MapOptions) {
+    super(element, options);
+
     this._userGeoPosStatus = 'IS_UNKNOWN';
     this._userGeoPosStatusChangeCallbacks = new Set<ChangedUserGeoPosStatusCallback>();
 
@@ -57,9 +57,19 @@ export class MapState implements MapStateConnection {
       return;
     }
 
+    const event: GeoPosUpdateEvent = {
+      type: 'mapState:userGeoPosChange',
+      payload: {
+        currentPosition: newCurrentPosition,
+        userGeoPosStatus: newCurrentPosition ? 'IS_KNOWN' : 'IS_UNKNOWN',
+      },
+    };
+    this.fire(event.type, event.payload);
+
+    console.log('setPos');
     const updateUserGeoPosStatus =
       !(this._currentPosition !== null && newCurrentPosition !== null);
-
+    console.log('updateUserGeoPosStatus:', updateUserGeoPosStatus);
     this._currentPosition = newCurrentPosition;
     if (updateUserGeoPosStatus) {
       this._userGeoPosStatus = newCurrentPosition ? 'IS_KNOWN' : 'IS_UNKNOWN';
@@ -68,7 +78,7 @@ export class MapState implements MapStateConnection {
 
     if (this._trackCurrentPosition) {
       if (newCurrentPosition) {
-        this._map.panTo([newCurrentPosition.lat, newCurrentPosition.lng]);
+        this.panTo([newCurrentPosition.lat, newCurrentPosition.lng]);
         this._updateMarkers();
       } else {
         if (this._renderUserCircleMarker && this._userCircleMarker) {
@@ -87,7 +97,7 @@ export class MapState implements MapStateConnection {
     // TODO: Add waiting for location state
     if (trackCurrentPosition) {
       if (this._currentPosition) {
-        this._map.panTo([this._currentPosition.lat, this._currentPosition.lng]);
+        this.panTo([this._currentPosition.lat, this._currentPosition.lng]);
         this._initializeMarkers();
       } else {
         this._deleteMarkers();
@@ -113,7 +123,7 @@ export class MapState implements MapStateConnection {
     );
 
     if (this._renderUserMarker && !this._userMarker) {
-      this._userMarker = L.marker(currentLatLng).addTo(this._map);
+      this._userMarker = L.marker(currentLatLng).addTo(this);
 
       console.assert(
         this._userMarkerPopup === null,
@@ -129,29 +139,29 @@ export class MapState implements MapStateConnection {
     if (this._renderUserCircleMarker && !this._userCircleMarker) {
       this._userCircleMarker = L.circle(currentLatLng, {
         radius: this._currentPosition.acc,
-      }).addTo(this._map);
+      }).addTo(this);
     }
 
     if (this._renderUserTrack && !this._userTrack) {
       this._userTrack = L.polyline([currentLatLng], {
         color: 'blue'
-      }).addTo(this._map);
+      }).addTo(this);
     }
   }
 
   private _deleteMarkers() {
     if (this._userTrack) {
-      this._map.removeLayer(this._userTrack);
+      this.removeLayer(this._userTrack);
       this._userTrack = null;
     }
 
     if (this._userCircleMarker) {
-      this._map.removeLayer(this._userCircleMarker);
+      this.removeLayer(this._userCircleMarker);
       this._userCircleMarker = null;
     }
 
     if (this._userMarker) {
-      this._map.removeLayer(this._userMarker);
+      this.removeLayer(this._userMarker);
       this._userMarker = null;
     }
   }

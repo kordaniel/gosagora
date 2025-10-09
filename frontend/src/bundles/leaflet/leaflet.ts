@@ -2,7 +2,8 @@ import L from './initPatchedLeaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
-import { MapState } from './mapState';
+import type { GeoPosUpdateEvent } from './leafletTypes';
+import { GosaGoraMap } from './mapState';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
@@ -33,16 +34,13 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
 document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 
-
-const map = L.map('map', {
+const map = new GosaGoraMap('map', {
   fullscreenControl: true,
   fullscreenControlOptions: {
     position: 'bottomright',
   },
   layers: [tileLayers.openStreetMap, tileLayers.openSeaMap],
 }).setView([0.00, 0.00], 10.0);
-
-const mapState = new MapState(map);
 
 L.control.layers(tileLayers.baseOverlays, tileLayers.mapOverlays).addTo(map);
 L.control.scale({
@@ -51,22 +49,22 @@ L.control.scale({
   position: 'bottomleft'
 }).addTo(map);
 
-const centerMapToLocation = L.control.centerMapToLocation(mapState.getCurrentGeoPos, {
+const centerMapToLocation = L.control.centerMapToLocation(map.getCurrentGeoPos, {
   position: 'bottomright',
 }).addTo(map);
 
-mapState.subscribeUserGeoPosStatusChangeCallback(centerMapToLocation.onUserGeoPosStatusChange);
+map.subscribeUserGeoPosStatusChangeCallback(centerMapToLocation.onUserGeoPosStatusChange);
 
 L.control.vesselMarker({
-  getCurrentGeoPos: mapState.getCurrentGeoPos,
-  isTrackingCurrentPosition: mapState.isTrackingCurrentPosition,
-  setIsTrackingCurrentPosition: mapState.setIsTrackingCurrentPosition,
+  getCurrentGeoPos: map.getCurrentGeoPos,
+  isTrackingCurrentPosition: map.isTrackingCurrentPosition,
+  setIsTrackingCurrentPosition: map.setIsTrackingCurrentPosition,
 }, {
   position: 'bottomright',
 }).addTo(map);
 
 const vesselMarker = L.marker.vesselMarker([0, 0]).addTo(map);
-vesselMarker.rotate();
+//vesselMarker.rotate();
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
@@ -80,8 +78,13 @@ map.on('click', (event) => {
   });
 });
 
+map.on('mapState:userGeoPosChange', (e: GeoPosUpdateEvent['payload'] ) => {
+  console.log('map RECV:', e);
+});
+
+
 const handleSetPosition = (pos: GeoPos | null) => {
-  mapState.setCurrentPosition(!pos ? null : {
+  map.setCurrentPosition(!pos ? null : {
     id: pos.id,
     timestamp: pos.timestamp,
     lat: pos.lat,
