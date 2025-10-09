@@ -1,9 +1,8 @@
-import L from './initPatchedLeaflet';
+import L, { GosaGoraMap } from './initPatchedLeaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
 import type { GeoPosUpdateEvent } from './leafletTypes';
-import { GosaGoraMap } from './mapState';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
