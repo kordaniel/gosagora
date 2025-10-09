@@ -3,7 +3,6 @@ import L from 'leaflet';
 
 import type {
   ChangedUserGeoPosStatusCallback,
-  GeoPosUpdateEvent,
   LatLngType,
   MapStateConnection,
   UserGeoPosStatus,
@@ -55,6 +54,8 @@ L.marker.vesselMarker = function(latlng, options?) {
 
 export class GosaGoraMap extends L.Map implements MapStateConnection {
 
+  private _markers: Set<L.Marker>;
+
   private _userGeoPosStatus: UserGeoPosStatus;
   private _userGeoPosStatusChangeCallbacks: Set<ChangedUserGeoPosStatusCallback>;
 
@@ -72,6 +73,8 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   constructor(element: string | HTMLElement, options?: L.MapOptions) {
     super(element, options);
 
+    this._markers = new Set<L.Marker>();
+
     this._userGeoPosStatus = 'IS_UNKNOWN';
     this._userGeoPosStatusChangeCallbacks = new Set<ChangedUserGeoPosStatusCallback>();
 
@@ -85,6 +88,18 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     this._renderUserMarker = true;
     this._renderUserCircleMarker = true;
     this._renderUserTrack = true;
+
+    this.on('layeradd', (e) => {
+      if (e.layer instanceof L.Marker) {
+        this._markers.add(e.layer);
+      }
+    });
+
+    this.on('layerremove', (e) => {
+      if (e.layer instanceof L.Marker) {
+        this._markers.delete(e.layer);
+      }
+    });
   }
 
   subscribeUserGeoPosStatusChangeCallback = (cb: ChangedUserGeoPosStatusCallback) => {
@@ -101,20 +116,17 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       return;
     }
 
-    const event: GeoPosUpdateEvent = {
-      type: 'mapState:userGeoPosChange',
-      payload: {
-        currentPosition: newCurrentPosition,
-        userGeoPosStatus: newCurrentPosition ? 'IS_KNOWN' : 'IS_UNKNOWN',
-      },
-    };
-    this.fire(event.type, event.payload);
-
-    console.log('setPos');
     const updateUserGeoPosStatus =
       !(this._currentPosition !== null && newCurrentPosition !== null);
-    console.log('updateUserGeoPosStatus:', updateUserGeoPosStatus);
+
+    this._markers.forEach(m => {
+      m.fire<'currentPosition:update'>('currentPosition:update', {
+        currentPosition: newCurrentPosition,
+      });
+    });
+
     this._currentPosition = newCurrentPosition;
+
     if (updateUserGeoPosStatus) {
       this._userGeoPosStatus = newCurrentPosition ? 'IS_KNOWN' : 'IS_UNKNOWN';
       this._emitUserGeoPosStatusChange();

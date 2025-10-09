@@ -2,7 +2,6 @@ import L, { GosaGoraMap } from './initPatchedLeaflet';
 
 import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
-import type { GeoPosUpdateEvent } from './leafletTypes';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
@@ -62,8 +61,7 @@ L.control.vesselMarker({
   position: 'bottomright',
 }).addTo(map);
 
-const vesselMarker = L.marker.vesselMarker([0, 0]).addTo(map);
-//vesselMarker.rotate();
+L.marker.vesselMarker([0, 0]).addTo(map);
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({
@@ -76,11 +74,6 @@ map.on('click', (event) => {
     },
   });
 });
-
-map.on('mapState:userGeoPosChange', (e: GeoPosUpdateEvent['payload'] ) => {
-  console.log('map RECV:', e);
-});
-
 
 const handleSetPosition = (pos: GeoPos | null) => {
   map.setCurrentPosition(!pos ? null : {

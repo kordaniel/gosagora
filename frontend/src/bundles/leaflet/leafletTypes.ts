@@ -1,5 +1,3 @@
-import type { LeafletEvent } from 'leaflet';
-
 import type { GeoPos } from '../../types';
 
 export interface LatLngType extends Omit<GeoPos, 'lon'> {
@@ -15,10 +13,11 @@ export interface MapStateConnection {
 export type UserGeoPosStatus = 'IS_KNOWN' | 'IS_UNKNOWN';
 export type ChangedUserGeoPosStatusCallback = (newUserGeoPosStatus: UserGeoPosStatus) => void;
 
-export interface GeoPosUpdateEvent extends Pick<LeafletEvent, 'type'> {
-  type: 'mapState:userGeoPosChange',
-  payload: {
+export interface CurrentPositionEventMap {
+  'currentPosition:update': {
     currentPosition: LatLngType | null;
-    userGeoPosStatus: UserGeoPosStatus, // TODO: Add requesting / waiting..
-  }
+  };
+  'currentPositionStatus:change': {
+    newCurrentPositionStatus: UserGeoPosStatus;
+  };
 }

@@ -5,13 +5,13 @@ import L from 'leaflet';
 declare module 'leaflet' {
 
   namespace Marker {
-    class VesselMarker extends L.Marker {
-      constructor(latlng: L.LatLngExpression, options?: L.MarkerOptions);
+    class VesselMarker extends Marker {
+      constructor(latlng: LatLngExpression, options?: MarkerOptions);
     }
   }
 
   namespace marker {
-    function vesselMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker.VesselMarker;
+    function vesselMarker(latlng: LatLngExpression, options?: MarkerOptions): Marker.VesselMarker;
   }
 }
 
@@ -40,10 +40,18 @@ class VesselMarker extends L.Marker {
     this.on('add', () => {
       this._iconSvg = this.getElement()?.querySelector<SVGElement>('#boat-svg');
     });
+
+    this.on('currentPosition:update', (event) => {
+      if (event.currentPosition === null) {
+        console.log('VesselMarker recv null');
+        return;
+      } // TODO: Handle else
+      this.setLatLng([event.currentPosition.lat, event.currentPosition.lng]);
+      this._updateIcon(event.currentPosition.hdg ?? 0);
+    });
   }
 
-  rotate() {
-    const heading = 180;
+  private _updateIcon(heading: number) {
     if (this._iconSvg) {
       this._iconSvg.style.transform = `rotate(${heading}deg)`;
     }
