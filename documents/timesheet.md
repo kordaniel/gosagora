@@ -149,4 +149,6 @@
 | 2025.10.09 | 2   | FRONTEND: Add VesselMarker marker stub |
 | 2025.10.09 | 2.5 | FRONTEND: Implement custom (typed) leaflet events, emit currentPosition:update to markers on map, update Vessel position/rotation to current position. Refactor types |
 | 2025.10.10 | 2   | FRONTEND: Add toggleable styled OnScreenDisplay to map, refactor leaflet modules, types, stringTools |
-| Total | 246 | |
+| 2025.10.10 | 1   | Add modes with diff icons to VesselMarker control isTrackingCurrentStatus to GosaGoraMap. Cleanup both classes. |
+| 2025.10.10 | 1.5 | FRONTEND: Add stylized Popup to VesselMarker marker with detailed info |
+| Total | 248.5 | |

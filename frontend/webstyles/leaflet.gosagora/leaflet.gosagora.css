@@ -32,3 +32,25 @@
   font-weight: bold;
   font-size: 1.25em;
 }
+
+.leaflet-marker-vessel-popup {
+  background: white;
+}
+
+.leaflet-marker-vessel-popup h4 {
+  border-bottom: 1px solid rgb(195, 198, 207); /* lightTheme.colors.outlineVariant */
+}
+
+.leaflet-marker-vessel-popup-grid {
+  display: grid;
+  gap: 1px 1px;
+}
+
+.leaflet-marker-vessel-popup-grid div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.leaflet-marker-vessel-popup-grid strong.leaflet-marker-vessel-big {
+  font-size: 1.25em;
+}

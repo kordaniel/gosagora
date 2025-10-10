@@ -1,8 +1,30 @@
 import L from 'leaflet';
 
+import {
+  DistanceUnits,
+  VelocityUnits,
+} from '../../utils/unitConverter';
+import {
+  dateOrTimestampToString,
+  decimalCoordToDMSString,
+  distanceToString,
+  headingToString,
+  velocityToString,
+} from '../../utils/stringTools';
+import type { LatLngType } from './leafletTypes';
+
 class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
 
   private _iconSvg?: SVGElement | null;
+  private _popup: L.Popup;
+  private _popupFields: {
+    hdg: HTMLElement | null;
+    vel: HTMLElement | null;
+    timestamp: HTMLElement | null;
+    acc: HTMLElement | null;
+    lat: HTMLElement | null;
+    lng: HTMLElement | null;
+  };
 
   constructor(latlng: L.LatLngExpression, options?: L.MarkerOptions) {
     if (options && 'icon' in options) {
@@ -22,23 +44,107 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       });
     }
 
+    this._popupFields = {
+      hdg: null, vel: null, timestamp: null, acc: null, lat: null, lng: null
+    };
+
+    const createPopupContent = (): HTMLElement => {
+      const container = L.DomUtil.create('div', 'leaflet-marker-vessel-popup');
+      const heading = L.DomUtil.create('h4', '', container);
+      const content = L.DomUtil.create('div', 'leaflet-marker-vessel-popup-grid', container);
+
+      const div1 = L.DomUtil.create('div', '', content);
+      const span1 = L.DomUtil.create('span', '', div1);
+      this._popupFields.hdg = L.DomUtil.create('strong', 'leaflet-marker-vessel-big', div1);
+
+      const div2 = L.DomUtil.create('div', '', content);
+      const span2 = L.DomUtil.create('span', '', div2);
+      this._popupFields.vel = L.DomUtil.create('strong', 'leaflet-marker-vessel-big', div2);
+
+      const div3 = L.DomUtil.create('div', '', content);
+      const span3 = L.DomUtil.create('span', '', div3);
+      this._popupFields.timestamp = L.DomUtil.create('strong', '', div3);
+
+      const div4 = L.DomUtil.create('div', '', content);
+      const span4 = L.DomUtil.create('span', '', div4);
+      this._popupFields.lat = L.DomUtil.create('strong', '', div4);
+
+      const div5 = L.DomUtil.create('div', '', content);
+      const span5 = L.DomUtil.create('span', '', div5);
+      this._popupFields.lng = L.DomUtil.create('strong', '', div5);
+
+      const div6 = L.DomUtil.create('div', '', content);
+      const span6 = L.DomUtil.create('span', '', div6);
+      this._popupFields.acc = L.DomUtil.create('strong', '', div6);
+
+      heading.innerHTML = 'Position Data';
+
+      span1.innerHTML = 'COG: ';
+      this._popupFields.hdg.innerHTML = headingToString(null, 2);
+
+      span2.innerHTML = 'SOG: ';
+      this._popupFields.vel.innerHTML = velocityToString(null, VelocityUnits.KilometersPerHour, 2);
+
+      span3.innerHTML = 'Time: ';
+      this._popupFields.timestamp.innerHTML = dateOrTimestampToString(null, { date: false, time: true });
+
+      span4.innerHTML = 'Latitude: ';
+      this._popupFields.lat.innerHTML = decimalCoordToDMSString('horizontal', null);
+
+      span5.innerHTML = 'Longitude: ';
+      this._popupFields.lng.innerHTML = decimalCoordToDMSString('vertical', null);
+
+      span6.innerHTML = 'Accuracy: ';
+      this._popupFields.acc.innerHTML = distanceToString(null, DistanceUnits.Meters, 2);
+
+      return container;
+    };
+
+    this._popup = L.popup({
+      content: createPopupContent(),
+    });
+    this.bindPopup(this._popup);
+
     this.on('add', () => {
       this._iconSvg = this.getElement()?.querySelector<SVGElement>('#boat-svg');
     });
 
     this.on('currentPosition:update', (event) => {
-      if (event.currentPosition === null) {
-        console.log('VesselMarker recv null');
-        return;
-      } // TODO: Handle else
-      this.setLatLng([event.currentPosition.lat, event.currentPosition.lng]);
-      this._updateIcon(event.currentPosition.hdg ?? 0);
+      if (event.currentPosition !== null) {
+        this.setLatLng([event.currentPosition.lat, event.currentPosition.lng]);
+        this._updateIcon(event.currentPosition.hdg ?? 0);
+      } // TODO: Else => render icon indication missing currentPosition
+
+      if (this._popup.isOpen()) {
+        this._updatePopup(event.currentPosition);
+      }
     });
   }
 
   private _updateIcon(heading: number) {
     if (this._iconSvg) {
       this._iconSvg.style.transform = `rotate(${heading}deg)`;
+    }
+  }
+
+  private _updatePopup(currentPosition: LatLngType | null) {
+    if (this._popupFields.hdg) {
+      this._popupFields.hdg.innerHTML = headingToString(currentPosition?.hdg, 2);
+    }
+    if (this._popupFields.vel) {
+      this._popupFields.vel.innerHTML = velocityToString(currentPosition?.vel, VelocityUnits.KilometersPerHour, 2);
+    }
+    if (this._popupFields.timestamp) {
+      this._popupFields.timestamp.innerHTML = dateOrTimestampToString(currentPosition?.timestamp, { date: false });
+    }
+    if (this._popupFields.lat) {
+      this._popupFields.lat.innerHTML =  decimalCoordToDMSString('horizontal', currentPosition?.lat);
+    }
+    if (this._popupFields.lng) {
+      this._popupFields.lng.innerHTML = decimalCoordToDMSString('vertical', currentPosition?.lng);
+    }
+    if (this._popupFields.acc) {
+      this._popupFields.acc.innerHTML = distanceToString(currentPosition?.acc, DistanceUnits.Meters, 2);
     }
   }
 }
