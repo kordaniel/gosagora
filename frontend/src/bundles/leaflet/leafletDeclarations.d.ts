@@ -68,15 +68,19 @@ declare module 'leaflet' {
   }
 
   namespace Marker {
+    interface VesselMarkerOptions extends L.MarkerOptions {
+      vesselColor?: `#${string}`;
+    }
+
     declare class VesselMarker extends L.Marker {
-      constructor(latlng: L.LatLngExpression, options?: L.MarkerOptions);
+      constructor(latlng: L.LatLngExpression, options?: L.Marker.VesselMarkerOptions);
     }
   }
 
   namespace marker {
     declare function vesselMarker(
       latlng: L.LatLngExpression,
-      options?: L.MarkerOptions
+      options?: L.Marker.VesselMarkerOptions
     ): L.Marker.VesselMarker;
   }
 

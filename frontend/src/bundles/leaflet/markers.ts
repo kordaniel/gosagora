@@ -26,23 +26,20 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
     lng: HTMLElement | null;
   };
 
-  constructor(latlng: L.LatLngExpression, options?: L.MarkerOptions) {
-    if (options && 'icon' in options) {
-      super(latlng, options);
-    } else {
-      super(latlng, {
-        icon: L.divIcon({
-          className: 'boat',
-          html: `
-            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="boat-svg">
-              <path d="M 128 512 C 128 512 128 128 256 0 C 384 128 384 512 384 512 Z" fill="#1010FF"/>
-            </svg>`,
-          iconAnchor: [12.5, 12.5],
-          iconSize: [25, 25],
-        }),
-        ...options
+  constructor(latlng: L.LatLngExpression, options?: L.Marker.VesselMarkerOptions) {
+    const { vesselColor, ...markerOptions } = options ?? {};
+    if (!('icon' in markerOptions)) {
+      markerOptions.icon = L.divIcon({
+        className: 'boat',
+        html: `
+          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="boat-svg">
+            <path d="M 128 512 C 128 512 128 128 256 0 C 384 128 384 512 384 512 Z" fill="${vesselColor ?? '#3388FF'}"/>
+          </svg>`,
+        iconAnchor: [12.5, 12.5],
+        iconSize: [25, 25],
       });
     }
+    super(latlng, markerOptions);
 
     this._popupFields = {
       hdg: null, vel: null, timestamp: null, acc: null, lat: null, lng: null
