@@ -32,9 +32,13 @@ export const decimalCoordToDMSString = (axis: 'horizontal' | 'vertical', decimal
   return `${degrees.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}'${seconds.toFixed(2).padStart(3 + 2, '0')}''${suffix}`;
 };
 
-export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'>, arcSecPrecision: number = 2) => {
+export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'> | null, arcSecPrecision: number = 2) => {
+  if (!coords) {
+    return { lat: '-', lon: '-', };
+  }
+
   if (coords.lat < -90 || coords.lat > 90) {
-    throw new RangeError('latitutde value must be between -90 and 90');
+    throw new RangeError('latitude value must be between -90 and 90');
   }
   if (coords.lon < -180 || coords.lon > 180) {
     throw new RangeError('longitude values must be between -180 and 180');
@@ -82,13 +86,13 @@ export const distanceToString = (
 };
 
 export const headingToString = (
-  heading: number | null,
+  heading: number | null | undefined,
   decimals: number = 1
 ): string => {
-  if (heading === null) {
+  if (heading === null || heading === undefined) {
     return '-';
   }
-  return `${heading.toFixed(decimals).padStart(4 + decimals, '0')}°`;
+  return `${heading.toFixed(decimals)}°`;
 };
 
 export const percentageToString = (
@@ -121,11 +125,11 @@ export const timeDurationToString = (
 };
 
 export const velocityToString = (
-  metersPerSec: number | null,
+  metersPerSec: number | null | undefined,
   outUnits: VelocityUnits = VelocityUnits.Knots,
   decimals: number = 1
 ): string => {
-  if (metersPerSec === null) {
+  if (metersPerSec === null || metersPerSec === undefined) {
     return '-';
   }
   return [
