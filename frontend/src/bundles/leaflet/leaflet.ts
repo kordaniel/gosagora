@@ -51,7 +51,10 @@ const centerMapToLocation = L.control.centerMapToLocation(map.getCurrentGeoPos, 
   position: 'bottomright',
 }).addTo(map);
 
-map.subscribeUserGeoPosStatusChangeCallback(centerMapToLocation.onUserGeoPosStatusChange);
+const onScreenDisplay = L.control.onScreenDisplay(map.getCurrentGeoPos, {
+  position: 'bottomright',
+  overlayPosition: 'topleft',
+}).addTo(map);
 
 L.control.vesselMarker({
   getCurrentGeoPos: map.getCurrentGeoPos,
@@ -62,6 +65,9 @@ L.control.vesselMarker({
 }).addTo(map);
 
 L.marker.vesselMarker([0, 0]).addTo(map);
+
+map.subscribeUserGeoPosStatusChangeCallback(centerMapToLocation.onUserGeoPosStatusChange);
+map.subscribeCurrentPositionChangeCallback(onScreenDisplay.onNewUserGeoPos);
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({

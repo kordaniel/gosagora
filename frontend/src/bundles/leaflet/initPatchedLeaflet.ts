@@ -3,6 +3,7 @@ import L from 'leaflet';
 
 import type {
   ChangedUserGeoPosStatusCallback,
+  CurrentPositionChangeCallback,
   LatLngType,
   MapStateConnection,
   UserGeoPosStatus,
@@ -29,6 +30,11 @@ L.control.centerMapToLocation = function(getCurrentGeoPos, options) {
   return new L.Control.CenterMaptoLocation(getCurrentGeoPos, options);
 };
 
+L.Control.OnScreenDisplay = controls.OnScreenDisplay;
+L.control.onScreenDisplay = function(getCurrentGeoPos, options) {
+  return new L.Control.OnScreenDisplay(getCurrentGeoPos,options);
+};
+
 L.Control.VesselMarker = controls.VesselMarker;
 L.control.vesselMarker = function(mapStateConnection, options) {
   return new L.Control.VesselMarker(mapStateConnection, options);
@@ -46,6 +52,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _userGeoPosStatus: UserGeoPosStatus;
   private _userGeoPosStatusChangeCallbacks: Set<ChangedUserGeoPosStatusCallback>;
+  private _currentPositionChangeCallbacks: Set<CurrentPositionChangeCallback>;
 
   private _currentPosition: LatLngType | null;
   private _userMarker: L.Marker | null;
@@ -65,6 +72,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
     this._userGeoPosStatus = 'IS_UNKNOWN';
     this._userGeoPosStatusChangeCallbacks = new Set<ChangedUserGeoPosStatusCallback>();
+    this._currentPositionChangeCallbacks = new Set<CurrentPositionChangeCallback>();
 
     this._currentPosition = null;
     this._userMarker = null;
@@ -95,6 +103,11 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     cb(this._userGeoPosStatus);
   };
 
+  subscribeCurrentPositionChangeCallback = (cb: CurrentPositionChangeCallback) => {
+    this._currentPositionChangeCallbacks.add(cb);
+    cb(this._currentPosition);
+  };
+
   getCurrentGeoPos = () => {
     return this._currentPosition;
   };
@@ -107,14 +120,15 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     const updateUserGeoPosStatus =
       !(this._currentPosition !== null && newCurrentPosition !== null);
 
+    this._currentPosition = newCurrentPosition;
+
     this._markers.forEach(m => {
       m.fire<'currentPosition:update'>('currentPosition:update', {
         currentPosition: newCurrentPosition,
       });
     });
 
-    this._currentPosition = newCurrentPosition;
-
+    this._emitCurrentPositionChange();
     if (updateUserGeoPosStatus) {
       this._userGeoPosStatus = newCurrentPosition ? 'IS_KNOWN' : 'IS_UNKNOWN';
       this._emitUserGeoPosStatusChange();
@@ -154,6 +168,10 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _emitUserGeoPosStatusChange() {
     this._userGeoPosStatusChangeCallbacks.forEach(cb => cb(this._userGeoPosStatus));
+  }
+
+  private _emitCurrentPositionChange() {
+    this._currentPositionChangeCallbacks.forEach(cb => cb(this._currentPosition));
   }
 
   private _initializeMarkers() {

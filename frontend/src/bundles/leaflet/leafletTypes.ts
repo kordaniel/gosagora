@@ -12,6 +12,7 @@ export interface MapStateConnection {
 
 export type UserGeoPosStatus = 'IS_KNOWN' | 'IS_UNKNOWN';
 export type ChangedUserGeoPosStatusCallback = (newUserGeoPosStatus: UserGeoPosStatus) => void;
+export type CurrentPositionChangeCallback = (newCurrentPosition: LatLngType | null) => void;
 
 export interface CurrentPositionEventMap {
   'currentPosition:update': {

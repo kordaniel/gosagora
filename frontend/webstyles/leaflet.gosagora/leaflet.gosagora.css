@@ -10,3 +10,25 @@
   cursor: not-allowed;
   opacity: 0.25;
 }
+
+.leaflet-control-onscreen-display {
+  width: 24px;
+  height: 24px;
+  margin-top: 3px;
+  margin-left: 3px;
+  display: inline-block;
+  background-image: url(assets/icons/overlay-data.svg);
+}
+
+.leaflet-control-onscreen-display-overlay {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.leaflet-control-onscreen-display-overlay td {
+  text-align: center;
+}
+
+.leaflet-control-onscreen-display-overlay td.double {
+  font-weight: bold;
+  font-size: 1.25em;
+}

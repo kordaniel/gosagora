@@ -1,6 +1,7 @@
 import 'leaflet';
 import type {
   ChangedUserGeoPosStatusCallback,
+  CurrentPositionChangeCallback,
   CurrentPositionEventMap,
   MapStateConnection,
 } from './leafletTypes';
@@ -18,9 +19,11 @@ declare global {
 }
 
 declare module 'leaflet' {
-  interface VesselMarkerOptions extends L.ControlOptions {}
-
   namespace Control {
+    interface OnScreenDisplayOptions extends L.ControlOptions {
+      overlayPosition?: L.ControlOptions['position'];
+    }
+
     declare class CenterMaptoLocation extends L.Control {
       constructor(
         getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
@@ -30,10 +33,19 @@ declare module 'leaflet' {
       onUserGeoPosStatusChange: ChangedUserGeoPosStatusCallback;
     }
 
+    declare class OnScreenDisplay extends L.Control {
+      constructor(
+        getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+        options?: L.Control.OnScreenDisplayOptions
+      );
+
+      onNewUserGeoPos: CurrentPositionChangeCallback;
+    }
+
     declare class VesselMarker extends L.Control {
       constructor(
         mapStateConnection: MapStateConnection,
-        options?: L.VesselMarkerOptions
+        options?: L.ControlOptions
       );
     }
   }
@@ -44,9 +56,14 @@ declare module 'leaflet' {
       options?: L.ControlOptions
     ): L.Control.CenterMaptoLocation;
 
+    declare function onScreenDisplay(
+      getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
+      options?: L.Control.OnScreenDisplayOptions
+    ): L.Control.OnScreenDisplay;
+
     declare function vesselMarker(
       mapStateConnection: MapStateConnection,
-      options?: L.VesselMarkerOptions
+      options?: L.ControlOptions
     ): L.Control.VesselMarker;
   }
 

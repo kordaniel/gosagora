@@ -146,4 +146,7 @@
 | 2025.10.07 | 2   | FRONTEND: Refactor Map state into own class, connect VesselMarker to map state, add leafletTypes |
 | 2025.10.08 | 2   | FRONTEND: Add CenterMapToLocation control, webstyles/ that contains gosagora map icons & css |
 | 2025.10.09 | 1.5 | FRONTEND: Refactor mapState, add disabled state to CenterMapToLocation control |
-| Total | 239.5 | |
+| 2025.10.09 | 2   | FRONTEND: Add VesselMarker marker stub |
+| 2025.10.09 | 2.5 | FRONTEND: Implement custom (typed) leaflet events, emit currentPosition:update to markers on map, update Vessel position/rotation to current position. Refactor types |
+| 2025.10.10 | 2   | FRONTEND: Add toggleable styled OnScreenDisplay to map, refactor leaflet modules, types, stringTools |
+| Total | 246 | |
