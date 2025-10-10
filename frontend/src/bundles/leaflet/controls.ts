@@ -238,8 +238,10 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _setFollowing() {
     this._vesselMarkerState = 'following';
     this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    if (this._map && this._map.getZoom() < 12) {
+      this._map.setZoom(12);
+    }
     if (this._icon) {
-      console.log('icon:', this._icon.classList);
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow following');
     }
   }
