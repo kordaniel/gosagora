@@ -18,7 +18,13 @@ const VEL_SUFFIXES: { [K in VelocityUnits]: string } = {
   [VelocityUnits.KilometersPerHour]: 'km/h',
 } as const;
 
-export const decimalCoordToDMSString = (axis: 'horizontal' | 'vertical', decimalDegrees: number) => {
+export const decimalCoordToDMSString = (
+  axis: 'horizontal' | 'vertical',
+  decimalDegrees: number | undefined | null
+): string => {
+  if (decimalDegrees === undefined || decimalDegrees === null) {
+    return "--°--'--.--''";
+  }
   const suffix = axis === 'horizontal'
     ? decimalDegrees < 0 ? 'W' : 'E'
     : decimalDegrees < 0 ? 'S' : 'N';
@@ -32,7 +38,10 @@ export const decimalCoordToDMSString = (axis: 'horizontal' | 'vertical', decimal
   return `${degrees.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}'${seconds.toFixed(2).padStart(3 + 2, '0')}''${suffix}`;
 };
 
-export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'> | null, arcSecPrecision: number = 2) => {
+export const decimalCoordsToDMSString = (
+  coords: Pick<GeoPos, 'lat' | 'lon'> | undefined | null,
+  arcSecPrecision: number = 2
+) => {
   if (!coords) {
     return { lat: '-', lon: '-', };
   }
@@ -64,20 +73,33 @@ export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'> | n
   };
 };
 
-export const dateOrTimestampToString = (dateOrTimestamp: Date | string | number) => {
+export const dateOrTimestampToString = (
+  dateOrTimestamp: Date | string | number | undefined | null,
+  includeFields: { date?: boolean; time?: boolean; } | undefined = { date: true, time: true }
+): string => {
+  if (dateOrTimestamp === undefined ||
+      dateOrTimestamp === null ||
+      (includeFields.date === false && includeFields.time === false)
+  ) {
+    return '-';
+  }
   const dateObj = isString(dateOrTimestamp) || isNumber(dateOrTimestamp)
     ? new Date(dateOrTimestamp)
     : dateOrTimestamp;
-  return dateObj.toLocaleString();
+  return includeFields.date === false
+    ? dateObj.toLocaleTimeString()
+    : includeFields.time === false
+      ? dateObj.toLocaleDateString()
+      : dateObj.toLocaleString();
 };
 
 export const distanceToString = (
-  meters: number | null,
+  meters: number | undefined | null,
   outUnits: DistanceUnits = DistanceUnits.NauticalMiles,
   decimals: number = 1,
 ): string => {
-  if (meters === null) {
-    return '-';
+  if (meters === undefined || meters === null) {
+    return `- ${DST_SUFFIXES[outUnits]}`;
   }
   return [
     unitConverter.metersTo(meters, outUnits).toFixed(decimals),
@@ -86,21 +108,21 @@ export const distanceToString = (
 };
 
 export const headingToString = (
-  heading: number | null | undefined,
+  heading: number | undefined | null,
   decimals: number = 1
 ): string => {
-  if (heading === null || heading === undefined) {
-    return '-';
+  if (heading === undefined || heading === null) {
+    return '-°';
   }
   return `${heading.toFixed(decimals)}°`;
 };
 
 export const percentageToString = (
-  percentage: number | null,
+  percentage: number | undefined | null,
   decimals: number = 0
 ): string => {
-  if (percentage === null) {
-    return '- %';
+  if (percentage === undefined || percentage === null) {
+    return '-%';
   }
   return `${percentage.toFixed(decimals)}%`;
 };
@@ -125,12 +147,12 @@ export const timeDurationToString = (
 };
 
 export const velocityToString = (
-  metersPerSec: number | null | undefined,
+  metersPerSec: number | undefined | null,
   outUnits: VelocityUnits = VelocityUnits.Knots,
   decimals: number = 1
 ): string => {
-  if (metersPerSec === null || metersPerSec === undefined) {
-    return '-';
+  if (metersPerSec === undefined || metersPerSec === null) {
+    return `- ${VEL_SUFFIXES[outUnits]}`;
   }
   return [
     unitConverter.mPerSecTo(metersPerSec, outUnits).toFixed(decimals),
