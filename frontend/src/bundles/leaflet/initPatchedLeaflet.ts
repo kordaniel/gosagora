@@ -112,6 +112,10 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     cb(this._currentPosition);
   };
 
+  unsubscribeCurrentPositionChangeCallback = (cb: CurrentPositionChangeCallback) => {
+    this._currentPositionChangeCallbacks.delete(cb);
+  };
+
   getCurrentGeoPos = () => {
     return this._currentPosition;
   };

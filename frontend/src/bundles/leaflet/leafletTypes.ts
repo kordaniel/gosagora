@@ -6,8 +6,9 @@ export interface LatLngType extends Omit<GeoPos, 'lon'> {
 
 export interface MapStateConnection {
   getCurrentGeoPos: () => LatLngType | null;
-  isTrackingCurrentPosition: () => boolean;
   setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
+  subscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
+  unsubscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
 }
 
 export type UserGeoPosStatus = 'IS_KNOWN' | 'IS_UNKNOWN';

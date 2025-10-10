@@ -179,6 +179,13 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
     return this._container;
   }
 
+  waitForCurrentPosition = (newCurrentPosition: LatLngType | null) => {
+    if (newCurrentPosition) {
+      this._mapStateConnection.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
+      this._setFollowing();
+    }
+  };
+
   private _onClick() {
     switch (this._vesselMarkerState) {
       case 'disabled': {
@@ -191,6 +198,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
         break;
       }
       case 'waiting':
+        this._mapStateConnection.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
         this._setDisabled();
         break;
       case 'enabled':
@@ -214,6 +222,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _setWaiting() {
     this._vesselMarkerState = 'waiting';
+    this._mapStateConnection.subscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
     if (this._icon) {
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow requesting');
     }

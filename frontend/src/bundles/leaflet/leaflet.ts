@@ -58,8 +58,9 @@ const onScreenDisplay = L.control.onScreenDisplay(map.getCurrentGeoPos, {
 
 L.control.vesselMarker({
   getCurrentGeoPos: map.getCurrentGeoPos,
-  isTrackingCurrentPosition: map.isTrackingCurrentPosition,
   setIsTrackingCurrentPosition: map.setIsTrackingCurrentPosition,
+  subscribeCurrentPositionChangeCallback: map.subscribeCurrentPositionChangeCallback,
+  unsubscribeCurrentPositionChangeCallback: map.unsubscribeCurrentPositionChangeCallback,
 }, {
   position: 'bottomright',
 }).addTo(map);
