@@ -146,14 +146,14 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _container?: HTMLDivElement;
   private _link?: HTMLAnchorElement;
   private _icon?: HTMLSpanElement;
-  //private _status: 'requesting' | 'locating' | 'following' | 'idle';
+  private _vesselMarkerState: 'disabled' | 'waiting' | 'enabled' | 'following';
 
   private _mapStateConnection: MapStateConnection;
 
   constructor(mapStateConnection: MapStateConnection, options?: L.ControlOptions) {
     super(options);
     this._mapStateConnection = mapStateConnection;
-    //this._status = 'idle';
+    this._vesselMarkerState = 'disabled';
   }
 
   override onAdd(map: L.Map): HTMLElement {
@@ -169,62 +169,70 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
       this._onClick();
     }, this);
 
+    this._map.on('dragstart', () => {
+      if (this._vesselMarkerState === 'following') {
+        this._mapStateConnection.setIsTrackingCurrentPosition(false);
+        this._setEnabled();
+      }
+    });
+
     return this._container;
   }
 
-  /*
-  private _isRequesting() {
-    if (!this._icon) {
-      return false;
-    }
-    return this._icon.classList.contains('requesting');
-  }
-
-  private _isLocating() {
-    if (!this._icon) {
-      return false;
-    }
-    return this._icon.classList.contains('locating');
-  }
-
-  private _isFollowing() {
-    if (!this._icon) {
-      return false;
-    }
-    return this._icon.classList.contains('following');
-  }
-  */
-
   private _onClick() {
-    console.log('click');
-
-    if (this._mapStateConnection.isTrackingCurrentPosition()) {
-      this._icon?.classList.remove('following');
-      this._mapStateConnection.setIsTrackingCurrentPosition(false);
-    } else {
-      this._icon?.classList.add('following');
-      this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    switch (this._vesselMarkerState) {
+      case 'disabled': {
+        const currentPosition = this._mapStateConnection.getCurrentGeoPos();
+        if (currentPosition) {
+          this._setFollowing();
+        } else {
+          this._setWaiting();
+        }
+        break;
+      }
+      case 'waiting':
+        this._setDisabled();
+        break;
+      case 'enabled':
+        this._setFollowing();
+        break;
+      case 'following':
+        this._setDisabled();
+        break;
+      default:
+        assertNever(this._vesselMarkerState);
     }
+  }
 
-    /*
-    if (this._isFollowing()) {
-      this._icon?.classList.remove('following');
-      return;
+  private _setDisabled() {
+    this._vesselMarkerState = 'disabled';
+    this._mapStateConnection.setIsTrackingCurrentPosition(false);
+    if (this._icon) {
+      this._icon.setAttribute('class', 'leaflet-control-boating-arrow');
     }
+  }
 
-    const pos = this._mapStateConnection.getCurrentGeoPos();
-    console.log('pos:', pos);
-
-    if (this._isLocating()) {
-      this._icon?.classList.remove('locating');
-    } else if (this._isRequesting()) {
-      this._icon?.classList.remove('requesting');
-    } else if (pos) {
-      this._icon?.classList.add('following');
-    } else {
-      this._icon?.classList.add('requesting');
+  private _setWaiting() {
+    this._vesselMarkerState = 'waiting';
+    if (this._icon) {
+      this._icon.setAttribute('class', 'leaflet-control-boating-arrow requesting');
     }
-    */
+  }
+
+  private _setEnabled() {
+    this._vesselMarkerState = 'enabled';
+    if (this._icon) {
+      this._icon.setAttribute('class', 'leaflet-control-boating-arrow locating');
+    }
+  }
+
+  private _setFollowing() {
+    this._vesselMarkerState = 'following';
+    this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    if (this._icon) {
+      console.log('icon:', this._icon.classList);
+      this._icon.setAttribute('class', 'leaflet-control-boating-arrow following');
+    }
   }
 }
 

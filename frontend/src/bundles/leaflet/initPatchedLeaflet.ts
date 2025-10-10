@@ -8,7 +8,6 @@ import type {
   MapStateConnection,
   UserGeoPosStatus,
 } from './leafletTypes';
-import { GeoPosToPopupHTML } from './helpers';
 import controls from './controls';
 import markers from './markers';
 
@@ -55,6 +54,8 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   private _currentPositionChangeCallbacks: Set<CurrentPositionChangeCallback>;
 
   private _currentPosition: LatLngType | null;
+  private _isTrackingCurrentPosition: boolean;
+  /*
   private _userMarker: L.Marker | null;
   private _userMarkerPopup: L.Popup | null;
   private _userCircleMarker: L.Circle | null;
@@ -64,6 +65,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   private _renderUserMarker: boolean;
   private _renderUserCircleMarker: boolean;
   private _renderUserTrack: boolean;
+  */
 
   constructor(element: string | HTMLElement, options?: L.MapOptions) {
     super(element, options);
@@ -75,6 +77,8 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     this._currentPositionChangeCallbacks = new Set<CurrentPositionChangeCallback>();
 
     this._currentPosition = null;
+    this._isTrackingCurrentPosition = false;
+    /*
     this._userMarker = null;
     this._userMarkerPopup = null;
     this._userCircleMarker = null;
@@ -84,7 +88,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     this._renderUserMarker = true;
     this._renderUserCircleMarker = true;
     this._renderUserTrack = true;
-
+    */
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
         this._markers.add(e.layer);
@@ -134,36 +138,20 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       this._emitUserGeoPosStatusChange();
     }
 
-    if (this._trackCurrentPosition) {
-      if (newCurrentPosition) {
-        this.panTo([newCurrentPosition.lat, newCurrentPosition.lng]);
-        this._updateMarkers();
-      } else {
-        if (this._renderUserCircleMarker && this._userCircleMarker) {
-          const newRadius = Math.min(200, 3 * this._userCircleMarker.getRadius());
-          this._userCircleMarker.setRadius(newRadius);
-        }
-      }
+    if (this._isTrackingCurrentPosition && newCurrentPosition) {
+      this.panTo([newCurrentPosition.lat, newCurrentPosition.lng]);
     }
   };
 
   isTrackingCurrentPosition = () => {
-    return this._trackCurrentPosition;
+    return this._isTrackingCurrentPosition;
   };
 
   setIsTrackingCurrentPosition = (trackCurrentPosition: boolean) => {
-    // TODO: Add waiting for location state
-    if (trackCurrentPosition) {
-      if (this._currentPosition) {
-        this.panTo([this._currentPosition.lat, this._currentPosition.lng]);
-        this._initializeMarkers();
-      } else {
-        this._deleteMarkers();
-      }
-    } else {
-      this._deleteMarkers();
+    this._isTrackingCurrentPosition = trackCurrentPosition;
+    if (trackCurrentPosition && this._currentPosition) {
+      this.panTo([this._currentPosition.lat, this._currentPosition.lng]);
     }
-    this._trackCurrentPosition = trackCurrentPosition;
   };
 
   private _emitUserGeoPosStatusChange() {
@@ -174,6 +162,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     this._currentPositionChangeCallbacks.forEach(cb => cb(this._currentPosition));
   }
 
+  /*
   private _initializeMarkers() {
     if (!this._currentPosition) {
       return; // TODO: set error/pending state
@@ -262,6 +251,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       this._userTrack.addLatLng(latLngPos);
     }
   }
+  */
 }
 
 export default L;
