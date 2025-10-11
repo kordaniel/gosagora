@@ -152,4 +152,5 @@
 | 2025.10.10 | 1   | Add modes with diff icons to VesselMarker control isTrackingCurrentStatus to GosaGoraMap. Cleanup both classes. |
 | 2025.10.10 | 1.5 | FRONTEND: Add stylized Popup to VesselMarker marker with detailed info |
 | 2025.10.11 | 1.5 | FRONTEND: Resize Map Vessel Popup after data change, add circle indicating geopos accuracy |
-| Total | 250 | |
+| 2025.10.11 | 2   | FRONTEND: Add VesselTrail polyline that renders vessels path for the locations where position was known, remove dead code |
+| Total | 252 | |

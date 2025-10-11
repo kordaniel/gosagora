@@ -89,6 +89,18 @@ declare module 'leaflet' {
     ): L.Marker.VesselMarker;
   }
 
+  declare class VesselTrail extends Polyline {
+    constructor(
+      latlngs?: LatLngExpression[][],
+      options?: PolylineOptions
+    );
+  }
+
+  declare function vesselTrail(
+    latlngs?: LatLngExpression[][],
+    options?: PolylineOptions
+  ): VesselTrail;
+
   interface Evented {
     on<K extends keyof CurrentPositionEventMap>(
       type: K,

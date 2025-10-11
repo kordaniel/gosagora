@@ -65,6 +65,7 @@ L.control.vesselMarker({
   position: 'bottomright',
 }).addTo(map);
 
+const vesselTrail = L.vesselTrail();
 const vesselMarkerCircle = L.circle([0, 0], {
   color: '#3388FF',
   fill: true,
@@ -75,9 +76,11 @@ const vesselMarkerCircle = L.circle([0, 0], {
   weight: 1, // stroke width
 });
 const vesselMarker = L.marker.vesselMarker([0, 0], vesselMarkerCircle);
+
 L.layerGroup([
+  vesselTrail,
+  vesselMarkerCircle,
   vesselMarker,
-  vesselMarkerCircle
 ]).addTo(map);
 
 map.subscribeUserGeoPosStatusChangeCallback(centerMapToLocation.onUserGeoPosStatusChange);
