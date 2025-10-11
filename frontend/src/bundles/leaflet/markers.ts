@@ -12,10 +12,12 @@ import {
   velocityToString,
 } from '../../utils/stringTools';
 import type { LatLngType } from './leafletTypes';
+import { clampNumber } from '../../utils/helpers';
 
 class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
 
   private _iconSvg?: SVGElement | null;
+  private _circle: L.Circle;
   private _popup: L.Popup;
   private _popupFields: {
     hdg: HTMLElement | null;
@@ -26,7 +28,10 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
     lng: HTMLElement | null;
   };
 
-  constructor(latlng: L.LatLngExpression, options?: L.Marker.VesselMarkerOptions) {
+  constructor(
+    latlng: L.LatLngExpression,
+    circle: L.Circle,
+    options?: L.Marker.VesselMarkerOptions) {
     const { vesselColor, ...markerOptions } = options ?? {};
     if (!('icon' in markerOptions)) {
       markerOptions.icon = L.divIcon({
@@ -40,6 +45,8 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       });
     }
     super(latlng, markerOptions);
+
+    this._circle = circle;
 
     this._popupFields = {
       hdg: null, vel: null, timestamp: null, acc: null, lat: null, lng: null
@@ -108,9 +115,22 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
 
     this.on('currentPosition:update', (event) => {
       if (event.currentPosition !== null) {
-        this.setLatLng([event.currentPosition.lat, event.currentPosition.lng]);
+        const latLng = new L.LatLng(event.currentPosition.lat, event.currentPosition.lng);
+        this._circle.setLatLng(latLng);
+        this._circle.setRadius(event.currentPosition.acc);
+        this._circle.setStyle({
+          dashArray: undefined,
+          fillColor: undefined,
+        });
+        this.setLatLng(latLng);
         this._updateIcon(event.currentPosition.hdg ?? 0);
-      } // TODO: Else => render icon indication missing currentPosition
+      } else {
+        this._circle.setRadius(clampNumber(this._circle.getRadius() + 150, 100, 1000));
+        this._circle.setStyle({
+          dashArray: '5',
+          fillColor: '#FF3388',
+        });
+      }
 
       if (this._popup.isOpen()) {
         this._updatePopup(event.currentPosition);
@@ -135,7 +155,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       this._popupFields.timestamp.innerHTML = dateOrTimestampToString(currentPosition?.timestamp, { date: false });
     }
     if (this._popupFields.lat) {
-      this._popupFields.lat.innerHTML =  decimalCoordToDMSString('horizontal', currentPosition?.lat);
+      this._popupFields.lat.innerHTML = decimalCoordToDMSString('horizontal', currentPosition?.lat);
     }
     if (this._popupFields.lng) {
       this._popupFields.lng.innerHTML = decimalCoordToDMSString('vertical', currentPosition?.lng);
@@ -143,6 +163,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
     if (this._popupFields.acc) {
       this._popupFields.acc.innerHTML = distanceToString(currentPosition?.acc, DistanceUnits.Meters, 2);
     }
+    this._popup.update();
   }
 }
 

@@ -40,8 +40,8 @@ L.control.vesselMarker = function(mapStateConnection, options) {
 };
 
 L.Marker.VesselMarker = markers.VesselMarker;
-L.marker.vesselMarker = function(latlng, options?) {
-  return new L.Marker.VesselMarker(latlng, options);
+L.marker.vesselMarker = function(latlng, circle, options?) {
+  return new L.Marker.VesselMarker(latlng, circle, options);
 };
 
 
@@ -121,6 +121,12 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   };
 
   setCurrentPosition = (newCurrentPosition: LatLngType | null) => {
+    this._markers.forEach(m => {
+      m.fire<'currentPosition:update'>('currentPosition:update', {
+        currentPosition: newCurrentPosition,
+      });
+    });
+
     if (this._currentPosition === null && newCurrentPosition === null) {
       return;
     }
@@ -129,12 +135,6 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       !(this._currentPosition !== null && newCurrentPosition !== null);
 
     this._currentPosition = newCurrentPosition;
-
-    this._markers.forEach(m => {
-      m.fire<'currentPosition:update'>('currentPosition:update', {
-        currentPosition: newCurrentPosition,
-      });
-    });
 
     this._emitCurrentPositionChange();
     if (updateUserGeoPosStatus) {
