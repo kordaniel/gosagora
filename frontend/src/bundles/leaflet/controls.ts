@@ -13,19 +13,14 @@ import { assertNever } from '../../utils/typeguards';
 
 class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLocation {
 
-  private _map?: L.Map;
-  private _getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'];
+  private _map?: L.GosaGoraMap;
   private _icon?: HTMLSpanElement;
 
-  constructor(
-    getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-    options?: L.ControlOptions
-  ) {
+  constructor(options?: L.ControlOptions) {
     super(options);
-    this._getCurrentGeoPos = getCurrentGeoPos;
   }
 
-  override onAdd(map: L.Map): HTMLElement {
+  override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
@@ -35,7 +30,7 @@ class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLoca
     L.DomEvent.on(link, 'click', (e: Event) => {
       L.DomEvent.stopPropagation(e);
       L.DomEvent.preventDefault(e);
-      const currentGeoPos = this._getCurrentGeoPos();
+      const currentGeoPos = this._map?.getCurrentGeoPos();
       if (this._map && currentGeoPos) {
         this._map.setView(
           [currentGeoPos.lat, currentGeoPos.lng],

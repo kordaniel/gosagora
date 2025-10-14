@@ -26,10 +26,7 @@ declare module 'leaflet' {
     }
 
     declare class CenterMaptoLocation extends L.Control {
-      constructor(
-        getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-        options?: L.ControlOptions
-      );
+      constructor(options?: L.ControlOptions);
 
       onUserGeoPosStatusChange: ChangedUserGeoPosStatusCallback;
     }
@@ -65,7 +62,6 @@ declare module 'leaflet' {
 
   namespace control {
     declare function centerMapToLocation(
-      getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
       options?: L.ControlOptions
     ): L.Control.CenterMaptoLocation;
 
@@ -139,10 +135,16 @@ declare module 'leaflet' {
     ): this;
   }
 
+  interface GosaGoraMapOptions extends L.MapOptions {
+    centerMapToLocation?: L.Control.CenterMaptoLocation;
+    vesselTrail?: VesselTrail;
+    vesselTrailControl?: L.Control.VesselTrailControl;
+  }
+
   declare class GosaGoraMap extends L.Map implements MapStateConnection {
     constructor(
       element: string | HTMLElement,
-      options?: L.MapOptions & { vesselTrail?: L.VesselTrail }
+      options?: GosaGoraMapOptions
     );
 
     getCurrentGeoPos: () => LatLngType | null;
