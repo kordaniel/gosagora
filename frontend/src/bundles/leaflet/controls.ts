@@ -2,7 +2,6 @@ import L from 'leaflet';
 
 import type {
   LatLngType,
-  MapStateConnection,
   UserGeoPosStatus,
 } from './leafletTypes';
 import {
@@ -16,7 +15,7 @@ class GroupedControls extends L.Control implements L.Control.GroupedControls {
   private _container?: HTMLDivElement;
 
   constructor(options: L.ControlOptions) {
-    super(options);
+    super({ position: 'bottomright', ...options });
   }
 
   override onAdd(_map: L.GosaGoraMap): HTMLElement {
@@ -181,11 +180,8 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _icon?: HTMLSpanElement;
   private _vesselMarkerState: 'disabled' | 'waiting' | 'enabled' | 'following';
 
-  private _mapStateConnection: MapStateConnection;
-
-  constructor(mapStateConnection: MapStateConnection, options?: L.ControlOptions) {
-    super(options);
-    this._mapStateConnection = mapStateConnection;
+  constructor(options?: L.ControlOptions) {
+    super({ position: 'bottomright', ...options });
     this._vesselMarkerState = 'disabled';
   }
 
@@ -203,7 +199,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
     this._map.on('dragstart', () => {
       if (this._vesselMarkerState === 'following') {
-        this._mapStateConnection.setIsTrackingCurrentPosition(false);
+        this._map?.setIsTrackingCurrentPosition(false);
         this._setEnabled();
       }
     });
@@ -221,7 +217,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   waitForCurrentPosition = (newCurrentPosition: LatLngType | null) => {
     if (newCurrentPosition) {
-      this._mapStateConnection.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
+      this._map?.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
       this._setFollowing();
     }
   };
@@ -229,7 +225,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _onClick() {
     switch (this._vesselMarkerState) {
       case 'disabled': {
-        const currentPosition = this._mapStateConnection.getCurrentGeoPos();
+        const currentPosition = this._map?.getCurrentGeoPos();
         if (currentPosition) {
           this._setFollowing();
         } else {
@@ -238,7 +234,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
         break;
       }
       case 'waiting':
-        this._mapStateConnection.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
+        this._map?.unsubscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
         this._setDisabled();
         break;
       case 'enabled':
@@ -254,7 +250,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _setDisabled() {
     this._vesselMarkerState = 'disabled';
-    this._mapStateConnection.setIsTrackingCurrentPosition(false);
+    this._map?.setIsTrackingCurrentPosition(false);
     this._map?.setIsVesselMarkerTrailEnabled(false);
     if (this._icon) {
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow');
@@ -263,7 +259,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _setWaiting() {
     this._vesselMarkerState = 'waiting';
-    this._mapStateConnection.subscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
+    this._map?.subscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
     if (this._icon) {
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow requesting');
     }
@@ -278,7 +274,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _setFollowing() {
     this._vesselMarkerState = 'following';
-    this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    this._map?.setIsTrackingCurrentPosition(true);
     this._map?.setIsVesselMarkerTrailEnabled(true);
     if (this._map && this._map.getZoom() < 12) {
       this._map.setZoom(12);

@@ -157,4 +157,5 @@
 | 2025.10.14 | 2   | FRONTEND: Add VesselTrailControl which turns the vessel trail on/off |
 | 2025.10.14 | 1.5 | FRONTEND: Remove getCurrentGeoPos cb from CenterMapToLocation, OnScreenDisplay, use addOn Map instance. Refactor instances into GosaGora Map, refactor GosaGora map typings |
 | 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
-| Total | 258 | |
+| 2025.10.15 | 0.5 | FRONTEND: Remove MapStateConnection interface, refactor VesselMarkerControl |
+| Total | 258.5 | |

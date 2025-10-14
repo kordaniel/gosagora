@@ -40,8 +40,8 @@ L.control.onScreenDisplay = function(options) {
 };
 
 L.Control.VesselMarker = controls.VesselMarker;
-L.control.vesselMarker = function(mapStateConnection, options) {
-  return new L.Control.VesselMarker(mapStateConnection, options);
+L.control.vesselMarker = function(options) {
+  return new L.Control.VesselMarker(options);
 };
 
 L.Control.VesselTrailControl = controls.VesselTrailControl;
@@ -75,6 +75,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
   private _onScreenDisplay: L.Control.OnScreenDisplay;
   private _vesselTrail: L.VesselTrail;
   private _vesselTrailControl: L.Control.VesselTrailControl;
+  private _vesselMarkerControl: L.Control.VesselMarker;
 
   constructor(
     element: string | HTMLElement,
@@ -85,6 +86,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
       onScreenDisplay,
       vesselTrail,
       vesselTrailControl,
+      vesselMarkerControl,
       ...mapOptions
     } = options ?? {};
     super(element, mapOptions);
@@ -113,12 +115,14 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     this._vesselTrailControl = vesselTrailControl ?? L.control.vesselTrailControl({
       position: 'bottomright'
     });
+    this._vesselMarkerControl = vesselMarkerControl ?? L.control.vesselMarker();
 
     this._groupedControls = L.control.groupedControls({
       position: 'bottomright'
     });
     this._groupedControls.addTo(this);
 
+    this._vesselMarkerControl.addTo(this);
     this._vesselTrailControl.addTo(this);
     this._onScreenDisplay.addTo(this);
     this._centerMapToLocation.addTo(this);

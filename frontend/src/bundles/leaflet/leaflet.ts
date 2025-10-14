@@ -47,15 +47,6 @@ L.control.scale({
   position: 'bottomleft'
 }).addTo(map);
 
-L.control.vesselMarker({
-  getCurrentGeoPos: map.getCurrentGeoPos,
-  setIsTrackingCurrentPosition: map.setIsTrackingCurrentPosition,
-  subscribeCurrentPositionChangeCallback: map.subscribeCurrentPositionChangeCallback,
-  unsubscribeCurrentPositionChangeCallback: map.unsubscribeCurrentPositionChangeCallback,
-}, {
-  position: 'bottomright',
-}).addTo(map);
-
 const vesselMarkerCircle = L.circle([0, 0], {
   color: '#3388FF',
   fill: true,

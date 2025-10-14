@@ -4,7 +4,6 @@ import type {
   CurrentPositionChangeCallback,
   CurrentPositionEventMap,
   LatLngType,
-  MapStateConnection,
 } from './leafletTypes';
 
 declare global {
@@ -46,16 +45,7 @@ declare module 'leaflet' {
     }
 
     declare class VesselMarker extends L.Control {
-      constructor(
-        mapStateConnection: Pick<
-          MapStateConnection,
-          | 'getCurrentGeoPos'
-          | 'setIsTrackingCurrentPosition'
-          | 'subscribeCurrentPositionChangeCallback'
-          | 'unsubscribeCurrentPositionChangeCallback'
-        >,
-        options?: L.ControlOptions
-      );
+      constructor(options?: L.ControlOptions);
     }
 
     declare class VesselTrailControl extends L.Control {
@@ -79,13 +69,6 @@ declare module 'leaflet' {
     ): L.Control.OnScreenDisplay;
 
     declare function vesselMarker(
-      mapStateConnection: Pick<
-          MapStateConnection,
-          | 'getCurrentGeoPos'
-          | 'setIsTrackingCurrentPosition'
-          | 'subscribeCurrentPositionChangeCallback'
-          | 'unsubscribeCurrentPositionChangeCallback'
-        >,
       options?: L.ControlOptions
     ): L.Control.VesselMarker;
 
@@ -148,9 +131,10 @@ declare module 'leaflet' {
     onScreenDisplay?: L.Control.OnScreenDisplay;
     vesselTrail?: VesselTrail;
     vesselTrailControl?: L.Control.VesselTrailControl;
+    vesselMarkerControl?: L.Control.VesselMarker;
   }
 
-  declare class GosaGoraMap extends L.Map implements MapStateConnection {
+  declare class GosaGoraMap extends L.Map {
     constructor(
       element: string | HTMLElement,
       options?: GosaGoraMapOptions
