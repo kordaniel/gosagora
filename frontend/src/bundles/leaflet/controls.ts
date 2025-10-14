@@ -11,9 +11,36 @@ import {
 } from '../../utils/stringTools';
 import { assertNever } from '../../utils/typeguards';
 
+class GroupedControls extends L.Control implements L.Control.GroupedControls {
+
+  private _container?: HTMLDivElement;
+
+  constructor(options: L.ControlOptions) {
+    super(options);
+  }
+
+  override onAdd(_map: L.GosaGoraMap): HTMLElement {
+    this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control grouped-controls');
+
+    L.DomEvent.disableClickPropagation(this._container);
+    L.DomEvent.disableScrollPropagation(this._container);
+
+    return this._container;
+  }
+
+  appendControlElement = (control: HTMLElement): HTMLElement | undefined => {
+    if (this._container) {
+      this._container.appendChild(control);
+    }
+    return this._container;
+  };
+}
+
+
 class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLocation {
 
   private _map?: L.GosaGoraMap;
+  private _container?: HTMLElement;
   private _icon?: HTMLSpanElement;
 
   constructor(options?: L.ControlOptions) {
@@ -22,8 +49,7 @@ class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLoca
 
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
-    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
+    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
     this._icon = L.DomUtil.create('span', 'leaflet-control-center-map-to disabled', link);
     link.href = '#';
 
@@ -39,7 +65,15 @@ class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLoca
       }
     });
 
-    return container;
+    const groupedControlsContainer = this._map.appendControlElementToGroupedControls(link);
+    if (groupedControlsContainer) {
+      this._container = groupedControlsContainer;
+    } else {
+      this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      this._container.appendChild(link);
+    }
+
+    return this._container;
   }
 
   onUserGeoPosStatusChange = (newUserGeoPosStatus: UserGeoPosStatus) => {
@@ -64,6 +98,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
 
   private _map?: L.GosaGoraMap;
 
+  private _container?: HTMLElement;
   private _overlay?: L.Control;
   private _overlayPosition: Required<L.ControlOptions['position']>;
   private _heading!: HTMLTableCellElement | null;
@@ -77,8 +112,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
 
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
-    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
+    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
     L.DomUtil.create('span', 'leaflet-control-onscreen-display', link);
     link.href = '#';
 
@@ -107,7 +141,15 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
       return container;
     };
 
-    return container;
+    const groupedControlsContainer = this._map.appendControlElementToGroupedControls(link);
+    if (groupedControlsContainer) {
+      this._container = groupedControlsContainer;
+    } else {
+      this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      this._container.appendChild(link);
+    }
+
+    return this._container;
   }
 
   onNewUserGeoPos = (newCurrenPosition: LatLngType | null) => {
@@ -134,7 +176,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
 class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _map?: L.GosaGoraMap;
-  private _container?: HTMLDivElement;
+  private _container?: HTMLElement;
   private _link?: HTMLAnchorElement;
   private _icon?: HTMLSpanElement;
   private _vesselMarkerState: 'disabled' | 'waiting' | 'enabled' | 'following';
@@ -149,8 +191,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
-    this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', this._container);
+    this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
     this._icon = L.DomUtil.create('span', 'leaflet-control-boating-arrow', this._link);
     this._link.href = '#';
 
@@ -166,6 +207,14 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
         this._setEnabled();
       }
     });
+
+    const groupedControlsContainer = this._map.appendControlElementToGroupedControls(this._link);
+    if (groupedControlsContainer) {
+      this._container = groupedControlsContainer;
+    } else {
+      this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      this._container.appendChild(this._link);
+    }
 
     return this._container;
   }
@@ -243,6 +292,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 class VesselTrailControl extends L.Control implements L.Control.VesselTrailControl {
 
   private _map?: L.GosaGoraMap;
+  private _container?: HTMLElement;
   private _icon?: HTMLSpanElement;
 
   constructor(options?: L.ControlOptions) {
@@ -251,8 +301,7 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
 
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
-    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
+    const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
     this._icon = L.DomUtil.create(
       'span',
       map.isVesselMarkerTrailEnabled()
@@ -275,7 +324,15 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
       this.updateIcon();
     }, this);
 
-    return container;
+    const groupedControlsContainer = this._map.appendControlElementToGroupedControls(link);
+    if (groupedControlsContainer) {
+      this._container = groupedControlsContainer;
+    } else {
+      this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      this._container.appendChild(link);
+    }
+
+    return this._container;
   }
 
   updateIcon = () => {
@@ -289,6 +346,7 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
 
 export default {
   CenterMapToLocation,
+  GroupedControls,
   OnScreenDisplay,
   VesselMarker,
   VesselTrailControl,

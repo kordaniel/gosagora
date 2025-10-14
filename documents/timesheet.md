@@ -153,4 +153,8 @@
 | 2025.10.10 | 1.5 | FRONTEND: Add stylized Popup to VesselMarker marker with detailed info |
 | 2025.10.11 | 1.5 | FRONTEND: Resize Map Vessel Popup after data change, add circle indicating geopos accuracy |
 | 2025.10.11 | 2   | FRONTEND: Add VesselTrail polyline that renders vessels path for the locations where position was known, remove dead code |
-| Total | 252 | |
+| 2025.10.13 | 1   | FRONTEND: Limit VesselTrail length |
+| 2025.10.14 | 2   | FRONTEND: Add VesselTrailControl which turns the vessel trail on/off |
+| 2025.10.14 | 1.5 | FRONTEND: Remove getCurrentGeoPos cb from CenterMapToLocation, OnScreenDisplay, use addOn Map instance. Refactor instances into GosaGora Map, refactor GosaGora map typings |
+| 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
+| Total | 258 | |

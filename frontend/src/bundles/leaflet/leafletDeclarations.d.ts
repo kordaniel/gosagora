@@ -31,6 +31,12 @@ declare module 'leaflet' {
       onUserGeoPosStatusChange: ChangedUserGeoPosStatusCallback;
     }
 
+    declare class GroupedControls extends L.Control {
+      constructor(options?: L.ControlOptions);
+
+      appendControlElement: (control: HTMLElement) => HTMLElement | undefined;
+    }
+
     declare class OnScreenDisplay extends L.Control {
       constructor(
         options?: L.Control.OnScreenDisplayOptions
@@ -63,6 +69,10 @@ declare module 'leaflet' {
     declare function centerMapToLocation(
       options?: L.ControlOptions
     ): L.Control.CenterMaptoLocation;
+
+    declare function groupedControls(
+      options?: L.ControlOptions
+    ): L.Control.GroupedControls;
 
     declare function onScreenDisplay(
       options?: L.Control.OnScreenDisplayOptions
@@ -146,6 +156,7 @@ declare module 'leaflet' {
       options?: GosaGoraMapOptions
     );
 
+    appendControlElementToGroupedControls: L.Control.GroupedControls['appendControlElement'];
     getCurrentGeoPos: () => LatLngType | null;
     setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
     subscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;

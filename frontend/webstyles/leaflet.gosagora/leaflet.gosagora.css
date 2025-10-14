@@ -1,3 +1,8 @@
+.leaflet-bar.grouped-controls {
+  display: flex;
+  flex-direction: column;
+}
+
 .leaflet-control-center-map-to {
   width: 24px;
   height: 24px;

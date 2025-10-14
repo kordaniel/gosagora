@@ -5,7 +5,6 @@ import type {
   ChangedUserGeoPosStatusCallback,
   CurrentPositionChangeCallback,
   LatLngType,
-  MapStateConnection,
   UserGeoPosStatus,
 } from './leafletTypes';
 import controls from './controls';
@@ -28,6 +27,11 @@ L.Marker.prototype.options.icon = L.icon({
 L.Control.CenterMaptoLocation = controls.CenterMapToLocation;
 L.control.centerMapToLocation = function(options) {
   return new L.Control.CenterMaptoLocation(options);
+};
+
+L.Control.GroupedControls = controls.GroupedControls;
+L.control.groupedControls = function(options) {
+  return new L.Control.GroupedControls(options);
 };
 
 L.Control.OnScreenDisplay = controls.OnScreenDisplay;
@@ -55,7 +59,7 @@ L.vesselTrail = function(latlngs?, options?) {
   return new L.VesselTrail(latlngs, options);
 };
 
-export class GosaGoraMap extends L.Map implements MapStateConnection {
+export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
 
   private _markers: Set<L.Marker>;     // Send currentPosition:update event for every position (even null)
 
@@ -66,10 +70,9 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   private _currentPosition: LatLngType | null;
   private _isTrackingCurrentPosition: boolean;
 
+  private _groupedControls?: L.Control.GroupedControls;
   private _centerMapToLocation: L.Control.CenterMaptoLocation;
-
   private _onScreenDisplay: L.Control.OnScreenDisplay;
-
   private _vesselTrail: L.VesselTrail;
   private _vesselTrailControl: L.Control.VesselTrailControl;
 
@@ -111,9 +114,14 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       position: 'bottomright'
     });
 
-    this._centerMapToLocation.addTo(this);
-    this._onScreenDisplay.addTo(this);
+    this._groupedControls = L.control.groupedControls({
+      position: 'bottomright'
+    });
+    this._groupedControls.addTo(this);
+
     this._vesselTrailControl.addTo(this);
+    this._onScreenDisplay.addTo(this);
+    this._centerMapToLocation.addTo(this);
 
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
@@ -127,6 +135,12 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
       }
     });
   }
+
+  appendControlElementToGroupedControls = (control: HTMLElement): HTMLElement | undefined => {
+    return this._groupedControls
+      ? this._groupedControls.appendControlElement(control)
+      : undefined;
+  };
 
   subscribeUserGeoPosStatusChangeCallback = (cb: ChangedUserGeoPosStatusCallback) => {
     this._userGeoPosStatusChangeCallbacks.add(cb);
