@@ -32,12 +32,17 @@ L.control.centerMapToLocation = function(getCurrentGeoPos, options) {
 
 L.Control.OnScreenDisplay = controls.OnScreenDisplay;
 L.control.onScreenDisplay = function(getCurrentGeoPos, options) {
-  return new L.Control.OnScreenDisplay(getCurrentGeoPos,options);
+  return new L.Control.OnScreenDisplay(getCurrentGeoPos, options);
 };
 
 L.Control.VesselMarker = controls.VesselMarker;
 L.control.vesselMarker = function(mapStateConnection, options) {
   return new L.Control.VesselMarker(mapStateConnection, options);
+};
+
+L.Control.VesselTrailControl = controls.VesselTrailControl;
+L.control.vesselTrailControl = function(mapStateConnection, options) {
+  return new L.Control.VesselTrailControl(mapStateConnection, options);
 };
 
 L.Marker.VesselMarker = markers.VesselMarker;
@@ -53,7 +58,6 @@ L.vesselTrail = function(latlngs?, options?) {
 export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _markers: Set<L.Marker>;     // Send currentPosition:update event for every position (even null)
-  private _polylines: Set<L.Polyline>; // Send currentPosition:update event for every position (even null)
 
   private _userGeoPosStatus: UserGeoPosStatus;
   private _userGeoPosStatusChangeCallbacks: Set<ChangedUserGeoPosStatusCallback>;
@@ -61,12 +65,16 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _currentPosition: LatLngType | null;
   private _isTrackingCurrentPosition: boolean;
+  private _vesselTrail: L.VesselTrail;
 
-  constructor(element: string | HTMLElement, options?: L.MapOptions) {
-    super(element, options);
+  constructor(
+    element: string | HTMLElement,
+    options?: L.MapOptions & { vesselTrail?: L.VesselTrail }
+  ) {
+    const { vesselTrail, ...mapOptions } = options ?? {};
+    super(element, mapOptions);
 
     this._markers = new Set<L.Marker>();
-    this._polylines = new Set<L.Polyline>();
 
     this._userGeoPosStatus = 'IS_UNKNOWN';
     this._userGeoPosStatusChangeCallbacks = new Set<ChangedUserGeoPosStatusCallback>();
@@ -74,20 +82,17 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
     this._currentPosition = null;
     this._isTrackingCurrentPosition = false;
+    this._vesselTrail = vesselTrail ?? L.vesselTrail();
 
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
         this._markers.add(e.layer);
-      } else if (e.layer instanceof polylines.VesselTrail) {
-        this._polylines.add(e.layer);
       }
     });
 
     this.on('layerremove', (e) => {
       if (e.layer instanceof L.Marker) {
         this._markers.delete(e.layer);
-      } else if (e.layer instanceof polylines.VesselTrail) {
-        this._polylines.delete(e.layer);
       }
     });
   }
@@ -128,11 +133,10 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
     this._currentPosition = newCurrentPosition;
 
-    this._polylines.forEach(pl => {
-      pl.fire<'currentPosition:update'>('currentPosition:update', {
-        currentPosition: newCurrentPosition,
-      });
+    this._vesselTrail.fire<'currentPosition:update'>('currentPosition:update', {
+      currentPosition: newCurrentPosition,
     });
+
     this._emitCurrentPositionChange();
 
     if (updateUserGeoPosStatus) {
@@ -154,6 +158,18 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     if (trackCurrentPosition && this._currentPosition) {
       this.panTo([this._currentPosition.lat, this._currentPosition.lng]);
     }
+  };
+
+  setIsVesselMarkerTrailEnabled = (enableVesselMarkerTrail: boolean) => {
+    if (enableVesselMarkerTrail && !this.isVesselMarkerTrailEnabled()) {
+      this._vesselTrail.addTo(this);
+    } else if (!enableVesselMarkerTrail && this.isVesselMarkerTrailEnabled()) {
+      this._vesselTrail.removeFrom(this);
+    }
+  };
+
+  isVesselMarkerTrailEnabled = (): boolean => {
+    return this.hasLayer(this._vesselTrail);
   };
 
   private _emitUserGeoPosStatusChange() {

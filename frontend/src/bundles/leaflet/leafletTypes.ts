@@ -9,6 +9,8 @@ export interface MapStateConnection {
   setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
   subscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
   unsubscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
+  isVesselMarkerTrailEnabled: () => boolean;
+  setIsVesselMarkerTrailEnabled: (enableVesselMarkerTrail: boolean) => void;
 }
 
 export type UserGeoPosStatus = 'IS_KNOWN' | 'IS_UNKNOWN';

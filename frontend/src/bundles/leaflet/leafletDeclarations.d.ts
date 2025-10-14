@@ -44,7 +44,24 @@ declare module 'leaflet' {
 
     declare class VesselMarker extends L.Control {
       constructor(
-        mapStateConnection: MapStateConnection,
+        mapStateConnection: Pick<
+          MapStateConnection,
+          | 'getCurrentGeoPos'
+          | 'setIsTrackingCurrentPosition'
+          | 'subscribeCurrentPositionChangeCallback'
+          | 'unsubscribeCurrentPositionChangeCallback'
+        >,
+        options?: L.ControlOptions
+      );
+    }
+
+    declare class VesselTrailControl extends L.Control {
+      constructor(
+        mapStateConnection: Pick<
+          MapStateConnection,
+          | 'isVesselMarkerTrailEnabled'
+          | 'setIsVesselMarkerTrailEnabled'
+        >,
         options?: L.ControlOptions
       );
     }
@@ -62,9 +79,24 @@ declare module 'leaflet' {
     ): L.Control.OnScreenDisplay;
 
     declare function vesselMarker(
-      mapStateConnection: MapStateConnection,
+      mapStateConnection: Pick<
+          MapStateConnection,
+          | 'getCurrentGeoPos'
+          | 'setIsTrackingCurrentPosition'
+          | 'subscribeCurrentPositionChangeCallback'
+          | 'unsubscribeCurrentPositionChangeCallback'
+        >,
       options?: L.ControlOptions
     ): L.Control.VesselMarker;
+
+    declare function vesselTrailControl(
+      mapStateConnection: Pick<
+        MapStateConnection,
+        | 'isVesselMarkerTrailEnabled'
+        | 'setIsVesselMarkerTrailEnabled'
+      >,
+      options?: L.ControlOptions
+    ): L.Control.VesselTrailControl;
   }
 
   namespace Marker {

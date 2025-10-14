@@ -11,6 +11,13 @@
   opacity: 0.25;
 }
 
+.leaflet-control-vessel-trail {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/vessel-trail.svg);
+}
+
 .leaflet-control-onscreen-display {
   width: 24px;
   height: 24px;
