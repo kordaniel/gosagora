@@ -3,6 +3,7 @@ import type {
   ChangedUserGeoPosStatusCallback,
   CurrentPositionChangeCallback,
   CurrentPositionEventMap,
+  LatLngType,
   MapStateConnection,
 } from './leafletTypes';
 
@@ -56,14 +57,7 @@ declare module 'leaflet' {
     }
 
     declare class VesselTrailControl extends L.Control {
-      constructor(
-        mapStateConnection: Pick<
-          MapStateConnection,
-          | 'isVesselMarkerTrailEnabled'
-          | 'setIsVesselMarkerTrailEnabled'
-        >,
-        options?: L.ControlOptions
-      );
+      constructor(options?: L.ControlOptions);
     }
   }
 
@@ -90,11 +84,6 @@ declare module 'leaflet' {
     ): L.Control.VesselMarker;
 
     declare function vesselTrailControl(
-      mapStateConnection: Pick<
-        MapStateConnection,
-        | 'isVesselMarkerTrailEnabled'
-        | 'setIsVesselMarkerTrailEnabled'
-      >,
       options?: L.ControlOptions
     ): L.Control.VesselTrailControl;
   }
@@ -146,5 +135,19 @@ declare module 'leaflet' {
       type: K,
       data: CurrentPositionEventMap[K],
     ): this;
+  }
+
+  declare class GosaGoraMap extends L.Map implements MapStateConnection {
+    constructor(
+      element: string | HTMLElement,
+      options?: L.MapOptions & { vesselTrail?: L.VesselTrail }
+    );
+
+    getCurrentGeoPos: () => LatLngType | null;
+    setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
+    subscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
+    unsubscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
+    isVesselMarkerTrailEnabled: () => boolean;
+    setIsVesselMarkerTrailEnabled: (enableVesselMarkerTrail: boolean) => void;
   }
 }

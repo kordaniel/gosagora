@@ -57,9 +57,6 @@ const onScreenDisplay = L.control.onScreenDisplay(map.getCurrentGeoPos, {
 }).addTo(map);
 
 L.control.vesselTrailControl({
-  isVesselMarkerTrailEnabled: map.isVesselMarkerTrailEnabled,
-  setIsVesselMarkerTrailEnabled: map.setIsVesselMarkerTrailEnabled,
-}, {
   position: 'bottomright'
 }).addTo(map);
 

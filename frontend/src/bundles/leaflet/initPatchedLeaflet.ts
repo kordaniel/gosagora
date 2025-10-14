@@ -41,8 +41,8 @@ L.control.vesselMarker = function(mapStateConnection, options) {
 };
 
 L.Control.VesselTrailControl = controls.VesselTrailControl;
-L.control.vesselTrailControl = function(mapStateConnection, options) {
-  return new L.Control.VesselTrailControl(mapStateConnection, options);
+L.control.vesselTrailControl = function(options) {
+  return new L.Control.VesselTrailControl(options);
 };
 
 L.Marker.VesselMarker = markers.VesselMarker;

@@ -249,25 +249,14 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
 class VesselTrailControl extends L.Control implements L.Control.VesselTrailControl {
 
-  private _mapStateConnection: Pick<
-    MapStateConnection,
-    | 'isVesselMarkerTrailEnabled'
-    | 'setIsVesselMarkerTrailEnabled'
-  >;
+  private _map?: L.GosaGoraMap;
 
-  constructor(
-    mapStateConnection: Pick<
-      MapStateConnection,
-      | 'isVesselMarkerTrailEnabled'
-      | 'setIsVesselMarkerTrailEnabled'
-    >,
-    options?: L.ControlOptions
-  ) {
+  constructor(options?: L.ControlOptions) {
     super(options);
-    this._mapStateConnection = mapStateConnection;
   }
 
-  override onAdd(_map: L.Map): HTMLElement {
+  override onAdd(map: L.GosaGoraMap): HTMLElement {
+    this._map = map;
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
     L.DomUtil.create('span', 'leaflet-control-vessel-trail', link);
@@ -276,8 +265,12 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
     L.DomEvent.on(link, 'click', (e: Event) => {
       L.DomEvent.stopPropagation(e);
       L.DomEvent.preventDefault(e);
-      this._mapStateConnection.setIsVesselMarkerTrailEnabled(
-        !this._mapStateConnection.isVesselMarkerTrailEnabled()
+      if (!this._map) {
+        console.warn('VesselTrailControl has no map connection');
+        return;
+      }
+      this._map.setIsVesselMarkerTrailEnabled(
+        !this._map.isVesselMarkerTrailEnabled()
       );
     }, this);
 
