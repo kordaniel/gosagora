@@ -66,12 +66,20 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   private _currentPosition: LatLngType | null;
   private _isTrackingCurrentPosition: boolean;
   private _vesselTrail: L.VesselTrail;
+  private _vesselTrailControl: L.Control.VesselTrailControl;
 
   constructor(
     element: string | HTMLElement,
-    options?: L.MapOptions & { vesselTrail?: L.VesselTrail }
+    options?: L.MapOptions & {
+      vesselTrail?: L.VesselTrail,
+      vesselTrailControl?: L.Control.VesselTrailControl,
+    }
   ) {
-    const { vesselTrail, ...mapOptions } = options ?? {};
+    const {
+      vesselTrail,
+      vesselTrailControl,
+      ...mapOptions
+    } = options ?? {};
     super(element, mapOptions);
 
     this._markers = new Set<L.Marker>();
@@ -83,6 +91,10 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     this._currentPosition = null;
     this._isTrackingCurrentPosition = false;
     this._vesselTrail = vesselTrail ?? L.vesselTrail();
+    this._vesselTrailControl = vesselTrailControl ?? L.control.vesselTrailControl({
+      position: 'bottomright'
+    });
+    this._vesselTrailControl.addTo(this);
 
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
@@ -166,6 +178,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     } else if (!enableVesselMarkerTrail && this.isVesselMarkerTrailEnabled()) {
       this._vesselTrail.removeFrom(this);
     }
+    this._vesselTrailControl.updateIcon();
   };
 
   isVesselMarkerTrailEnabled = (): boolean => {

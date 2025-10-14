@@ -56,10 +56,6 @@ const onScreenDisplay = L.control.onScreenDisplay(map.getCurrentGeoPos, {
   overlayPosition: 'topleft',
 }).addTo(map);
 
-L.control.vesselTrailControl({
-  position: 'bottomright'
-}).addTo(map);
-
 L.control.vesselMarker({
   getCurrentGeoPos: map.getCurrentGeoPos,
   setIsTrackingCurrentPosition: map.setIsTrackingCurrentPosition,

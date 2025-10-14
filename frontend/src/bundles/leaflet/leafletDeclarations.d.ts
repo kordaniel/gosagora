@@ -58,6 +58,8 @@ declare module 'leaflet' {
 
     declare class VesselTrailControl extends L.Control {
       constructor(options?: L.ControlOptions);
+
+      updateIcon: () => void;
     }
   }
 

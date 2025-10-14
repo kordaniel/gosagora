@@ -142,7 +142,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
 
 class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
-  private _map?: L.Map;
+  private _map?: L.GosaGoraMap;
   private _container?: HTMLDivElement;
   private _link?: HTMLAnchorElement;
   private _icon?: HTMLSpanElement;
@@ -156,7 +156,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
     this._vesselMarkerState = 'disabled';
   }
 
-  override onAdd(map: L.Map): HTMLElement {
+  override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
     this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', this._container);
@@ -215,6 +215,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _setDisabled() {
     this._vesselMarkerState = 'disabled';
     this._mapStateConnection.setIsTrackingCurrentPosition(false);
+    this._map?.setIsVesselMarkerTrailEnabled(false);
     if (this._icon) {
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow');
     }
@@ -238,6 +239,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _setFollowing() {
     this._vesselMarkerState = 'following';
     this._mapStateConnection.setIsTrackingCurrentPosition(true);
+    this._map?.setIsVesselMarkerTrailEnabled(true);
     if (this._map && this._map.getZoom() < 12) {
       this._map.setZoom(12);
     }
@@ -276,22 +278,22 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
         console.warn('VesselTrailControl has no map connection');
         return;
       }
-
       this._map.setIsVesselMarkerTrailEnabled(
         !this._map.isVesselMarkerTrailEnabled()
       );
-
-      if (this._map.isVesselMarkerTrailEnabled()) {
-        if (this._icon) {
-          this._icon.setAttribute('class', 'leaflet-control-vessel-trail on');
-        }
-      } else if (this._icon) {
-        this._icon.setAttribute('class', 'leaflet-control-vessel-trail');
-      }
+      this.updateIcon();
     }, this);
 
     return container;
   }
+
+  updateIcon = () => {
+    if (this._map && this._map.isVesselMarkerTrailEnabled()) {
+      this._icon?.setAttribute('class', 'leaflet-control-vessel-trail on');
+    } else if (this._icon) {
+      this._icon.setAttribute('class', 'leaflet-control-vessel-trail');
+    }
+  };
 }
 
 export default {
