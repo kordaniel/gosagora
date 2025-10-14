@@ -18,6 +18,10 @@
   background-image: url(assets/icons/vessel-trail.svg);
 }
 
+.leaflet-control-vessel-trail.on {
+  background-image: url(assets/icons/vessel-trail-on.svg);
+}
+
 .leaflet-control-onscreen-display {
   width: 24px;
   height: 24px;

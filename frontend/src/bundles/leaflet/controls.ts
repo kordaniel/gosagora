@@ -250,6 +250,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
 class VesselTrailControl extends L.Control implements L.Control.VesselTrailControl {
 
   private _map?: L.GosaGoraMap;
+  private _icon?: HTMLSpanElement;
 
   constructor(options?: L.ControlOptions) {
     super(options);
@@ -259,7 +260,13 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
     this._map = map;
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
-    L.DomUtil.create('span', 'leaflet-control-vessel-trail', link);
+    this._icon = L.DomUtil.create(
+      'span',
+      map.isVesselMarkerTrailEnabled()
+        ? 'leaflet-control-vessel-trail on'
+        : 'leaflet-control-vessel-trail',
+      link
+    );
     link.href = '#';
 
     L.DomEvent.on(link, 'click', (e: Event) => {
@@ -269,9 +276,18 @@ class VesselTrailControl extends L.Control implements L.Control.VesselTrailContr
         console.warn('VesselTrailControl has no map connection');
         return;
       }
+
       this._map.setIsVesselMarkerTrailEnabled(
         !this._map.isVesselMarkerTrailEnabled()
       );
+
+      if (this._map.isVesselMarkerTrailEnabled()) {
+        if (this._icon) {
+          this._icon.setAttribute('class', 'leaflet-control-vessel-trail on');
+        }
+      } else if (this._icon) {
+        this._icon.setAttribute('class', 'leaflet-control-vessel-trail');
+      }
     }, this);
 
     return container;
