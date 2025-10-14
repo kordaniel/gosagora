@@ -62,24 +62,20 @@ class CenterMapToLocation extends L.Control implements L.Control.CenterMaptoLoca
 
 class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
 
-  private _map?: L.Map;
-  private _getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'];
+  private _map?: L.GosaGoraMap;
+
   private _overlay?: L.Control;
   private _overlayPosition: Required<L.ControlOptions['position']>;
   private _heading!: HTMLTableCellElement | null;
   private _velocity!: HTMLTableCellElement | null;
 
-  constructor(
-    getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
-    options?: L.Control.OnScreenDisplayOptions
-  ) {
+  constructor(options?: L.Control.OnScreenDisplayOptions) {
     const { overlayPosition, ...controlOptions } = options ?? {};
     super({ position: 'bottomright', ...controlOptions });
     this._overlayPosition = overlayPosition ?? 'topleft';
-    this._getCurrentGeoPos = getCurrentGeoPos;
   }
 
-  override onAdd(map: L.Map): HTMLElement {
+  override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', container);
@@ -129,7 +125,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
         this._map.removeControl(this._overlay);
       } else {
         this._map.addControl(this._overlay);
-        this.onNewUserGeoPos(this._getCurrentGeoPos());
+        this.onNewUserGeoPos(this._map.getCurrentGeoPos());
       }
     }
   }

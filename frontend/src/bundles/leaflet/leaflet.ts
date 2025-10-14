@@ -47,11 +47,6 @@ L.control.scale({
   position: 'bottomleft'
 }).addTo(map);
 
-const onScreenDisplay = L.control.onScreenDisplay(map.getCurrentGeoPos, {
-  position: 'bottomright',
-  overlayPosition: 'topleft',
-}).addTo(map);
-
 L.control.vesselMarker({
   getCurrentGeoPos: map.getCurrentGeoPos,
   setIsTrackingCurrentPosition: map.setIsTrackingCurrentPosition,
@@ -72,8 +67,6 @@ const vesselMarkerCircle = L.circle([0, 0], {
 }).addTo(map);
 
 L.marker.vesselMarker([0, 0], vesselMarkerCircle).addTo(map);
-
-map.subscribeCurrentPositionChangeCallback(onScreenDisplay.onNewUserGeoPos);
 
 map.on('click', (event) => {
   msgBridgeToRN.sendMsg({

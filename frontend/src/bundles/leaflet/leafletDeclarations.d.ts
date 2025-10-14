@@ -33,7 +33,6 @@ declare module 'leaflet' {
 
     declare class OnScreenDisplay extends L.Control {
       constructor(
-        getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
         options?: L.Control.OnScreenDisplayOptions
       );
 
@@ -66,7 +65,6 @@ declare module 'leaflet' {
     ): L.Control.CenterMaptoLocation;
 
     declare function onScreenDisplay(
-      getCurrentGeoPos: MapStateConnection['getCurrentGeoPos'],
       options?: L.Control.OnScreenDisplayOptions
     ): L.Control.OnScreenDisplay;
 
@@ -137,6 +135,7 @@ declare module 'leaflet' {
 
   interface GosaGoraMapOptions extends L.MapOptions {
     centerMapToLocation?: L.Control.CenterMaptoLocation;
+    onScreenDisplay?: L.Control.OnScreenDisplay;
     vesselTrail?: VesselTrail;
     vesselTrailControl?: L.Control.VesselTrailControl;
   }

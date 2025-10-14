@@ -31,8 +31,8 @@ L.control.centerMapToLocation = function(options) {
 };
 
 L.Control.OnScreenDisplay = controls.OnScreenDisplay;
-L.control.onScreenDisplay = function(getCurrentGeoPos, options) {
-  return new L.Control.OnScreenDisplay(getCurrentGeoPos, options);
+L.control.onScreenDisplay = function(options) {
+  return new L.Control.OnScreenDisplay(options);
 };
 
 L.Control.VesselMarker = controls.VesselMarker;
@@ -68,6 +68,8 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
 
   private _centerMapToLocation: L.Control.CenterMaptoLocation;
 
+  private _onScreenDisplay: L.Control.OnScreenDisplay;
+
   private _vesselTrail: L.VesselTrail;
   private _vesselTrailControl: L.Control.VesselTrailControl;
 
@@ -77,6 +79,7 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
   ) {
     const {
       centerMapToLocation,
+      onScreenDisplay,
       vesselTrail,
       vesselTrailControl,
       ...mapOptions
@@ -97,12 +100,19 @@ export class GosaGoraMap extends L.Map implements MapStateConnection {
     });
     this.subscribeUserGeoPosStatusChangeCallback(this._centerMapToLocation.onUserGeoPosStatusChange);
 
+    this._onScreenDisplay = onScreenDisplay ?? L.control.onScreenDisplay({
+      position: 'bottomright',
+      overlayPosition: 'topleft',
+    });
+    this.subscribeCurrentPositionChangeCallback(this._onScreenDisplay.onNewUserGeoPos);
+
     this._vesselTrail = vesselTrail ?? L.vesselTrail();
     this._vesselTrailControl = vesselTrailControl ?? L.control.vesselTrailControl({
       position: 'bottomright'
     });
 
     this._centerMapToLocation.addTo(this);
+    this._onScreenDisplay.addTo(this);
     this._vesselTrailControl.addTo(this);
 
     this.on('layeradd', (e) => {
