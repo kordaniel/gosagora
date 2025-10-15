@@ -54,6 +54,11 @@ L.marker.vesselMarker = function(latlng, circle, options?) {
   return new L.Marker.VesselMarker(latlng, circle, options);
 };
 
+L.VelocityVector = polylines.VelocityVector;
+L.velocityVector = function(options?: L.VelocityVectorOptions) {
+  return new L.VelocityVector(options);
+};
+
 L.VesselTrail = polylines.VesselTrail;
 L.vesselTrail = function(latlngs?, options?) {
   return new L.VesselTrail(latlngs, options);
@@ -76,6 +81,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
   private _vesselTrail: L.VesselTrail;
   private _vesselTrailControl: L.Control.VesselTrailControl;
   private _vesselMarkerControl: L.Control.VesselMarker;
+  private _velocityVector: L.VelocityVector;
 
   constructor(
     element: string | HTMLElement,
@@ -90,6 +96,8 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
       ...mapOptions
     } = options ?? {};
     super(element, mapOptions);
+
+    this.createPane(L.VelocityVector.RenderPane).style.zIndex = '650';
 
     this._markers = new Set<L.Marker>();
 
@@ -126,6 +134,11 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     this._vesselTrailControl.addTo(this);
     this._onScreenDisplay.addTo(this);
     this._centerMapToLocation.addTo(this);
+
+    this._velocityVector = L.velocityVector({
+      overlayPosition: 'bottomleft'
+    });
+    this._velocityVector.addTo(this);
 
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
@@ -228,6 +241,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
 
   private _emitCurrentPositionChange() {
     this._currentPositionChangeCallbacks.forEach(cb => cb(this._currentPosition));
+    this._velocityVector.onNewUserGeoPos(this._currentPosition);
   }
 }
 

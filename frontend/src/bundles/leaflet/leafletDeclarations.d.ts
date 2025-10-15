@@ -99,12 +99,35 @@ declare module 'leaflet' {
     ): L.Marker.VesselMarker;
   }
 
+  interface VelocityVectorOptions {
+    lengthMinutes?: number;
+    segmentsCount?: number;
+    segmentColors?: {
+      first?: `#${string}`;
+      second?: `#${string}`;
+    };
+    overlayPosition?: L.ControlOptions['position'];
+  }
+
+  declare class VelocityVector {
+    static readonly RenderPane: string;
+
+    constructor(options?: VelocityVectorOptions);
+
+    addTo(map: GosaGoraMap): void;
+    onNewUserGeoPos(newCurrenPosition: LatLngType | null): void;
+  }
+
   declare class VesselTrail extends Polyline {
     constructor(
       latlngs?: LatLngExpression[][],
       options?: PolylineOptions
     );
   }
+
+  declare function velocityVector(
+    options?: VelocityVectorOptions
+  ): VelocityVector;
 
   declare function vesselTrail(
     latlngs?: LatLngExpression[][],

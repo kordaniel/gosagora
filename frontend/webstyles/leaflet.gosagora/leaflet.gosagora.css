@@ -36,8 +36,14 @@
   background-image: url(assets/icons/overlay-data.svg);
 }
 
+.leaflet-bottom.leaflet-left .leaflet-control-onscreen-display-overlay {
+  /* NOTE: Overide leaflet margins for bottomleft position to lineup with scale */
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
 .leaflet-control-onscreen-display-overlay {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .leaflet-control-onscreen-display-overlay td {
@@ -47,6 +53,26 @@
 .leaflet-control-onscreen-display-overlay td.double {
   font-weight: bold;
   font-size: 1.25em;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid {
+  column-gap: 0;
+  display: grid;
+  grid-auto-rows: auto;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 3px;
+  row-gap: 2px;
+  width: max-content;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell {
+  min-height: 4px;
+  min-width: 30px;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell.text {
+  margin: 0;
+  text-align: center;
 }
 
 .leaflet-marker-vessel-popup {

@@ -1,4 +1,88 @@
 import L from 'leaflet';
+import { computeDestinationPoint } from 'geolib';
+
+import type { LatLngType } from './leafletTypes';
+
+class VelocityVector implements L.VelocityVector {
+
+  static readonly RenderPane = 'velocityVectorPane';
+
+  private _vectorSegmentsCount: number;  // Amount of segments to divide the vector into
+  private _vectorLengthMinutes: number;  // How far ahead the total of the segments project into the future
+  private _segmentLengthMinutes: number; // How far ahead one segment project into the future
+  private _vector: L.Polyline[];
+
+  private _overlay: L.Control;
+
+  constructor(options?: L.VelocityVectorOptions) {
+    this._vectorSegmentsCount = options?.segmentsCount || 4;
+    this._vectorLengthMinutes = options?.lengthMinutes || 60;
+    this._segmentLengthMinutes = (this._vectorLengthMinutes / this._vectorSegmentsCount);
+
+    const segmentColors = {
+      first: options?.segmentColors?.first || '#FF84B7',
+      second: options?.segmentColors?.second || '#84FFCC',
+    };
+
+    this._vector = this._computeVectorPoints(null).map((coords, i) => {
+      return L.polyline(coords, {
+        color: i % 2 === 0 ? segmentColors.first : segmentColors.second,
+        opacity: 0.9,
+        pane: VelocityVector.RenderPane,
+        weight: 2,
+      });
+    });
+
+    this._overlay = new L.Control({
+      position: options?.overlayPosition ?? 'bottomleft',
+    });
+
+    this._overlay.onAdd = (_map: L.Map) => {
+      const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-onscreen-display-overlay');
+      container.innerHTML =
+`<div class="velocity-vector-grid">
+   <div class="gridcell" style="background-color: ${segmentColors.first}"></div>
+   <div class="gridcell" style="background-color: ${segmentColors.second}"></div>
+   <div class="gridcell text">${Math.round(this._segmentLengthMinutes)}min</div>
+   <div class="gridcell text">${Math.round(2 * this._segmentLengthMinutes)}min</div>
+ </div>`;
+
+      return container;
+    };
+  }
+
+  addTo(map: L.GosaGoraMap) {
+    this._vector.forEach(v => v.addTo(map));
+    this._overlay.addTo(map);
+  }
+
+  onNewUserGeoPos(newCurrenPosition: LatLngType | null) {
+    this._computeVectorPoints(newCurrenPosition).forEach((coords, i) => {
+      this._vector[i].setLatLngs(coords);
+    });
+  }
+
+  private _computeVectorPoints(position: LatLngType | null): Array<[[number, number], [number, number]]> {
+    if (!position || position.hdg === null || position.vel === null) {
+      return Array.from({ length: this._vectorSegmentsCount }, () => [[0, 0], [0, 0]]);
+    }
+
+    const segmentDistance = this._segmentLengthMinutes * 60 * position.vel;
+    const heading = position.hdg;
+    const coords = [
+      { latitude: position.lat, longitude: position.lng },
+      { latitude: position.lat, longitude: position.lng }
+    ];
+
+    return Array.from({ length: this._vectorSegmentsCount }, (_, i) => {
+      coords[(i+1) % 2] = computeDestinationPoint(coords[i%2], segmentDistance, heading);
+      return [
+        [coords[i%2].latitude, coords[i%2].longitude],
+        [coords[(i+1) % 2].latitude, coords[(i+1) % 2].longitude],
+      ];
+    });
+  }
+}
 
 /**
  * Class that renders the trail of a vessels path. If current geopos is lost (null), starts a separate new
@@ -16,7 +100,7 @@ import L from 'leaflet';
  * Please note that this implementation is not strongly typed to assert that this holds, but
  * uses 'as' casting where needed to silence compiler warnings.
  */
-class VesselTrail extends L.Polyline {
+class VesselTrail extends L.Polyline implements L.VesselTrail {
 
   private _addNewRing: boolean;
   private _currentPointsTotalCnt: number;
@@ -36,7 +120,8 @@ class VesselTrail extends L.Polyline {
 
     super(multiPolyline, {
       color: '#FF3388',
-      opacity: 0.75,
+      opacity: 0.9,
+      weight: 2,
       ...options
     });
 
@@ -104,5 +189,6 @@ class VesselTrail extends L.Polyline {
 }
 
 export default {
+  VelocityVector,
   VesselTrail,
 };

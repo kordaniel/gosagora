@@ -158,4 +158,5 @@
 | 2025.10.14 | 1.5 | FRONTEND: Remove getCurrentGeoPos cb from CenterMapToLocation, OnScreenDisplay, use addOn Map instance. Refactor instances into GosaGora Map, refactor GosaGora map typings |
 | 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
 | 2025.10.15 | 0.5 | FRONTEND: Remove MapStateConnection interface, refactor VesselMarkerControl |
-| Total | 258.5 | |
+| 2025.10.16 | 3.5 | FRONTEND: Add segmented VelocityVector path projection, slightly refactor map/leaflet styles |
+| Total | 262 | |
