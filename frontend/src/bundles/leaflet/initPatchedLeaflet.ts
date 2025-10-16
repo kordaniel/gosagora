@@ -39,6 +39,11 @@ L.control.onScreenDisplay = function(options) {
   return new L.Control.OnScreenDisplay(options);
 };
 
+L.Control.VelocityVectorControl = controls.VelocityVectorControl;
+L.control.velocityVectorControl = function(options) {
+  return new L.Control.VelocityVectorControl(options);
+};
+
 L.Control.VesselMarker = controls.VesselMarker;
 L.control.vesselMarker = function(options) {
   return new L.Control.VesselMarker(options);
@@ -74,6 +79,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
 
   private _currentPosition: LatLngType | null;
   private _isTrackingCurrentPosition: boolean;
+  private _isVelocityVectorEnabled: boolean;
 
   private _groupedControls?: L.Control.GroupedControls;
   private _centerMapToLocation: L.Control.CenterMaptoLocation;
@@ -82,6 +88,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
   private _vesselTrailControl: L.Control.VesselTrailControl;
   private _vesselMarkerControl: L.Control.VesselMarker;
   private _velocityVector: L.VelocityVector;
+  private _velocityVectorControl?: L.Control.VelocityVectorControl;
 
   constructor(
     element: string | HTMLElement,
@@ -90,6 +97,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     const {
       centerMapToLocation,
       onScreenDisplay,
+      velocityVectorControl,
       vesselTrail,
       vesselTrailControl,
       vesselMarkerControl,
@@ -108,6 +116,10 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     this._currentPosition = null;
     this._isTrackingCurrentPosition = false;
 
+
+    this._velocityVector = L.velocityVector();
+    this._isVelocityVectorEnabled = this.setIsVelocityVectorEnabled(false);
+
     this._centerMapToLocation = centerMapToLocation ?? L.control.centerMapToLocation({
       position: 'bottomright'
     });
@@ -124,6 +136,7 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
       position: 'bottomright'
     });
     this._vesselMarkerControl = vesselMarkerControl ?? L.control.vesselMarker();
+    this._velocityVectorControl = velocityVectorControl ?? L.control.velocityVectorControl();
 
     this._groupedControls = L.control.groupedControls({
       position: 'bottomright'
@@ -131,14 +144,10 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     this._groupedControls.addTo(this);
 
     this._vesselMarkerControl.addTo(this);
+    this._velocityVectorControl.addTo(this);
     this._vesselTrailControl.addTo(this);
     this._onScreenDisplay.addTo(this);
     this._centerMapToLocation.addTo(this);
-
-    this._velocityVector = L.velocityVector({
-      overlayPosition: 'bottomleft'
-    });
-    this._velocityVector.addTo(this);
 
     this.on('layeradd', (e) => {
       if (e.layer instanceof L.Marker) {
@@ -233,6 +242,21 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
 
   isVesselMarkerTrailEnabled = (): boolean => {
     return this.hasLayer(this._vesselTrail);
+  };
+
+  setIsVelocityVectorEnabled = (enabled: boolean): boolean => {
+    if (enabled && !this.isVelocityVectorEnabled()) {
+      this._velocityVector.addTo(this);
+    } else if (!enabled && this.isVelocityVectorEnabled()) {
+      this._velocityVector.removeFrom(this);
+    }
+    this._isVelocityVectorEnabled = enabled;
+    this._velocityVectorControl?.updateIcon();
+    return enabled;
+  };
+
+  isVelocityVectorEnabled = (): boolean => {
+    return this._isVelocityVectorEnabled;
   };
 
   private _emitUserGeoPosStatusChange() {

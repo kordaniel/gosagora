@@ -60,19 +60,31 @@
   display: grid;
   grid-auto-rows: auto;
   grid-template-columns: repeat(2, 1fr);
-  padding: 3px;
-  row-gap: 2px;
+  padding: 2px;
+  row-gap: 1px;
   width: max-content;
 }
 
 .leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell {
   min-height: 4px;
   min-width: 30px;
+  margin-top: 1px;
 }
 
 .leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell.text {
-  margin: 0;
+  padding: 0px 3px 0px 3px;
   text-align: center;
+}
+
+.leaflet-control-velocity-vector {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/velocity-vector.svg);
+}
+
+.leaflet-control-velocity-vector.on {
+  background-image: url(assets/icons/velocity-vector-on.svg);
 }
 
 .leaflet-marker-vessel-popup {

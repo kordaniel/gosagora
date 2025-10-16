@@ -44,6 +44,12 @@ declare module 'leaflet' {
       onNewUserGeoPos: CurrentPositionChangeCallback;
     }
 
+    class VelocityVectorControl extends L.Control {
+      constructor(options?: L.ControlOptions);
+
+      updateIcon: () => void;
+    }
+
     declare class VesselMarker extends L.Control {
       constructor(options?: L.ControlOptions);
     }
@@ -67,6 +73,10 @@ declare module 'leaflet' {
     declare function onScreenDisplay(
       options?: L.Control.OnScreenDisplayOptions
     ): L.Control.OnScreenDisplay;
+
+    declare function velocityVectorControl(
+      options?: L.ControlOptions
+    ): L.Control.VelocityVectorControl;
 
     declare function vesselMarker(
       options?: L.ControlOptions
@@ -116,6 +126,7 @@ declare module 'leaflet' {
 
     addTo(map: GosaGoraMap): void;
     onNewUserGeoPos(newCurrenPosition: LatLngType | null): void;
+    removeFrom(map: L.GosaGoraMap): void;
   }
 
   declare class VesselTrail extends Polyline {
@@ -152,6 +163,7 @@ declare module 'leaflet' {
   interface GosaGoraMapOptions extends L.MapOptions {
     centerMapToLocation?: L.Control.CenterMaptoLocation;
     onScreenDisplay?: L.Control.OnScreenDisplay;
+    velocityVectorControl?: L.Control.VelocityVectorControl;
     vesselTrail?: VesselTrail;
     vesselTrailControl?: L.Control.VesselTrailControl;
     vesselMarkerControl?: L.Control.VesselMarker;
@@ -170,5 +182,7 @@ declare module 'leaflet' {
     unsubscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
     isVesselMarkerTrailEnabled: () => boolean;
     setIsVesselMarkerTrailEnabled: (enableVesselMarkerTrail: boolean) => void;
+    isVelocityVectorEnabled: () => boolean;
+    setIsVelocityVectorEnabled: (enabled: boolean) => boolean;
   }
 }

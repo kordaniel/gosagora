@@ -34,7 +34,7 @@ class VelocityVector implements L.VelocityVector {
     });
 
     this._overlay = new L.Control({
-      position: options?.overlayPosition ?? 'bottomleft',
+      position: options?.overlayPosition ?? 'topleft',
     });
 
     this._overlay.onAdd = (_map: L.Map) => {
@@ -54,6 +54,15 @@ class VelocityVector implements L.VelocityVector {
   addTo(map: L.GosaGoraMap) {
     this._vector.forEach(v => v.addTo(map));
     this._overlay.addTo(map);
+  }
+
+  removeFrom(map: L.GosaGoraMap) {
+    if (this._overlay) {
+      if ('_map' in this._overlay && this._overlay._map === map) {
+        map.removeControl(this._overlay);
+      }
+    }
+    this._vector.forEach(v => v.removeFrom(map));
   }
 
   onNewUserGeoPos(newCurrenPosition: LatLngType | null) {

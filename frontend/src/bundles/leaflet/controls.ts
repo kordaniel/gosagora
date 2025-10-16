@@ -172,6 +172,75 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
   }
 }
 
+class VelocityVectorControl extends L.Control implements L.Control.VelocityVectorControl {
+
+  private _map?: L.GosaGoraMap;
+  private _container?: HTMLElement;
+  private _link?: HTMLAnchorElement;
+  private _icon?: HTMLSpanElement;
+
+  constructor(options?: L.ControlOptions) {
+    super({ position: 'bottomright', ...options });
+  }
+
+  override onAdd(map: L.GosaGoraMap): HTMLElement {
+    this._map = map;
+    this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
+    this._icon = L.DomUtil.create(
+      'span',
+      this._map.isVelocityVectorEnabled()
+        ? 'leaflet-control-velocity-vector on'
+        : 'leaflet-control-velocity-vector',
+      this._link
+    );
+    this._link.href = '#';
+
+    L.DomEvent.on(this._link, 'click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      L.DomEvent.preventDefault(e);
+      if (this._map?.isVelocityVectorEnabled()) {
+        this._setDisabled();
+      } else {
+        this._setEnabled();
+      }
+    }, this);
+
+    const groupedControlsContainer = this._map.appendControlElementToGroupedControls(this._link);
+    if (groupedControlsContainer) {
+      this._container = groupedControlsContainer;
+    } else {
+      this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      this._container.appendChild(this._link);
+    }
+
+    return this._container;
+  }
+
+  updateIcon = () => {
+    if (!this._icon) {
+      return;
+    }
+
+    if (this._map?.isVelocityVectorEnabled()) {
+      if (!this._icon.classList.contains('on')) {
+        this._icon.classList.add('on');
+      }
+    } else {
+      this._icon.classList.remove('on');
+    }
+  };
+
+  private _setEnabled() {
+    this._map?.setIsVelocityVectorEnabled(true);
+    this.updateIcon();
+  }
+
+  private _setDisabled() {
+    this._map?.setIsVelocityVectorEnabled(false);
+    this.updateIcon();
+  }
+}
+
 class VesselMarker extends L.Control implements L.Control.VesselMarker {
 
   private _map?: L.GosaGoraMap;
@@ -251,6 +320,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _setDisabled() {
     this._vesselMarkerState = 'disabled';
     this._map?.setIsTrackingCurrentPosition(false);
+    this._map?.setIsVelocityVectorEnabled(false);
     this._map?.setIsVesselMarkerTrailEnabled(false);
     if (this._icon) {
       this._icon.setAttribute('class', 'leaflet-control-boating-arrow');
@@ -275,6 +345,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   private _setFollowing() {
     this._vesselMarkerState = 'following';
     this._map?.setIsTrackingCurrentPosition(true);
+    this._map?.setIsVelocityVectorEnabled(true);
     this._map?.setIsVesselMarkerTrailEnabled(true);
     if (this._map && this._map.getZoom() < 12) {
       this._map.setZoom(12);
@@ -344,6 +415,7 @@ export default {
   CenterMapToLocation,
   GroupedControls,
   OnScreenDisplay,
+  VelocityVectorControl,
   VesselMarker,
   VesselTrailControl,
 };
