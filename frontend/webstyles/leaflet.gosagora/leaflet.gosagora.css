@@ -36,6 +36,10 @@
   background-image: url(assets/icons/overlay-data.svg);
 }
 
+.leaflet-control-onscreen-display.on {
+  background-image: url(assets/icons/overlay-data-on.svg);
+}
+
 .leaflet-bottom.leaflet-left .leaflet-control-onscreen-display-overlay {
   /* NOTE: Overide leaflet margins for bottomleft position to lineup with scale */
   margin-bottom: 5px;

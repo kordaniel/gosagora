@@ -100,6 +100,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
   private _container?: HTMLElement;
   private _overlay?: L.Control;
   private _overlayPosition: Required<L.ControlOptions['position']>;
+  private _icon?: HTMLSpanElement;
   private _heading!: HTMLTableCellElement | null;
   private _velocity!: HTMLTableCellElement | null;
 
@@ -112,7 +113,7 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
     const link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
-    L.DomUtil.create('span', 'leaflet-control-onscreen-display', link);
+    this._icon = L.DomUtil.create('span', 'leaflet-control-onscreen-display', link);
     link.href = '#';
 
     L.DomEvent.on(link, 'click', (e: Event) => {
@@ -164,9 +165,13 @@ class OnScreenDisplay extends L.Control implements L.Control.OnScreenDisplay {
     if (this._map && this._overlay) {
       if ('_map' in this._overlay && this._overlay._map === this._map) {
         this._map.removeControl(this._overlay);
+        this._icon?.classList.remove('on');
       } else {
         this._map.addControl(this._overlay);
         this.onNewUserGeoPos(this._map.getCurrentGeoPos());
+        if (this._icon && !this._icon.classList.contains('on')) {
+          this._icon.classList.add('on');
+        }
       }
     }
   }

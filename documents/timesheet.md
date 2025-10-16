@@ -159,4 +159,5 @@
 | 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
 | 2025.10.15 | 0.5 | FRONTEND: Remove MapStateConnection interface, refactor VesselMarkerControl |
 | 2025.10.16 | 3.5 | FRONTEND: Add segmented VelocityVector path projection, slightly refactor map/leaflet styles |
-| Total | 262 | |
+| 2025.10.16 | 2   | FRONTEND: Add VelocityVectorControl, new icon for OnScreenDisplay on state. Stylize map/leaflet |
+| Total | 264 | |
