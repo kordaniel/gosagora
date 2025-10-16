@@ -20,23 +20,6 @@ await esbuild.build({
   },
 });
 
-// Bundle CSS, once, don't watch for changes since this comes from an outside lib
-await esbuild.build({
-  entryPoints: [
-    'vendor/leaflet.boating/L.Control.Boating.css'
-  ],
-  bundle: true,
-  loader: {
-    '.png': 'dataurl',
-    '.svg': 'base64',
-  },
-  outdir: `${OUT_DIR}leaflet.boating/`,
-  outExtension: {
-    '.css': `.css${BUNDLED_FILES_EXT}`
-  },
-});
-
-
 let leafletCtx = await esbuild.context({
   entryPoints: [
     'src/bundles/leaflet/leaflet.ts'

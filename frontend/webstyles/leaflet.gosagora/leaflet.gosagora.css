@@ -16,6 +16,26 @@
   opacity: 0.25;
 }
 
+.leaflet-control-vessel-marker {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/vessel-marker.svg);
+}
+
+.leaflet-control-vessel-marker.waiting {
+  background-image: url(assets/icons/vessel-marker-waiting.svg);
+  animation: spin 2s linear infinite;
+}
+
+.leaflet-control-vessel-marker.enabled {
+  background-image: url(assets/icons/vessel-marker-enabled.svg);
+}
+
+.leaflet-control-vessel-marker.following {
+  background-image: url(assets/icons/vessel-marker-following.svg);
+}
+
 .leaflet-control-vessel-trail {
   width: 30px;
   height: 30px;
@@ -111,4 +131,13 @@
 
 .leaflet-marker-vessel-popup-grid strong.leaflet-marker-vessel-big {
   font-size: 1.25em;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -262,7 +262,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
   override onAdd(map: L.GosaGoraMap): HTMLElement {
     this._map = map;
     this._link = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single');
-    this._icon = L.DomUtil.create('span', 'leaflet-control-boating-arrow', this._link);
+    this._icon = L.DomUtil.create('span', 'leaflet-control-vessel-marker', this._link);
     this._link.href = '#';
 
     L.DomEvent.on(this._link, 'click', (e: Event) => {
@@ -328,7 +328,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
     this._map?.setIsVelocityVectorEnabled(false);
     this._map?.setIsVesselMarkerTrailEnabled(false);
     if (this._icon) {
-      this._icon.setAttribute('class', 'leaflet-control-boating-arrow');
+      this._icon.setAttribute('class', 'leaflet-control-vessel-marker');
     }
   }
 
@@ -336,14 +336,14 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
     this._vesselMarkerState = 'waiting';
     this._map?.subscribeCurrentPositionChangeCallback(this.waitForCurrentPosition);
     if (this._icon) {
-      this._icon.setAttribute('class', 'leaflet-control-boating-arrow requesting');
+      this._icon.setAttribute('class', 'leaflet-control-vessel-marker waiting');
     }
   }
 
   private _setEnabled() {
     this._vesselMarkerState = 'enabled';
     if (this._icon) {
-      this._icon.setAttribute('class', 'leaflet-control-boating-arrow locating');
+      this._icon.setAttribute('class', 'leaflet-control-vessel-marker enabled');
     }
   }
 
@@ -356,7 +356,7 @@ class VesselMarker extends L.Control implements L.Control.VesselMarker {
       this._map.setZoom(12);
     }
     if (this._icon) {
-      this._icon.setAttribute('class', 'leaflet-control-boating-arrow following');
+      this._icon.setAttribute('class', 'leaflet-control-vessel-marker following');
     }
   }
 }
