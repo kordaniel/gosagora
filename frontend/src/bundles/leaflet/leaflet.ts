@@ -50,10 +50,10 @@ L.control.scale({
 const vesselMarkerCircle = L.circle([0, 0], {
   color: '#3388FF',
   fill: true,
-  fillOpacity: 0.1,
+  fillOpacity: 0.15,
   interactive: false,
   radius: 500,
-  stroke: true,
+  stroke: false,
   weight: 1, // stroke width
 }).addTo(map);
 

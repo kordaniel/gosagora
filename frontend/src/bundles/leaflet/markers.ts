@@ -121,6 +121,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
         this._circle.setStyle({
           dashArray: undefined,
           fillColor: undefined,
+          stroke: false,
         });
         this.setLatLng(latLng);
         this._updateIcon(event.currentPosition.hdg ?? 0);
@@ -129,6 +130,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
         this._circle.setStyle({
           dashArray: '5',
           fillColor: '#FF3388',
+          stroke: true,
         });
       }
 
