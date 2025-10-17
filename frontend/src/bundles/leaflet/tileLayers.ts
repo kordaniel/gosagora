@@ -43,6 +43,12 @@ const openTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.pn
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://opentopomap.org/about">OpenTopoMap (CC-BY-SA)</a>',
 });
 
+const cartoBaseMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  ...tileLayerOptions,
+  subdomains: 'abcd',
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+});
+
 const openSeaMap = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
   ...tileLayerOptions,
   attribution: '&copy; <a href="https://www.openseamap.org">OpenSeaMap</a>',
@@ -75,6 +81,7 @@ autoGraticule.lineStyle = {
 const baseOverlays: Record<string, L.TileLayer> = {
   'OpenStreetMap': openStreetMap,
   'OpenTopoMap (Limited coverage)': openTopoMap,
+  'CARTO BaseMaps': cartoBaseMap,
 };
 
 const mapOverlays: Record<string, L.TileLayer | L.LayerGroup> = {
