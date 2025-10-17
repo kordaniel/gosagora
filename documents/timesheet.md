@@ -159,5 +159,7 @@
 | 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
 | 2025.10.15 | 0.5 | FRONTEND: Remove MapStateConnection interface, refactor VesselMarkerControl |
 | 2025.10.16 | 3.5 | FRONTEND: Add segmented VelocityVector path projection, slightly refactor map/leaflet styles |
-| 2025.10.16 | 2   | FRONTEND: Add VelocityVectorControl, new icon for OnScreenDisplay on state. Stylize map/leaflet |
-| Total | 264 | |
+| 2025.10.16 | 3   | FRONTEND: Add VelocityVectorControl, new icon for OnScreenDisplay on state. Stylize map/leaflet. Delete boating.library vendor files |
+| 2025.10.16 | 1   | FRONTEND: Extract openLink -> utils/linking.ts from Link Component, implement typesafe parseJSON function |
+| 2025.10.17 | 3   | FRONTEND: Extend typeguards, improve leaflet message parsing and handling. Open leaflet links in external browser trough RN linking |
+| Total | 269 | |

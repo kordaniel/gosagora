@@ -5,6 +5,8 @@ import type { GeoPos } from '../../types';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
+const SEND_DEBUG_ECHO_MESSAGES = false;
+
 const handleRNMessage = (msg: RNLeafletMessage) => {
   if (msg.type === 'debug') {
     // NOTE: relay errors back to RN from leaflet msgBridgeToRN setOnMsgHandler's closure try/catch
@@ -12,22 +14,48 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
     return;
   }
 
-  // TODO: Transmit echo debug msg's only in dev env
-  msgBridgeToRN.sendMsg({
-    type: 'debug',
-    payload: {
-      echo: JSON.stringify(msg),
-    },
-  });
+  if (SEND_DEBUG_ECHO_MESSAGES) {
+    msgBridgeToRN.sendMsg({
+      type: 'debug',
+      payload: {
+        echo: JSON.stringify(msg),
+      },
+    });
+  }
 
   switch (msg.payload.command) {
+    case 'openUrl': {
+      // IGNORE. TODO: Define own set of types for RN -> web and web -> RN
+      break;
+    }
     case 'setPosition': {
       handleSetPosition(msg.payload.position);
       break;
     }
-    default: assertNever(msg.payload.command);
+    default: assertNever(msg.payload);
   }
 };
+
+document.addEventListener('click', (event: MouseEvent) => {
+  const target = event.target;
+  if (!target || !(target instanceof HTMLElement)) {
+    return;
+  }
+  const anchor = target.closest('a');
+  if (!anchor || !anchor.href) {
+    return;
+  }
+
+  event.preventDefault();
+
+  msgBridgeToRN.sendMsg({
+    type: 'command',
+    payload: {
+      command: 'openUrl',
+      href: anchor.href,
+    },
+  });
+});
 
 document.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
 window.addEventListener('message', msgBridgeToRN.setOnMsgHandler(handleRNMessage));
@@ -58,18 +86,6 @@ const vesselMarkerCircle = L.circle([0, 0], {
 }).addTo(map);
 
 L.marker.vesselMarker([0, 0], vesselMarkerCircle).addTo(map);
-
-map.on('click', (event) => {
-  msgBridgeToRN.sendMsg({
-    type: 'debug',
-    payload: {
-      msg: JSON.stringify({
-        lat: event.latlng.lat,
-        lon: event.latlng.lng
-      }),
-    },
-  });
-});
 
 const handleSetPosition = (pos: GeoPos | null) => {
   map.setCurrentPosition(!pos ? null : {

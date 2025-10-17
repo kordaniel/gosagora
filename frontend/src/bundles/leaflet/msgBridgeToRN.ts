@@ -12,12 +12,15 @@ export type RNLeafletMessage =
       };
     }
   | {
-    type: 'command',
-    payload: {
-      command: 'setPosition',
-      position: GeoPos | null;
+      type: 'command';
+      payload: {
+        command: 'openUrl';
+        href: string;
+      } | {
+        command: 'setPosition';
+        position: GeoPos | null;
+      };
     };
-  };
 
 export const sendMsg = (data: RNLeafletMessage) => {
   const msg = JSON.stringify(data);
