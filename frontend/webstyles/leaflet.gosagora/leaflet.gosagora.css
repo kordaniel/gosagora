@@ -1,0 +1,143 @@
+.leaflet-bar.grouped-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.leaflet-control-center-map-to {
+  width: 24px;
+  height: 24px;
+  margin-top: 3px;
+  display: inline-block;
+  background-image: url(assets/icons/center-map-to.svg);
+}
+
+.leaflet-control-center-map-to.disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
+
+.leaflet-control-vessel-marker {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/vessel-marker.svg);
+}
+
+.leaflet-control-vessel-marker.waiting {
+  background-image: url(assets/icons/vessel-marker-waiting.svg);
+  animation: spin 2s linear infinite;
+}
+
+.leaflet-control-vessel-marker.enabled {
+  background-image: url(assets/icons/vessel-marker-enabled.svg);
+}
+
+.leaflet-control-vessel-marker.following {
+  background-image: url(assets/icons/vessel-marker-following.svg);
+}
+
+.leaflet-control-vessel-trail {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/vessel-trail.svg);
+}
+
+.leaflet-control-vessel-trail.on {
+  background-image: url(assets/icons/vessel-trail-on.svg);
+}
+
+.leaflet-control-onscreen-display {
+  width: 24px;
+  height: 24px;
+  margin-top: 3px;
+  margin-left: 3px;
+  display: inline-block;
+  background-image: url(assets/icons/overlay-data.svg);
+}
+
+.leaflet-control-onscreen-display.on {
+  background-image: url(assets/icons/overlay-data-on.svg);
+}
+
+.leaflet-bottom.leaflet-left .leaflet-control-onscreen-display-overlay {
+  /* NOTE: Overide leaflet margins for bottomleft position to lineup with scale */
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.leaflet-control-onscreen-display-overlay {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.leaflet-control-onscreen-display-overlay td {
+  text-align: center;
+}
+
+.leaflet-control-onscreen-display-overlay td.double {
+  font-weight: bold;
+  font-size: 1.25em;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid {
+  column-gap: 0;
+  display: grid;
+  grid-auto-rows: auto;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 2px;
+  row-gap: 1px;
+  width: max-content;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell {
+  min-height: 4px;
+  min-width: 30px;
+  margin-top: 1px;
+}
+
+.leaflet-control-onscreen-display-overlay div.velocity-vector-grid > .gridcell.text {
+  padding: 0px 3px 0px 3px;
+  text-align: center;
+}
+
+.leaflet-control-velocity-vector {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-image: url(assets/icons/velocity-vector.svg);
+}
+
+.leaflet-control-velocity-vector.on {
+  background-image: url(assets/icons/velocity-vector-on.svg);
+}
+
+.leaflet-marker-vessel-popup {
+  background: white;
+}
+
+.leaflet-marker-vessel-popup h4 {
+  border-bottom: 1px solid rgb(195, 198, 207); /* lightTheme.colors.outlineVariant */
+}
+
+.leaflet-marker-vessel-popup-grid {
+  display: grid;
+  gap: 1px 1px;
+}
+
+.leaflet-marker-vessel-popup-grid div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.leaflet-marker-vessel-popup-grid strong.leaflet-marker-vessel-big {
+  font-size: 1.25em;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

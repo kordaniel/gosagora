@@ -18,9 +18,36 @@ const VEL_SUFFIXES: { [K in VelocityUnits]: string } = {
   [VelocityUnits.KilometersPerHour]: 'km/h',
 } as const;
 
-export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'>, arcSecPrecision: number = 2) => {
+export const decimalCoordToDMSString = (
+  axis: 'horizontal' | 'vertical',
+  decimalDegrees: number | undefined | null
+): string => {
+  if (decimalDegrees === undefined || decimalDegrees === null) {
+    return "--°--'--.--''";
+  }
+  const suffix = axis === 'horizontal'
+    ? decimalDegrees < 0 ? 'W' : 'E'
+    : decimalDegrees < 0 ? 'S' : 'N';
+
+  const deg = Math.abs(decimalDegrees);
+  const degrees = truncateNumber(deg);
+  const fraction = deg - degrees;
+  const minutes = truncateNumber(fraction * 60);
+  const seconds = (fraction - minutes / 60) * Math.pow(60, 2);
+
+  return `${degrees.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}'${seconds.toFixed(2).padStart(3 + 2, '0')}''${suffix}`;
+};
+
+export const decimalCoordsToDMSString = (
+  coords: Pick<GeoPos, 'lat' | 'lon'> | undefined | null,
+  arcSecPrecision: number = 2
+) => {
+  if (!coords) {
+    return { lat: '-', lon: '-', };
+  }
+
   if (coords.lat < -90 || coords.lat > 90) {
-    throw new RangeError('latitutde value must be between -90 and 90');
+    throw new RangeError('latitude value must be between -90 and 90');
   }
   if (coords.lon < -180 || coords.lon > 180) {
     throw new RangeError('longitude values must be between -180 and 180');
@@ -46,20 +73,33 @@ export const decimalCoordsToDMSString = (coords: Pick<GeoPos, 'lat' | 'lon'>, ar
   };
 };
 
-export const dateOrTimestampToString = (dateOrTimestamp: Date | string | number) => {
+export const dateOrTimestampToString = (
+  dateOrTimestamp: Date | string | number | undefined | null,
+  includeFields: { date?: boolean; time?: boolean; } | undefined = { date: true, time: true }
+): string => {
+  if (dateOrTimestamp === undefined ||
+      dateOrTimestamp === null ||
+      (includeFields.date === false && includeFields.time === false)
+  ) {
+    return '-';
+  }
   const dateObj = isString(dateOrTimestamp) || isNumber(dateOrTimestamp)
     ? new Date(dateOrTimestamp)
     : dateOrTimestamp;
-  return dateObj.toLocaleString();
+  return includeFields.date === false
+    ? dateObj.toLocaleTimeString()
+    : includeFields.time === false
+      ? dateObj.toLocaleDateString()
+      : dateObj.toLocaleString();
 };
 
 export const distanceToString = (
-  meters: number | null,
+  meters: number | undefined | null,
   outUnits: DistanceUnits = DistanceUnits.NauticalMiles,
   decimals: number = 1,
 ): string => {
-  if (meters === null) {
-    return '-';
+  if (meters === undefined || meters === null) {
+    return `- ${DST_SUFFIXES[outUnits]}`;
   }
   return [
     unitConverter.metersTo(meters, outUnits).toFixed(decimals),
@@ -68,21 +108,21 @@ export const distanceToString = (
 };
 
 export const headingToString = (
-  heading: number | null,
+  heading: number | undefined | null,
   decimals: number = 1
 ): string => {
-  if (heading === null) {
-    return '-';
+  if (heading === undefined || heading === null) {
+    return '-°';
   }
-  return `${heading.toFixed(decimals).padStart(4 + decimals, '0')}°`;
+  return `${heading.toFixed(decimals)}°`;
 };
 
 export const percentageToString = (
-  percentage: number | null,
+  percentage: number | undefined | null,
   decimals: number = 0
 ): string => {
-  if (percentage === null) {
-    return '- %';
+  if (percentage === undefined || percentage === null) {
+    return '-%';
   }
   return `${percentage.toFixed(decimals)}%`;
 };
@@ -107,12 +147,12 @@ export const timeDurationToString = (
 };
 
 export const velocityToString = (
-  metersPerSec: number | null,
+  metersPerSec: number | undefined | null,
   outUnits: VelocityUnits = VelocityUnits.Knots,
   decimals: number = 1
 ): string => {
-  if (metersPerSec === null) {
-    return '-';
+  if (metersPerSec === undefined || metersPerSec === null) {
+    return `- ${VEL_SUFFIXES[outUnits]}`;
   }
   return [
     unitConverter.mPerSecTo(metersPerSec, outUnits).toFixed(decimals),

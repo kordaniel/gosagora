@@ -138,4 +138,28 @@
 | 2025.09.29 | 3   | FRONTEND: Implement useStartTimer hook start/pause/reset/alter time functionality. Stylize StartTimer, add custom fonts to AppTheme |
 | 2025.09.30 | 1   | FRONTEND: Implement syncing to closest full minute to useStartTimer |
 | 2025.10.01 | 4   | FRONTEND: Implement changing useStartTimer duration. Add TimeSelector, TimeFieldSelector components. Refactor & stylize Start Timer |
-| Total | 225 | |
+| 2025.10.02 | 3   | FRONTEND: Refactor WebView leaflet <-> RN messaging, extend Map functionality |
+| 2025.10.03 | 0.5 | FRONTEND: Add Toggle FullScreen button to Map |
+| 2025.10.05 | 1.5 | FRONTEND: Add leaflet-auto-graticule, patch imported class and create a PR in leadlet-auto-graticule repo |
+| 2025.10.06 | 3   | FRONTEND: Add module to leaflet bundle that initializes and exports patched L. Add VesselMarker Control stub |
+| 2025.10.07 | 1   | FRONTEND: Add vendor/ dir, include parts of 3rd party leaflet.boating library |
+| 2025.10.07 | 2   | FRONTEND: Refactor Map state into own class, connect VesselMarker to map state, add leafletTypes |
+| 2025.10.08 | 2   | FRONTEND: Add CenterMapToLocation control, webstyles/ that contains gosagora map icons & css |
+| 2025.10.09 | 1.5 | FRONTEND: Refactor mapState, add disabled state to CenterMapToLocation control |
+| 2025.10.09 | 2   | FRONTEND: Add VesselMarker marker stub |
+| 2025.10.09 | 2.5 | FRONTEND: Implement custom (typed) leaflet events, emit currentPosition:update to markers on map, update Vessel position/rotation to current position. Refactor types |
+| 2025.10.10 | 2   | FRONTEND: Add toggleable styled OnScreenDisplay to map, refactor leaflet modules, types, stringTools |
+| 2025.10.10 | 1   | Add modes with diff icons to VesselMarker control isTrackingCurrentStatus to GosaGoraMap. Cleanup both classes. |
+| 2025.10.10 | 1.5 | FRONTEND: Add stylized Popup to VesselMarker marker with detailed info |
+| 2025.10.11 | 1.5 | FRONTEND: Resize Map Vessel Popup after data change, add circle indicating geopos accuracy |
+| 2025.10.11 | 2   | FRONTEND: Add VesselTrail polyline that renders vessels path for the locations where position was known, remove dead code |
+| 2025.10.13 | 1   | FRONTEND: Limit VesselTrail length |
+| 2025.10.14 | 2   | FRONTEND: Add VesselTrailControl which turns the vessel trail on/off |
+| 2025.10.14 | 1.5 | FRONTEND: Remove getCurrentGeoPos cb from CenterMapToLocation, OnScreenDisplay, use addOn Map instance. Refactor instances into GosaGora Map, refactor GosaGora map typings |
+| 2025.10.14 | 1.5 | FRONTEND: Add GroupedControls, render all controls in one div without spacing |
+| 2025.10.15 | 0.5 | FRONTEND: Remove MapStateConnection interface, refactor VesselMarkerControl |
+| 2025.10.16 | 3.5 | FRONTEND: Add segmented VelocityVector path projection, slightly refactor map/leaflet styles |
+| 2025.10.16 | 3   | FRONTEND: Add VelocityVectorControl, new icon for OnScreenDisplay on state. Stylize map/leaflet. Delete boating.library vendor files |
+| 2025.10.16 | 1   | FRONTEND: Extract openLink -> utils/linking.ts from Link Component, implement typesafe parseJSON function |
+| 2025.10.17 | 3   | FRONTEND: Extend typeguards, improve leaflet message parsing and handling. Open leaflet links in external browser trough RN linking |
+| Total | 269 | |
