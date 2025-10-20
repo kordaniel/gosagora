@@ -74,7 +74,7 @@ const GeoPosView = ({ pos }: { pos: GeoPos | null }) => {
 const Dashboard = () => {
   const dispatch = useAppDispatch();
   const {
-    current,
+    currentPosition,
     error,
     history,
     historyMaxLen,
@@ -102,7 +102,7 @@ const Dashboard = () => {
       <Button onPress={startTracking as () => void} disabled={trackingStatus !== 'idle'}>Start tracking</Button>
       <Button onPress={() => stopTracking(true)} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
       <StyledText variant="title">Current position</StyledText>
-      <GeoPosView pos={current} />
+      <GeoPosView pos={currentPosition} />
       <StyledText variant="title">History</StyledText>
       {history
         .reduceRight<Array<GeoPos | null>>((acc, cur) => acc.concat(cur), [])
