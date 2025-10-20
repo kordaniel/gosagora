@@ -12,7 +12,6 @@ import {
 import { randRange, randUnitRangeFrom } from '../../utils/helpers';
 import { locObjToGeoPos } from './helpers';
 import store from '../../store';
-import unitConverter from '../../utils/unitConverter';
 
 export interface LocationTaskExecutorBody {
   locations: Location.LocationObject[];
