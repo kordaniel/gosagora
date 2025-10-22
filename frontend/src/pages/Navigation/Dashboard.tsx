@@ -74,7 +74,7 @@ const Dashboard = () => {
             <View style={[theme.styles.containerFlexRow, {
               justifyContent: "space-between",
             }]}>
-              <Text variant="headlineMedium">SOG</Text>
+              <Text variant="headlineMedium">SOG:</Text>
               <Text variant="headlineMedium" style={{ fontWeight: "bold" }}>{velocityToString(currentPosition?.vel)}</Text>
             </View>
             <Text variant="headlineMedium" style={{ fontWeight: "bold" }}>{dms.lat}</Text>
