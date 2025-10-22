@@ -98,7 +98,21 @@ const darkTheme: MD3Theme = {
   }
 };
 
-const customFonts: Record<string, MD3Type> = StyleSheet.create({
+const customLightFonts: Record<string, MD3Type> = StyleSheet.create({
+  displayHuge: {
+    ...MD3LightTheme.fonts.displayLarge,
+    fontSize: 96,
+    lineHeight: 100,
+  },
+  displayHugeBold: {
+    ...MD3LightTheme.fonts.displayLarge,
+    fontSize: 96,
+    fontWeight: 'bold',
+    lineHeight: 100,
+  },
+});
+
+const customDarkFonts: Record<string, MD3Type> = StyleSheet.create({
   displayHuge: {
     ...MD3DarkTheme.fonts.displayLarge,
     fontSize: 96,
@@ -133,6 +147,47 @@ const styles = StyleSheet.create({
   },
   buttonLoading: {
     opacity: 0.8,
+  },
+  centerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compassDial: {
+    alignItems: 'center',
+    borderRadius: 80,
+    borderWidth: 20,
+    height: 160,
+    justifyContent: 'center',
+    width: 160,
+  },
+  compassMarkerHeading: {
+    borderBottomWidth: 20,
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 3,
+    borderRightColor: 'transparent',
+    borderRightWidth: 3,
+    height: 0,
+    width: 0,
+  },
+  compassMarkerNorth: {
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 4,
+    borderRightColor: 'transparent',
+    borderRightWidth: 4,
+    borderTopWidth: 6,
+    height: 0,
+    width: 0,
+  },
+  compassOuterDial: {
+    alignItems: 'center',
+    borderRadius: 83,
+    height: 166,
+    justifyContent: 'center',
+    width: 166
+  },
+  compassTextContainer: {
+    alignItems: 'center',
+    position: 'absolute',
   },
   container: {
     alignItems: 'center',
@@ -226,6 +281,23 @@ const lightStyle = StyleSheet.create({
   buttonText: {
     ...lightTheme.fonts.default,
     color: lightTheme.colors.onPrimary,
+  },
+  compassDial: {
+    ...styles.compassDial,
+    backgroundColor: lightTheme.colors.surfaceVariant,
+    borderColor: lightTheme.colors.surface,
+  },
+  compassMarkerHeading: {
+    ...styles.compassMarkerHeading,
+    borderBottomColor: lightTheme.colors.onSurfaceVariant,
+  },
+  compassMarkerNorth: {
+    ...styles.compassMarkerNorth,
+    borderTopColor: lightTheme.colors.error,
+  },
+  compassOuterDial: {
+    ...styles.compassOuterDial,
+    backgroundColor: lightTheme.colors.outlineVariant,
   },
   developerViewContainer: {
     ...styles.developerViewContainer,
@@ -331,6 +403,23 @@ const darkStyle = StyleSheet.create({
     ...darkTheme.fonts.default,
     color: darkTheme.colors.onPrimary,
   },
+  compassDial: {
+    ...styles.compassDial,
+    backgroundColor: darkTheme.colors.surfaceVariant,
+    borderColor: darkTheme.colors.surface,
+  },
+  compassMarkerHeading: {
+    ...styles.compassMarkerHeading,
+    borderBottomColor: darkTheme.colors.onSurfaceVariant,
+  },
+  compassMarkerNorth: {
+    ...styles.compassMarkerNorth,
+    borderTopColor: darkTheme.colors.error,
+  },
+  compassOuterDial: {
+    ...styles.compassOuterDial,
+    backgroundColor: darkTheme.colors.outlineVariant,
+  },
   developerViewContainer: {
     ...styles.developerViewContainer,
     backgroundColor: darkTheme.colors.backdrop,
@@ -425,17 +514,17 @@ export const getTheme = (colorScheme?: ColorSchemeName): Omit<AppTheme, 'toggleS
   switch (colorScheme) {
     case 'dark': return {
       ...darkTheme,
-      customFonts,
+      customFonts: customDarkFonts,
       styles: darkStyle,
     };
     case 'light': return {
       ...lightTheme,
-      customFonts,
+      customFonts: customLightFonts,
       styles: lightStyle,
     };
     default: return { // NOTE: Do not throw here, OS might return null | undefined colorScheme
       ...darkTheme,
-      customFonts,
+      customFonts: customDarkFonts,
       styles: darkStyle,
     };
   }
