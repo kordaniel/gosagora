@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-import { ScrollView, View, useWindowDimensions } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Button, Text, useTheme } from 'react-native-paper';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import Button from '../../components/Button';
 import Compass from '../../components/Compass';
 import ErrorRenderer from '../../components/ErrorRenderer';
 
@@ -30,22 +29,34 @@ const Dashboard = () => {
   const { startTracking, stopTracking } = useLocation();
   const { width } = useWindowDimensions();
   const [renderCompassNorthUp, setRenderCompassNorthUp] = useState<boolean>(false);
+  const style = StyleSheet.create({
+    scrollView: {
+      alignItems: 'stretch',
+      flex: 1,
+      gap: 8,
+      justifyContent: 'space-between',
+      paddingHorizontal: 3,
+      paddingVertical: 12,
+    }
+  });
 
   const halfWidth = clampNumber(Math.floor(0.5 * width) - 15, 120, 300); // NOTE: Leave room for flex gap & margins
   const dms = decimalCoordsToDMSString(
     currentPosition !== null ? { lat: currentPosition.lat, lon: currentPosition.lon } : null
   );
 
+  const toggleTracking = () => {
+    if (trackingStatus === 'idle') {
+      void startTracking();
+    } else {
+      stopTracking(true);
+    }
+  };
+
   return (
-    <ScrollView contentContainerStyle={[
-      theme.styles.container,
-      { flex: 1, paddingTop: 12 },
-    ]}>
+    <ScrollView contentContainerStyle={style.scrollView}>
       <ErrorRenderer>{error}</ErrorRenderer>
-      <View style={[
-        theme.styles.containerFlexColumn,
-        { alignItems: "center" }
-      ]}>
+      <View style={theme.styles.containerFlexColumn}>
         <View style={[
           theme.styles.containerFlexRow,
           { justifyContent: "center" }
@@ -70,21 +81,20 @@ const Dashboard = () => {
             <Text variant="headlineMedium" style={{ fontWeight: "bold" }}>{dms.lon}</Text>
           </View>
         </View>
-        <View style={[theme.styles.containerFlexRow, { justifyContent: "space-between" }]}>
-          <Text>Last fix</Text>
-          <Text>{dateOrTimestampToString(currentPosition?.timestamp)}</Text>
-        </View>
-        <View style={[theme.styles.containerFlexRow, { justifyContent: "space-between" }]}>
-          <Text>Signal quality</Text>
-          <Text>{geoPosAccuracyQualityToString(signalQuality, currentPosition?.acc)}</Text>
-        </View>
-        <Text>Status: {trackingStatus}</Text>
-        <Button onPress={() => setRenderCompassNorthUp(prev => !prev)}>{renderCompassNorthUp
-          ? 'Set Compass to Head-Up mode'
-          : 'Set Compass to North-Up mode'
-        }</Button>
-        <Button onPress={startTracking as () => void} disabled={trackingStatus !== 'idle'}>Start tracking</Button>
-        <Button onPress={() => stopTracking(true)} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
+        <Text>Last position received at: {dateOrTimestampToString(currentPosition?.timestamp)}</Text>
+        <Text>Signal quality: {geoPosAccuracyQualityToString(signalQuality, currentPosition?.acc)}</Text>
+      </View>
+      <View style={theme.styles.containerFlexColumn}>
+        <Text>Location services status: {trackingStatus}</Text>
+        <Button mode="outlined" onPress={() => setRenderCompassNorthUp(prev => !prev)}>
+          {renderCompassNorthUp
+            ? "Switch Compass to Head-Up mode"
+            : "Switch Compass to North-Up mode"
+          }
+        </Button>
+        <Button mode="outlined" onPress={toggleTracking}>
+          {trackingStatus === "idle" ? "Enable Location Services" : "Turn Off Location Services"}
+        </Button>
       </View>
     </ScrollView>
   );
