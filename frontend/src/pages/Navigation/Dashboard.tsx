@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
 import Button from '../../components/Button';
@@ -15,6 +15,7 @@ import {
 } from '../../utils/stringTools';
 import type { AppTheme } from '../../types';
 import { SelectLocation } from '../../store/slices/locationSlice';
+import { clampNumber } from '../../utils/helpers';
 import { useAppSelector } from '../../store/hooks';
 import useLocation from '../../hooks/useLocation';
 
@@ -27,7 +28,10 @@ const Dashboard = () => {
     signalQuality
   } = useAppSelector(SelectLocation);
   const { startTracking, stopTracking } = useLocation();
+  const { width } = useWindowDimensions();
+  const [renderCompassNorthUp, setRenderCompassNorthUp] = useState<boolean>(false);
 
+  const halfWidth = clampNumber(Math.floor(0.5 * width) - 15, 120, 300); // NOTE: Leave room for flex gap & margins
   const dms = decimalCoordsToDMSString(
     currentPosition !== null ? { lat: currentPosition.lat, lon: currentPosition.lon } : null
   );
@@ -46,11 +50,15 @@ const Dashboard = () => {
           theme.styles.containerFlexRow,
           { justifyContent: "center" }
         ]}>
-          <Compass heading={currentPosition?.hdg} />
+          <Compass
+            heading={currentPosition?.hdg}
+            heightAndWidth={halfWidth}
+            renderNorthUp={renderCompassNorthUp}
+          />
           <View style={[theme.styles.containerFlexColumn, {
             justifyContent: "center",
             alignItems: "stretch",
-            minWidth: 150,
+            minWidth: Math.min(halfWidth, 150),
           }]}>
             <View style={[theme.styles.containerFlexRow, {
               justifyContent: "space-between",
@@ -71,6 +79,10 @@ const Dashboard = () => {
           <Text>{geoPosAccuracyQualityToString(signalQuality, currentPosition?.acc)}</Text>
         </View>
         <Text>Status: {trackingStatus}</Text>
+        <Button onPress={() => setRenderCompassNorthUp(prev => !prev)}>{renderCompassNorthUp
+          ? 'Set Compass to Head-Up mode'
+          : 'Set Compass to North-Up mode'
+        }</Button>
         <Button onPress={startTracking as () => void} disabled={trackingStatus !== 'idle'}>Start tracking</Button>
         <Button onPress={() => stopTracking(true)} disabled={trackingStatus === 'idle'}>Stop tracking</Button>
       </View>
