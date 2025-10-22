@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
-import { View } from 'react-native';
 
 import type { AppTheme } from '../types';
 import { headingToString } from '../utils/stringTools';
@@ -28,64 +28,76 @@ const getCardinalDirection = (angle: number | undefined | null): string => {
 
 interface CompassProps {
   heading: number | undefined | null;
+  renderNorthUp?: boolean;
+  heightAndWidth?: number;
 }
 
-const Compass = ({ heading }: CompassProps) => {
+const Compass = ({
+  heading,
+  renderNorthUp = false,
+  heightAndWidth = 150,
+}: CompassProps) => {
   const theme = useTheme<AppTheme>();
+  const radius = Math.ceil(0.5 * heightAndWidth);
+  const cardinalLabelsAngle = Math.round(360 / CARDINAL_LABELS.length); // degrees between every label, including separator '°'
+  const cardinalLabelsModulo = CARDINAL_LABELS.slice(1).findIndex(l => l !== '°') + 1; // indexes that contain an actual cardinal label (N,E,S,W) and not the separator '°'
+
+  const styles = StyleSheet.create({
+    dial: {
+      ...theme.styles.compassDial,
+      ...(!renderNorthUp && { transform: [{ rotate: `-${heading ?? 0}deg` }] }),
+      borderRadius: radius,
+      height: heightAndWidth,
+      width: heightAndWidth,
+    },
+    outerDial: {
+      ...theme.styles.compassOuterDial,
+      borderRadius: radius,
+      height: heightAndWidth + 6,
+      width: heightAndWidth + 6,
+    },
+  });
 
   return (
     <View style={theme.styles.centerContainer}>
-      <View style={theme.styles.compassOuterDial}>
-        <View style={[
-          theme.styles.compassDial,
-          { transform: [{ rotate: `-${heading ?? 0}deg` }] }
-        ]}>
+      <View style={styles.outerDial}>
+        <View style={styles.dial}>
           {CARDINAL_LABELS.map((dir, i) => (
             <Text
               key={i}
               variant="titleMedium"
               style={[
+                theme.styles.compassTextCardinal,
                 {
-                  color: theme.colors.onSurface,
-                  fontWeight: "bold",
-                  position: 'absolute',
                   transform: [
-                    { rotate: `${i * 15}deg` },
-                    { translateY: i % 6 === 0 ? -69 : -66 }
+                    { rotate: `${i * cardinalLabelsAngle}deg` },
+                    { translateY: i % cardinalLabelsModulo === 0 ? -radius+11 : -radius+14 }
                   ]
-                }
-              ]}
+                }]}
             >
               {dir}
             </Text>
           ))}
           <View style={[
             theme.styles.compassMarkerNorth,
-            { transform: [ { translateY: -77 } ] }
+            { transform: [ { translateY: -radius+3 } ] } /* 3 == 0.5 * theme.styles.compassMarkerNorth.borderTopWidth */
           ]} />
           <View style={[
             theme.styles.compassMarkerHeading,
             {
-              position: 'absolute',
               transform: [
                 { rotate: `${heading ?? 0}deg` },
-                { translateY: -50 }
+                { translateY: -radius+28 } /* 28 = 20+8 = theme.styles.compassdial + 0.5 * theme.styles.compassMarkerHeading.borderBottomWidth */
               ],
             }
           ]} />
         </View>
       </View>
-      <View style={theme.styles.compassTextContainer}>
-        <Text variant="headlineLarge" style={{
-          color: theme.colors.onSurfaceVariant,
-          fontWeight: "bold"
-        }}>
+      <View style={theme.styles.compassTextDialContainer}>
+        <Text variant="headlineLarge" style={theme.styles.compassTextDial}>
           {getCardinalDirection(heading)}
         </Text>
-        <Text variant="headlineMedium" style={{
-          color: theme.colors.onSurfaceVariant,
-          fontWeight: "bold"
-        }}>
+        <Text variant="headlineMedium" style={theme.styles.compassTextDial}>
           {headingToString(heading, 0)}
         </Text>
       </View>

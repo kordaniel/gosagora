@@ -154,19 +154,17 @@ const styles = StyleSheet.create({
   },
   compassDial: {
     alignItems: 'center',
-    borderRadius: 80,
     borderWidth: 20,
-    height: 160,
     justifyContent: 'center',
-    width: 160,
   },
   compassMarkerHeading: {
-    borderBottomWidth: 20,
+    borderBottomWidth: 16,
     borderLeftColor: 'transparent',
     borderLeftWidth: 3,
     borderRightColor: 'transparent',
     borderRightWidth: 3,
     height: 0,
+    position: 'absolute',
     width: 0,
   },
   compassMarkerNorth: {
@@ -176,16 +174,17 @@ const styles = StyleSheet.create({
     borderRightWidth: 4,
     borderTopWidth: 6,
     height: 0,
+    position: 'absolute',
     width: 0,
   },
-  compassOuterDial: {
-    alignItems: 'center',
-    borderRadius: 83,
-    height: 166,
-    justifyContent: 'center',
-    width: 166
+  compassTextCardinal: {
+    fontWeight: 'bold',
+    position: 'absolute',
   },
-  compassTextContainer: {
+  compassTextDial: {
+    fontWeight: 'bold',
+  },
+  compassTextDialContainer: {
     alignItems: 'center',
     position: 'absolute',
   },
@@ -296,8 +295,16 @@ const lightStyle = StyleSheet.create({
     borderTopColor: lightTheme.colors.error,
   },
   compassOuterDial: {
-    ...styles.compassOuterDial,
+    ...styles.centerContainer,
     backgroundColor: lightTheme.colors.outlineVariant,
+  },
+  compassTextCardinal: {
+    ...styles.compassTextCardinal,
+    color: lightTheme.colors.onSurface,
+  },
+  compassTextDial: {
+    ...styles.compassTextDial,
+    color: lightTheme.colors.onSurfaceVariant,
   },
   developerViewContainer: {
     ...styles.developerViewContainer,
@@ -417,8 +424,16 @@ const darkStyle = StyleSheet.create({
     borderTopColor: darkTheme.colors.error,
   },
   compassOuterDial: {
-    ...styles.compassOuterDial,
+    ...styles.centerContainer,
     backgroundColor: darkTheme.colors.outlineVariant,
+  },
+  compassTextCardinal: {
+    ...styles.compassTextCardinal,
+    color: darkTheme.colors.onSurface,
+  },
+  compassTextDial: {
+    ...styles.compassTextDial,
+    color: darkTheme.colors.onSurfaceVariant,
   },
   developerViewContainer: {
     ...styles.developerViewContainer,
