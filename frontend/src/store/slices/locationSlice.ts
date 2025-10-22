@@ -28,7 +28,7 @@ interface LocationWindow {
 }
 
 export interface LocationState {
-  current: GeoPos | null;
+  currentPosition: GeoPos | null;
   error: string | null;
   history: Array<GeoPos | null>;
   historyMaxLen: number;
@@ -38,7 +38,7 @@ export interface LocationState {
 }
 
 const initialState: LocationState = {
-  current: null,
+  currentPosition: null,
   error: null,
   history: [],
   historyMaxLen: HISTORY_MAX_LEN,
@@ -55,13 +55,13 @@ const locationSlice = createSlice({
   name: 'location',
   initialState,
   reducers: {
-    addLocation: (state, action: PayloadAction<{ current: GeoPos | null; signalQuality: number; }>) => {
-      if (state.current !== null || (state.history.length > 0 && state.history.at(-1) !== null)) {
+    addLocation: (state, action: PayloadAction<{ currentPosition: GeoPos | null; signalQuality: number; }>) => {
+      if (state.currentPosition !== null || (state.history.length > 0 && state.history.at(-1) !== null)) {
         state.history = state.history
           .slice(-(state.historyMaxLen-1))
-          .concat(state.current);
+          .concat(state.currentPosition);
       }
-      state.current = action.payload.current;
+      state.currentPosition = action.payload.currentPosition;
       state.signalQuality = action.payload.signalQuality;
     },
     setError: (state, action: PayloadAction<string | null>) => {
@@ -99,7 +99,7 @@ const {
 } = locationSlice.actions;
 
 export const SelectLocation = (state: RootState): Omit<LocationState, 'locationWindow'> => ({
-  current: state.location.current,
+  currentPosition: state.location.currentPosition,
   error: state.location.error,
   history: state.location.history,
   historyMaxLen: state.location.historyMaxLen,
@@ -110,7 +110,7 @@ export const SelectLocation = (state: RootState): Omit<LocationState, 'locationW
 export const handleNewLocation = (geoPosition: GeoPos | null): AppThunk => {
   return (dispatch, getState) => {
     if (geoPosition === null) {
-      dispatch(addLocation({ current: null, signalQuality: 0 }));
+      dispatch(addLocation({ currentPosition: null, signalQuality: 0 }));
       return;
     }
 
@@ -123,18 +123,18 @@ export const handleNewLocation = (geoPosition: GeoPos | null): AppThunk => {
     window[index] = geoPosition;
 
     if (index + 1 === windowLength) {
-      const current = computeAveragedGeoPos(window);
-      const signalQuality = computeGeoPosAccuracyQuality(current.acc);
+      const currentPosition = computeAveragedGeoPos(window);
+      const signalQuality = computeGeoPosAccuracyQuality(currentPosition.acc);
       dispatch(setLocationWindow({
         buffer: window.slice(LOCATION_WINDOW_LEN - LOCATION_WINDOW_OVERLAP),
         idxNext: LOCATION_WINDOW_OVERLAP,
       }));
-      dispatch(addLocation({ current, signalQuality }));
+      dispatch(addLocation({ currentPosition, signalQuality }));
     } else {
       if (initializingLocWindow) {
-        const current = computeAveragedGeoPos(window);
-        const signalQuality = computeGeoPosAccuracyQuality(current.acc);
-        dispatch(addLocation({ current, signalQuality }));
+        const currentPosition = computeAveragedGeoPos(window);
+        const signalQuality = computeGeoPosAccuracyQuality(currentPosition.acc);
+        dispatch(addLocation({ currentPosition, signalQuality }));
       }
       dispatch(setLocationWindow({
         buffer: window,

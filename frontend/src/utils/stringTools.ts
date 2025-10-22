@@ -107,6 +107,29 @@ export const distanceToString = (
   ].join(' ');
 };
 
+export const geoPosAccuracyQualityToString = (
+  signalQuality: number,
+  accuracy?: number | null,
+  accuracyUnits: DistanceUnits = DistanceUnits.Meters,
+): string => {
+  // NOTE: The actual distances in meters depends on the values assigned to
+  //       MAX_ACC_TRESHOLD, MIN_ACC_TRESHOLD in modules/location/helpers.ts
+  //       and are larger in development environment.
+  const geoPosAccuracy = signalQuality > 90
+    ? 'Excellent'   // < ~3.9m
+    : signalQuality > 80
+      ? 'Good'      // < 4.8m
+      : signalQuality > 70
+        ? 'Fair'    // < 5.7m
+        : signalQuality > 20
+          ? 'Poor'  // < ~10.2m
+          : 'Lost'; // ~10.2-12m
+
+  return accuracy === undefined || accuracy === null
+    ? geoPosAccuracy
+    : `${geoPosAccuracy} (${distanceToString(accuracy, accuracyUnits)})`;
+};
+
 export const headingToString = (
   heading: number | undefined | null,
   decimals: number = 1

@@ -162,4 +162,6 @@
 | 2025.10.16 | 3   | FRONTEND: Add VelocityVectorControl, new icon for OnScreenDisplay on state. Stylize map/leaflet. Delete boating.library vendor files |
 | 2025.10.16 | 1   | FRONTEND: Extract openLink -> utils/linking.ts from Link Component, implement typesafe parseJSON function |
 | 2025.10.17 | 3   | FRONTEND: Extend typeguards, improve leaflet message parsing and handling. Open leaflet links in external browser trough RN linking |
-| Total | 269 | |
+| 2025.10.21 | 4   | FRONTEND: Minor fixes to locationSlice, extend stringTools. Add Compass component, refactor and stylize Navigation/Dashboard page |
+| 2025.10.22 | 4   | FRONTEND: Cleanup, comment Compass component and implement passing rendering head/north-up and size props |
+| Total | 277 | |

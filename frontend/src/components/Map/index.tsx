@@ -14,7 +14,7 @@ import { useAppSelector } from '../../store/hooks';
 
 
 const Map = () => {
-  const { current } = useAppSelector(SelectLocation);
+  const { currentPosition } = useAppSelector(SelectLocation);
   const [leafletHtml, setLeafletHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,16 +54,16 @@ const Map = () => {
   };
 
   useEffect(() => {
-    if (current && sendDataToWebRef.current) {
+    if (currentPosition && sendDataToWebRef.current) {
       sendDataToWebRef.current.sendDataToWeb({
         type: 'command',
         payload: {
           command: 'setPosition',
-          position: current,
+          position: currentPosition,
         },
       });
     }
-  }, [current]);
+  }, [currentPosition]);
 
   useEffect(() => {
     const loadLeafletHtml = async () => {
