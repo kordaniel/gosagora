@@ -10,12 +10,12 @@ import {
   type WebViewMessageEvent
 } from 'react-native-webview';
 
-import type { RNLeafletMessage } from '../bundles/leaflet/msgBridgeToRN';
+import type { RNToLeafletMessage } from '../bundles/leaflet/msgBridgeToRN';
 import config from '../utils/config';
 import { isString } from '../utils/typeguards';
 
 export type SendDataToWebType = {
-  sendDataToWeb: (data: RNLeafletMessage) => void;
+  sendDataToWeb: (data: RNToLeafletMessage) => void;
 };
 
 interface HtmlRendererProps {
