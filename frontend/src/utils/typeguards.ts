@@ -1,5 +1,9 @@
 import type { DateRange, GeoPos } from '../types';
-import type { RNLeafletMessage } from '../bundles/leaflet/msgBridgeToRN';
+import type {
+  LeafletToRNCommandMessage,
+  LeafletToRNMessage,
+  RNLeafletBidirectionalMessages,
+} from '../bundles/leaflet/msgBridgeToRN';
 
 const hasOptionalStringField = <T extends object, K extends string>(
   param: T,
@@ -53,25 +57,14 @@ export const isString = (param: unknown): param is string => {
   return typeof param === 'string' || param instanceof String;
 };
 
-const isRNLeafletMessageDebugPayload = (payload: NonNullable<object>): payload is {
-  echo?: string;
-  error?: string;
-  msg?: string;
-} => {
+const isRNLeafletBidirectionalDebugMessage = (payload: NonNullable<object>): payload is RNLeafletBidirectionalMessages['debug'] => {
   return !Array.isArray(payload) &&
     hasOptionalStringField(payload, 'echo') &&
     hasOptionalStringField(payload, 'error') &&
     hasOptionalStringField(payload, 'msg');
 };
 
-const isRNLeafletMessageCommandPayload = (payload: NonNullable<object>): payload is
-{
-  command: 'openUrl';
-  href: string;
-} | {
-  command: 'setPosition';
-  position: GeoPos | null;
-} => {
+const isLeafletToRNCommandMessagePayload = (payload: NonNullable<object>): payload is LeafletToRNCommandMessage => {
   if (Array.isArray(payload)) {
     return false;
   }
@@ -81,17 +74,12 @@ const isRNLeafletMessageCommandPayload = (payload: NonNullable<object>): payload
 
   if (payload.command === 'openUrl') {
     return 'href' in payload && isString(payload.href);
-  } else if (payload.command === 'setPosition') {
-    if (!('position' in payload)) {
-      return false;
-    }
-    return payload.position === null || isGeoPos(payload.position);
+  } else {
+    return false;
   }
-
-  return false;
 };
 
-export const isRNLeafletMessage = (param: unknown): param is RNLeafletMessage => {
+export const isLeafletToRNMessage = (param: unknown): param is LeafletToRNMessage => {
   if (!isNotNullObject(param) ||
       !('type' in param && isString(param.type)) ||
       !('payload' in param && isNotNullObject(param.payload))
@@ -99,10 +87,10 @@ export const isRNLeafletMessage = (param: unknown): param is RNLeafletMessage =>
     return false;
   }
 
-  if (param.type === 'debug') {
-    return isRNLeafletMessageDebugPayload(param.payload);
-  } else if (param.type === 'command') {
-    return isRNLeafletMessageCommandPayload(param.payload);
+  if (param.type === 'command') {
+    return isLeafletToRNCommandMessagePayload(param.payload);
+  } else if (param.type === 'debug') {
+    return isRNLeafletBidirectionalDebugMessage(param.payload);
   } else {
     return false;
   }

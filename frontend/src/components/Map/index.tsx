@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import HtmlRenderer, { type SendDataToWebType} from '../HtmlRenderer';
 import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
-import { assertNever, isRNLeafletMessage } from '../../utils/typeguards';
+import { assertNever, isLeafletToRNMessage } from '../../utils/typeguards';
 import { SelectLocation } from '../../store/slices/locationSlice';
 import config from '../../utils/config';
 import htmlBuilder from '../../modules/htmlBuilder';
@@ -18,10 +18,10 @@ const Map = () => {
   const [leafletHtml, setLeafletHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const sendDataToWebRef  = useRef<SendDataToWebType>(null);
+  const sendDataToWebRef = useRef<SendDataToWebType>(null);
 
   const handleMessage = (data: string) => {
-    const parsedData = parseJSON(isRNLeafletMessage)(data);
+    const parsedData = parseJSON(isLeafletToRNMessage)(data);
 
     if (parsedData.hasError) {
       console.error('MAP:', parsedData.error);
@@ -36,11 +36,8 @@ const Map = () => {
           case 'openUrl':
             openLink(leafletMsg.payload.href);
             break;
-          case 'setPosition':
-            // IGNORE. TODO: Define own set of types for RN -> web and web -> RN
-            break;
           default:
-            assertNever(leafletMsg.payload);
+            assertNever(leafletMsg.payload.command);
         }
         break;
       case 'debug':

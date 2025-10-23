@@ -40,8 +40,6 @@ export type RNToLeafletMessage = {
   }
 }[keyof RNToLeafletMessageTypesPayloads];
 
-export type RNLeafletMessage = LeafletToRNMessage | RNToLeafletMessage;
-
 const sendMsg = (data: LeafletToRNMessage) => {
   const msg = JSON.stringify(data);
   if (window.ReactNativeWebView) {
