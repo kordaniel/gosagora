@@ -4,6 +4,7 @@ import HtmlRenderer, { type SendDataToWebType} from '../HtmlRenderer';
 import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
 import { assertNever, isLeafletToRNMessage } from '../../utils/typeguards';
+import type { RNToLeafletMessage } from '../../bundles/leaflet/msgBridgeToRN';
 import { SelectLocation } from '../../store/slices/locationSlice';
 import config from '../../utils/config';
 import htmlBuilder from '../../modules/htmlBuilder';
@@ -51,14 +52,15 @@ const Map = () => {
   };
 
   useEffect(() => {
-    if (currentPosition && sendDataToWebRef.current) {
-      sendDataToWebRef.current.sendDataToWeb({
+    if (sendDataToWebRef.current) {
+      const message: RNToLeafletMessage = {
         type: 'command',
         payload: {
           command: 'setPosition',
           position: currentPosition,
         },
-      });
+      };
+      sendDataToWebRef.current.sendDataToWeb(JSON.stringify(message));
     }
   }, [currentPosition]);
 

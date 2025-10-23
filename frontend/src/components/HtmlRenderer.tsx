@@ -10,12 +10,11 @@ import {
   type WebViewMessageEvent
 } from 'react-native-webview';
 
-import type { RNToLeafletMessage } from '../bundles/leaflet/msgBridgeToRN';
 import config from '../utils/config';
 import { isString } from '../utils/typeguards';
 
 export type SendDataToWebType = {
-  sendDataToWeb: (data: RNToLeafletMessage) => void;
+  sendDataToWeb: (data: string) => void;
 };
 
 interface HtmlRendererProps {
@@ -40,8 +39,7 @@ const RenderMobile = forwardRef<SendDataToWebType, RenderProps>(function RenderM
 
   const sendDataToWeb: SendDataToWebType['sendDataToWeb'] = (data) => {
     if (webViewRef.current) {
-      const msg = JSON.stringify(data);
-      webViewRef.current.postMessage(msg);
+      webViewRef.current.postMessage(data);
     } else {
       console.error('RenderMobile.webViewRef.current === null');
     }
@@ -93,8 +91,7 @@ const RenderWeb = forwardRef<SendDataToWebType, RenderProps>(function RenderWeb(
 
   const sendDataToWeb: SendDataToWebType['sendDataToWeb'] = (data) => {
     if (iframeRef.current) {
-      const msg = JSON.stringify(data);
-      iframeRef.current.contentWindow?.postMessage(msg);
+      iframeRef.current.contentWindow?.postMessage(data);
     } else {
       console.error('RenderWeb.iframeRef.current === null');
     }
