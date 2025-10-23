@@ -1,13 +1,13 @@
 import L, { GosaGoraMap } from './initPatchedLeaflet';
 
-import msgBridgeToRN, { type RNLeafletMessage } from './msgBridgeToRN';
+import msgBridgeToRN, { type RNToLeafletMessage } from './msgBridgeToRN';
 import type { GeoPos } from '../../types';
 import { assertNever } from '../../utils/typeguards';
 import tileLayers from './tileLayers';
 
 const SEND_DEBUG_ECHO_MESSAGES = false;
 
-const handleRNMessage = (msg: RNLeafletMessage) => {
+const handleRNMessage = (msg: RNToLeafletMessage) => {
   if (msg.type === 'debug') {
     // NOTE: relay errors back to RN from leaflet msgBridgeToRN setOnMsgHandler's closure try/catch
     msgBridgeToRN.sendMsg(msg);
@@ -24,15 +24,11 @@ const handleRNMessage = (msg: RNLeafletMessage) => {
   }
 
   switch (msg.payload.command) {
-    case 'openUrl': {
-      // IGNORE. TODO: Define own set of types for RN -> web and web -> RN
-      break;
-    }
     case 'setPosition': {
       handleSetPosition(msg.payload.position);
       break;
     }
-    default: assertNever(msg.payload);
+    default: assertNever(msg.payload.command);
   }
 };
 

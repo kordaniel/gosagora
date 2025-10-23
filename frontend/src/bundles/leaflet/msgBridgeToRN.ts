@@ -42,7 +42,7 @@ export type RNToLeafletMessage = {
 
 export type RNLeafletMessage = LeafletToRNMessage | RNToLeafletMessage;
 
-export const sendMsg = (data: RNLeafletMessage) => {
+const sendMsg = (data: LeafletToRNMessage) => {
   const msg = JSON.stringify(data);
   if (window.ReactNativeWebView) {
     window.ReactNativeWebView.postMessage(msg);
@@ -51,12 +51,12 @@ export const sendMsg = (data: RNLeafletMessage) => {
   }
 };
 
-const setOnMsgHandler = (handler: (msg: RNLeafletMessage) => void) => {
+const setOnMsgHandler = (handler: (msg: RNToLeafletMessage) => void) => {
   return (
     event: MessageEvent<string> | WebViewMessageEvent['nativeEvent'] // iframe contentWindow.postMessage | react-native-webview postMessage event
   ) => {
     try {
-      handler(JSON.parse(event.data) as RNLeafletMessage);
+      handler(JSON.parse(event.data) as RNToLeafletMessage);
     } catch (err: unknown) {
       handler({
         type: 'debug',
