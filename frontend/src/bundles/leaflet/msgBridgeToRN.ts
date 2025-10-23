@@ -2,25 +2,45 @@ import type { WebViewMessageEvent } from 'react-native-webview';
 
 import type { GeoPos } from '../../types';
 
-export type RNLeafletMessage =
-  | {
-      type: 'debug';
-      payload: {
-        echo?: string;
-        error?: string;
-        msg?: string;
-      };
-    }
-  | {
-      type: 'command';
-      payload: {
-        command: 'openUrl';
-        href: string;
-      } | {
-        command: 'setPosition';
-        position: GeoPos | null;
-      };
-    };
+export type RNLeafletBidirectionalMessages = {
+  debug: {
+    echo?: string;
+    error?: string;
+    msg?: string;
+  };
+};
+
+export type LeafletToRNCommandMessage =
+  | { command: 'openUrl'; href: string; };
+
+export type RNToLeafletCommandMessage =
+  | { command: 'setPosition'; position: GeoPos | null; };
+
+export type LeafletToRNMessageTypesPayloads = {
+  command: LeafletToRNCommandMessage;
+  debug: RNLeafletBidirectionalMessages['debug'];
+};
+
+export type LeafletToRNMessage = {
+  [T in keyof LeafletToRNMessageTypesPayloads]: {
+    type: T;
+    payload: LeafletToRNMessageTypesPayloads[T];
+  }
+}[keyof LeafletToRNMessageTypesPayloads];
+
+export type RNToLeafletMessageTypesPayloads = {
+  command: RNToLeafletCommandMessage;
+  debug: RNLeafletBidirectionalMessages['debug'];
+};
+
+export type RNToLeafletMessage = {
+  [T in keyof RNToLeafletMessageTypesPayloads]: {
+    type: T;
+    payload: RNToLeafletMessageTypesPayloads[T];
+  }
+}[keyof RNToLeafletMessageTypesPayloads];
+
+export type RNLeafletMessage = LeafletToRNMessage | RNToLeafletMessage;
 
 export const sendMsg = (data: RNLeafletMessage) => {
   const msg = JSON.stringify(data);
