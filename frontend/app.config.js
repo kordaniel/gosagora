@@ -3,9 +3,10 @@ import 'dotenv/config';
 export default {
   name: 'GosaGora',
   slug: 'gosagora',
-  version: '0.0.1',
+  version: '0.1.0',
+  githubUrl: 'https://github.com/kordaniel/gosagora',
   orientation: 'portrait',
-  icon: './assets/icon.png',
+  icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic', // https://docs.expo.dev/develop/user-interface/color-themes/
   newArchEnabled: true,
   plugins: [[
@@ -41,10 +42,6 @@ export default {
     }
   },
   android: {
-    adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#ffffff',
-    },
     package: 'com.kordaniel.gosagora',
     permissions: [
       'ACCESS_FINE_LOCATION',
@@ -54,7 +51,7 @@ export default {
     ]
   },
   web: {
-    favicon: './assets/favicon.png',
+    favicon: './assets/images/favicon.png',
   },
   extra: {
     eas: {
