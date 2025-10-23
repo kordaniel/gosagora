@@ -166,4 +166,5 @@
 | 2025.10.22 | 4   | FRONTEND: Cleanup, comment Compass component and implement passing rendering head/north-up and size props |
 | 2025.10.22 | 1   | FRONTEND: Implement different types for RN->Leaflet and Leaflet->RN messages |
 | 2025.10.23 | 2.5 | FRONTEND: Refactor Leaflet bundle & RN to use the new message types, HtmlRenderer sendDataToWeb signature. Add typeguards for RN->Leaflet messages and parse all messages with the typesafe parseJSON function. Stringify messages in Map component |
-| Total | 280.5 | |
+| 2025.10.23 | 1   | FRONTEND: Set Gosagora icon and favicon. Bump version to 0.1.0 |
+| Total | 281.5 | |

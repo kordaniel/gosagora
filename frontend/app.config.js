@@ -3,7 +3,7 @@ import 'dotenv/config';
 export default {
   name: 'GosaGora',
   slug: 'gosagora',
-  version: '0.0.1',
+  version: '0.1.0',
   githubUrl: 'https://github.com/kordaniel/gosagora',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
