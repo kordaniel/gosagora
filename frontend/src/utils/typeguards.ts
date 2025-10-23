@@ -3,6 +3,8 @@ import type {
   LeafletToRNCommandMessage,
   LeafletToRNMessage,
   RNLeafletBidirectionalMessages,
+  RNToLeafletCommandMessage,
+  RNToLeafletMessage,
 } from '../bundles/leaflet/msgBridgeToRN';
 
 const hasOptionalStringField = <T extends object, K extends string>(
@@ -79,6 +81,24 @@ const isLeafletToRNCommandMessagePayload = (payload: NonNullable<object>): paylo
   }
 };
 
+const isRNToLeafletCommandMessagePayload = (payload: NonNullable<object>): payload is RNToLeafletCommandMessage => {
+  if (Array.isArray(payload)) {
+    return false;
+  }
+  if (!('command' in payload && isString(payload.command))) {
+    return false;
+  }
+
+  if (payload.command === 'setPosition') {
+    if (!('position' in payload)) {
+      return false;
+    }
+    return payload.position === null || isGeoPos(payload.position);
+  } else {
+    return false;
+  }
+};
+
 export const isLeafletToRNMessage = (param: unknown): param is LeafletToRNMessage => {
   if (!isNotNullObject(param) ||
       !('type' in param && isString(param.type)) ||
@@ -89,6 +109,23 @@ export const isLeafletToRNMessage = (param: unknown): param is LeafletToRNMessag
 
   if (param.type === 'command') {
     return isLeafletToRNCommandMessagePayload(param.payload);
+  } else if (param.type === 'debug') {
+    return isRNLeafletBidirectionalDebugMessage(param.payload);
+  } else {
+    return false;
+  }
+};
+
+export const isRNToLeafletMessage = (param: unknown): param is RNToLeafletMessage => {
+  if (!isNotNullObject(param) ||
+      !('type' in param && isString(param.type)) ||
+      !('payload' in param && isNotNullObject(param.payload))
+  ) {
+    return false;
+  }
+
+  if (param.type === 'command') {
+    return isRNToLeafletCommandMessagePayload(param.payload);
   } else if (param.type === 'debug') {
     return isRNLeafletBidirectionalDebugMessage(param.payload);
   } else {

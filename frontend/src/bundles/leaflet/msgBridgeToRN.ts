@@ -1,6 +1,8 @@
 import type { WebViewMessageEvent } from 'react-native-webview';
 
 import type { GeoPos } from '../../types';
+import { isRNToLeafletMessage } from '../../utils/typeguards';
+import { parseJSON } from '../../utils/parsers';
 
 export type RNLeafletBidirectionalMessages = {
   debug: {
@@ -16,7 +18,7 @@ export type LeafletToRNCommandMessage =
 export type RNToLeafletCommandMessage =
   | { command: 'setPosition'; position: GeoPos | null; };
 
-export type LeafletToRNMessageTypesPayloads = {
+type LeafletToRNMessageTypesPayloads = {
   command: LeafletToRNCommandMessage;
   debug: RNLeafletBidirectionalMessages['debug'];
 };
@@ -28,7 +30,7 @@ export type LeafletToRNMessage = {
   }
 }[keyof LeafletToRNMessageTypesPayloads];
 
-export type RNToLeafletMessageTypesPayloads = {
+type RNToLeafletMessageTypesPayloads = {
   command: RNToLeafletCommandMessage;
   debug: RNLeafletBidirectionalMessages['debug'];
 };
@@ -53,17 +55,20 @@ const setOnMsgHandler = (handler: (msg: RNToLeafletMessage) => void) => {
   return (
     event: MessageEvent<string> | WebViewMessageEvent['nativeEvent'] // iframe contentWindow.postMessage | react-native-webview postMessage event
   ) => {
-    try {
-      handler(JSON.parse(event.data) as RNToLeafletMessage);
-    } catch (err: unknown) {
+    const parsedData = parseJSON(isRNToLeafletMessage)(event.data);
+
+    if (parsedData.hasError) {
+      // NOTE: relay errors back to RN
       handler({
         type: 'debug',
         payload: {
-          error: JSON.stringify(err instanceof Error ? err.message : err),
-          echo: event.data,
+          error: parsedData.error, // Contains original event.data string
         },
       });
+      return;
     }
+
+    handler(parsedData.parsed);
   };
 };
 

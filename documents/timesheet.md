@@ -164,4 +164,6 @@
 | 2025.10.17 | 3   | FRONTEND: Extend typeguards, improve leaflet message parsing and handling. Open leaflet links in external browser trough RN linking |
 | 2025.10.21 | 4   | FRONTEND: Minor fixes to locationSlice, extend stringTools. Add Compass component, refactor and stylize Navigation/Dashboard page |
 | 2025.10.22 | 4   | FRONTEND: Cleanup, comment Compass component and implement passing rendering head/north-up and size props |
-| Total | 277 | |
+| 2025.10.22 | 1   | FRONTEND: Implement different types for RN->Leaflet and Leaflet->RN messages |
+| 2025.10.23 | 2   | FRONTEND: Refactor Leaflet bundle & RN to use the new message types. Add typeguards for RN->Leaflet messages and parse all messages with the typesafe parseJSON function |
+| Total | 280 | |
