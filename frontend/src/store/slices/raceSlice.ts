@@ -1,5 +1,6 @@
 import {
   type PayloadAction,
+  createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
 
@@ -135,17 +136,24 @@ const {
   removeRace,
 } = raceSlice.actions;
 
-export const SelectRaces = (state: RootState): ReplaceField<RaceSliceRaces, 'races', RaceListing[]> => ({
-  ...state.race.races,
-  races: state.race.races.races.map(toRaceListing),
-});
+
+export const SelectRaces = createSelector(
+  (state: RootState) => state.race.races,
+  (races: RaceSliceRaces): ReplaceField<RaceSliceRaces, 'races', RaceListing[]> => ({
+    ...races,
+    races: races.races.map(toRaceListing),
+  }),
+);
 
 export const SelectSubmitNewRace = (state: RootState): RaceSliceSubmitNewRace => state.race.submitNewRace;
 
-export const SelectRace = (state: RootState): ReplaceField<RaceSliceRace, 'selectedRace', RaceDetails | null> => ({
-  ...state.race.race,
-  selectedRace: state.race.race.selectedRace ? toRaceDetails(state.race.race.selectedRace) : null,
-});
+export const SelectRace = createSelector(
+  (state: RootState) => state.race.race,
+  (race: RaceSliceRace): ReplaceField<RaceSliceRace, 'selectedRace', RaceDetails | null> => ({
+    ...race,
+    selectedRace: race.selectedRace ? toRaceDetails(race.selectedRace) : null,
+  }),
+);
 
 export const initializeRaces = (): AppAsyncThunk => {
   return async (dispatch) => {

@@ -167,4 +167,5 @@
 | 2025.10.22 | 1   | FRONTEND: Implement different types for RN->Leaflet and Leaflet->RN messages |
 | 2025.10.23 | 2.5 | FRONTEND: Refactor Leaflet bundle & RN to use the new message types, HtmlRenderer sendDataToWeb signature. Add typeguards for RN->Leaflet messages and parse all messages with the typesafe parseJSON function. Stringify messages in Map component |
 | 2025.10.23 | 1   | FRONTEND: Set Gosagora icon and favicon. Bump version to 0.1.0 |
-| Total | 281.5 | |
+| 2025.10.24 | 0.5 | FRONTEND: Memoize relevant redux selectors with Reselects createSelector |
+| Total | 282 | |
