@@ -1,5 +1,6 @@
 import {
   type PayloadAction,
+  createSelector,
   createSlice
 } from '@reduxjs/toolkit';
 import { FirebaseError } from 'firebase/app';
@@ -84,14 +85,14 @@ export const {
   updateUserBoatIdentity: authSliceUpdateUserBoatIdentity,
 } = authSlice.actions;
 
-export const SelectAuth = (state: RootState): ReplaceField<AuthState, 'user', UserDetails | null> & {
-  isAuthenticated: boolean;
-} => ({
-  ...state.auth,
-  user: state.auth.user ? toUserDetails(state.auth.user) : null,
-  isAuthenticated: !state.auth.loading && state.auth.user !== null,
-});
-
+export const SelectAuth = createSelector(
+  (state: RootState) => state.auth,
+  (auth: AuthState): ReplaceField<AuthState, 'user', UserDetails | null> & { isAuthenticated: boolean; } => ({
+    ...auth,
+    user: auth.user ? toUserDetails(auth.user) : null,
+    isAuthenticated: !auth.loading && auth.user !== null,
+  }),
+);
 
 export const authSliceHandleSignIn = (email: string, password: string): AppAsyncThunk => {
   return async (dispatch, getState) => {
