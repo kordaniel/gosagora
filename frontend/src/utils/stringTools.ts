@@ -1,21 +1,21 @@
 import type { GeoPos, TimeDuration } from '../types';
 import { isNumber, isString } from './typeguards';
 import unitConverter, {
-  DistanceUnits,
-  VelocityUnits,
+  type DistanceUnits,
+  type VelocityUnits,
 } from './unitConverter';
 import { truncateNumber } from './helpers';
 
 const DST_SUFFIXES: { [K in DistanceUnits]: string } = {
-  [DistanceUnits.NauticalMiles]: 'NM',
-  [DistanceUnits.Meters]: 'm',
-  [DistanceUnits.Kilometers]: 'km',
+  kilometers: 'km',
+  meters: 'm',
+  nauticalMiles: 'NM',
 } as const;
 
 const VEL_SUFFIXES: { [K in VelocityUnits]: string } = {
-  [VelocityUnits.Knots]: 'kts',
-  [VelocityUnits.MetersPerSec]: 'm/s',
-  [VelocityUnits.KilometersPerHour]: 'km/h',
+  kilometersPerHour: 'km/h',
+  knots: 'kts',
+  metersPerSec: 'm/s',
 } as const;
 
 export const decimalCoordToDMSString = (
@@ -95,7 +95,7 @@ export const dateOrTimestampToString = (
 
 export const distanceToString = (
   meters: number | undefined | null,
-  outUnits: DistanceUnits = DistanceUnits.NauticalMiles,
+  outUnits: DistanceUnits = 'nauticalMiles',
   decimals: number = 1,
 ): string => {
   if (meters === undefined || meters === null) {
@@ -110,7 +110,7 @@ export const distanceToString = (
 export const geoPosAccuracyQualityToString = (
   signalQuality: number,
   accuracy?: number | null,
-  accuracyUnits: DistanceUnits = DistanceUnits.Meters,
+  accuracyUnits: DistanceUnits = 'meters',
 ): string => {
   // NOTE: The actual distances in meters depends on the values assigned to
   //       MAX_ACC_TRESHOLD, MIN_ACC_TRESHOLD in modules/location/helpers.ts
@@ -171,7 +171,7 @@ export const timeDurationToString = (
 
 export const velocityToString = (
   metersPerSec: number | undefined | null,
-  outUnits: VelocityUnits = VelocityUnits.Knots,
+  outUnits: VelocityUnits = 'knots',
   decimals: number = 1
 ): string => {
   if (metersPerSec === undefined || metersPerSec === null) {

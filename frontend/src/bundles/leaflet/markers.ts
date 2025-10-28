@@ -1,10 +1,6 @@
 import L from 'leaflet';
 
 import {
-  DistanceUnits,
-  VelocityUnits,
-} from '../../utils/unitConverter';
-import {
   dateOrTimestampToString,
   decimalCoordToDMSString,
   distanceToString,
@@ -87,7 +83,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       this._popupFields.hdg.innerHTML = headingToString(null, 2);
 
       span2.innerHTML = 'SOG: ';
-      this._popupFields.vel.innerHTML = velocityToString(null, VelocityUnits.KilometersPerHour, 2);
+      this._popupFields.vel.innerHTML = velocityToString(null, 'kilometersPerHour', 2);
 
       span3.innerHTML = 'Time: ';
       this._popupFields.timestamp.innerHTML = dateOrTimestampToString(null, { date: false, time: true });
@@ -99,7 +95,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       this._popupFields.lng.innerHTML = decimalCoordToDMSString('vertical', null);
 
       span6.innerHTML = 'Accuracy: ';
-      this._popupFields.acc.innerHTML = distanceToString(null, DistanceUnits.Meters, 2);
+      this._popupFields.acc.innerHTML = distanceToString(null, 'meters', 2);
 
       return container;
     };
@@ -151,7 +147,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       this._popupFields.hdg.innerHTML = headingToString(currentPosition?.hdg, 2);
     }
     if (this._popupFields.vel) {
-      this._popupFields.vel.innerHTML = velocityToString(currentPosition?.vel, VelocityUnits.KilometersPerHour, 2);
+      this._popupFields.vel.innerHTML = velocityToString(currentPosition?.vel, 'kilometersPerHour', 2);
     }
     if (this._popupFields.timestamp) {
       this._popupFields.timestamp.innerHTML = dateOrTimestampToString(currentPosition?.timestamp, { date: false });
@@ -163,7 +159,7 @@ class VesselMarker extends L.Marker implements L.Marker.VesselMarker {
       this._popupFields.lng.innerHTML = decimalCoordToDMSString('vertical', currentPosition?.lng);
     }
     if (this._popupFields.acc) {
-      this._popupFields.acc.innerHTML = distanceToString(currentPosition?.acc, DistanceUnits.Meters, 2);
+      this._popupFields.acc.innerHTML = distanceToString(currentPosition?.acc, 'meters', 2);
     }
     this._popup.update();
   }
