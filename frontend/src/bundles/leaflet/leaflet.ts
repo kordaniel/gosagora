@@ -41,6 +41,9 @@ document.addEventListener('click', (event: MouseEvent) => {
   if (!anchor || !anchor.href) {
     return;
   }
+  if (anchor.classList.contains('leaflet-popup-close-button')) {
+    return;
+  }
 
   event.preventDefault();
 
