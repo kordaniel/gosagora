@@ -34,15 +34,10 @@ const raceListingDataQueryOpts: FindOptions = {
   },
 };
 
-const fromUtcStrToISOStr = (utcDateStr: string): string => {
-  const [year, month, date] = utcDateStr.split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, date)).toISOString();
-};
-
 const toRaceListingData = ({ id, name, type, description, dateFrom, dateTo, user }: Race): RaceListingData => ({
   id, name, type, description,
-  dateFrom: fromUtcStrToISOStr(dateFrom as unknown as string),
-  dateTo: fromUtcStrToISOStr(dateTo as unknown as string),
+  dateFrom: dateFrom.toISOString(),
+  dateTo: dateTo.toISOString(),
   user: {
     id: user.id,
     displayName: user.displayName,
@@ -57,8 +52,8 @@ const toRaceData = (race: Race): RaceData => ({
   url: race.url,
   email: race.email,
   description: race.description,
-  dateFrom: fromUtcStrToISOStr(race.dateFrom as unknown as string),
-  dateTo: fromUtcStrToISOStr(race.dateTo as unknown as string),
+  dateFrom: race.dateFrom.toISOString(),
+  dateTo: race.dateTo.toISOString(),
   registrationOpenDate: race.registrationOpenDate.toISOString(),
   registrationCloseDate: race.registrationCloseDate.toISOString(),
   user: {

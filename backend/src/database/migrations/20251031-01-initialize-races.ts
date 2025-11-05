@@ -43,11 +43,11 @@ module.exports = {
         allowNull: false,
       },
       date_from: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         allowNull: false,
       },
       date_to: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         allowNull: false,
       },
       registration_open_date: {
