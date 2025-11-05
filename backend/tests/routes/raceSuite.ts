@@ -44,7 +44,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
       describe('Succeeds', () => {
 
         test('with valid data', async () => {
-          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           const user = await userUtils.createSignedInUser();
           const idToken = await user.credentials.user.getIdToken();
@@ -70,8 +69,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
-            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
-            dateTo: utcDateStrToDateOnly(raceData.dateTo),
+            dateFrom: raceData.dateFrom,
+            dateTo: raceData.dateTo,
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -81,7 +80,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('with valid data where url is null', async () => {
-          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           raceData.url = null;
           const user = await userUtils.createSignedInUser();
@@ -108,8 +106,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
-            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
-            dateTo: utcDateStrToDateOnly(raceData.dateTo),
+            dateFrom: raceData.dateFrom,
+            dateTo: raceData.dateTo,
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -119,7 +117,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('with valid data where email is null', async () => {
-          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           const raceData = raceUtils.getRaceCreationArgumentsObject();
           raceData.email = null;
           const user = await userUtils.createSignedInUser();
@@ -146,8 +143,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
-            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
-            dateTo: utcDateStrToDateOnly(raceData.dateTo),
+            dateFrom: raceData.dateFrom,
+            dateTo: raceData.dateTo,
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -157,7 +154,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
         });
 
         test('With valid data without field public', async () => {
-          const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { public: isPublic, ...raceData } = raceUtils.getRaceCreationArgumentsObject();
           const user = await userUtils.createSignedInUser();
@@ -184,8 +180,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             name: raceData.name,
             type: raceData.type,
             description: raceData.description,
-            dateFrom: utcDateStrToDateOnly(raceData.dateFrom),
-            dateTo: utcDateStrToDateOnly(raceData.dateTo),
+            dateFrom: raceData.dateFrom,
+            dateTo: raceData.dateTo,
             user: {
               id: user.user.id,
               displayName: user.user.displayName,
@@ -1013,15 +1009,13 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           throw new Error('Internal test error: No races in DB');
         }
 
-        const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
-
         const expected = racesInDb.map(({
           race: { id, name, type, description, dateFrom, dateTo },
           user
         }) => ({
           id, name, type, description,
-          dateFrom: utcDateStrToDateOnly(dateFrom as unknown as string),
-          dateTo: utcDateStrToDateOnly(dateTo as unknown as string),
+          dateFrom: dateFrom.toISOString(),
+          dateTo: dateTo.toISOString(),
           user: {
             id: user.id,
             displayName: user.displayName
@@ -1047,11 +1041,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           throw new Error('Internal test error: No races in DB');
         }
 
-        const fromUtcStrToISOStr = (utcDateStr: string): string => {
-          const [year, month, date] = utcDateStr.split('-').map(Number);
-          return new Date(Date.UTC(year, month - 1, date)).toISOString();
-        };
-
         const selectedRace = racesInDb[1];
 
         const expected = {
@@ -1062,8 +1051,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           url: selectedRace.race.url,
           email: selectedRace.race.email,
           description: selectedRace.race.description,
-          dateFrom: fromUtcStrToISOStr(selectedRace.race.dateFrom as unknown as string),
-          dateTo: fromUtcStrToISOStr(selectedRace.race.dateTo as unknown as string),
+          dateFrom: selectedRace.race.dateFrom.toISOString(),
+          dateTo: selectedRace.race.dateTo.toISOString(),
           registrationOpenDate: selectedRace.race.registrationOpenDate.toISOString(),
           registrationCloseDate: selectedRace.race.registrationCloseDate.toISOString(),
           user: {
@@ -1081,11 +1070,6 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
       });
 
       test('succeeds when fetching by id where race creator has been deleted', async () => {
-        const fromUtcStrToISOStr = (utcDateStr: string): string => {
-          const [year, month, date] = utcDateStr.split('-').map(Number);
-          return new Date(Date.UTC(year, month - 1, date)).toISOString();
-        };
-
         const raceInDb = await raceUtils.createRace({ public: true });
         const idToken = await raceInDb.userCredentials.user.getIdToken();
         const expected = {
@@ -1096,8 +1080,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
           url: raceInDb.race.url,
           email: raceInDb.race.email,
           description: raceInDb.race.description,
-          dateFrom: fromUtcStrToISOStr(raceInDb.race.dateFrom as unknown as string),
-          dateTo: fromUtcStrToISOStr(raceInDb.race.dateTo as unknown as string),
+          dateFrom: raceInDb.race.dateFrom.toISOString(),
+          dateTo: raceInDb.race.dateTo.toISOString(),
           registrationOpenDate: raceInDb.race.registrationOpenDate.toISOString(),
           registrationCloseDate: raceInDb.race.registrationCloseDate.toISOString(),
           user: {
@@ -1381,19 +1365,13 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const { raceData, raceListingData } = res.body;
 
-            const utcDateStrToDateOnly = (org: string) => `${org.split('T')[0]}T00:00:00.000Z`;
-            const fromUtcStrToISOStr = (utcDateStr: string): string => {
-              // TODO: Refactor away into utils module !!!!!!!!!!
-              const [year, month, date] = utcDateStr.split('-').map(Number);
-              return new Date(Date.UTC(year, month - 1, date)).toISOString();
-            };
             expect(raceListingData).toStrictEqual({
               id: raceToBeUpdated.race.id,
               name: updatedRaceName,
               type: raceToBeUpdated.race.type,
               description: raceToBeUpdated.race.description,
-              dateFrom: utcDateStrToDateOnly(raceToBeUpdated.race.dateFrom as unknown as string),
-              dateTo: utcDateStrToDateOnly(raceToBeUpdated.race.dateTo as unknown as string),
+              dateFrom: raceToBeUpdated.race.dateFrom.toISOString(),
+              dateTo: raceToBeUpdated.race.dateTo.toISOString(),
               user: expectedUserResponse,
             });
             expect(raceData).toStrictEqual({
@@ -1404,8 +1382,8 @@ export const raceTestSuite = (api: TestAgent) => describe('/race', () => {
               url: raceToBeUpdated.race.url,
               email: raceToBeUpdated.race.email,
               description: raceToBeUpdated.race.description,
-              dateFrom: fromUtcStrToISOStr(raceToBeUpdated.race.dateFrom.toString()),
-              dateTo: fromUtcStrToISOStr(raceToBeUpdated.race.dateTo.toString()),
+              dateFrom: raceToBeUpdated.race.dateFrom.toISOString(),
+              dateTo: raceToBeUpdated.race.dateTo.toISOString(),
               registrationOpenDate: raceToBeUpdated.race.registrationOpenDate.toISOString(),
               registrationCloseDate: raceToBeUpdated.race.registrationCloseDate.toISOString(),
               user: expectedUserResponse,
