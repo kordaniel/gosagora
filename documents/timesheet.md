@@ -169,4 +169,6 @@
 | 2025.10.23 | 1   | FRONTEND: Set Gosagora icon and favicon. Bump version to 0.1.0 |
 | 2025.10.24 | 0.5 | FRONTEND: Memoize relevant redux selectors with Reselects createSelector |
 | 2025.10.28 | 0.5 | FRONTEND: Refactor src/utils/unitConverter units types enum -> string literal union |
-| Total | 282.5 | |
+| 2025.11.05 | 1   | BACKEND: Refactor Race model SQL table dateFrom, dateTo columns datatype DATEONLY->DATE |
+| 2025.11.09 | 0.5 | BACKEND: Refactor User SignIn API endpoint to return correct prev signin date |
+| Total | 284 | |

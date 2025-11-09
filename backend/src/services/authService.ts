@@ -59,8 +59,9 @@ const loginUser = async (credentials: SignInArguments): Promise<UserDetailsData>
     throw new AuthError('Forbidden: invalid user', 403);
   }
 
+  const userDetails = toUserDetailsData(user);
   await user.updateLastseen();
-  return toUserDetailsData(user);
+  return userDetails;
 };
 
 const verifyIdToken = async (firebaseIdToken: string): Promise<DecodedIdToken> => {
