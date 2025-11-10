@@ -185,10 +185,17 @@ const deleteUsers = async (firebaseUserUidsToDelete: string[]): Promise<DeleteUs
   }
 };
 
+const hasUsers = async () => {
+  const fbUsers = await getAllUsers(1, undefined);
+  return fbUsers === null
+    ? false
+    : fbUsers.users.length > 0;
+};
 
 export default {
   verifyIdToken,
   createUser,
   getAllUsers,
   deleteUsers,
+  hasUsers,
 };
