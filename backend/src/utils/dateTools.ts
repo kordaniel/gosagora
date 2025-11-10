@@ -1,4 +1,4 @@
-const MSEC_IN_DAY = 1000 * 24 * 60 * 60;
+export const MSEC_IN_DAY = 1000 * 24 * 60 * 60;
 
 export const getDateOffsetDaysFromNow = (daysOffset: number = 0): Date => {
   return new Date(Date.now() + (daysOffset * MSEC_IN_DAY));
