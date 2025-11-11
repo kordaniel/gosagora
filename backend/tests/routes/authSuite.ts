@@ -504,18 +504,20 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         expect(res.body).toBeDefined();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, lastseenAt, ...bodyRest } = res.body;
+        const { id, ...bodyRest } = res.body;
 
         expect(id).toEqual(userInDb!.id);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(lastseenAt)).not.toBeNaN();
 
         expect(bodyRest).toStrictEqual({
           email: user.userBase.email.toLowerCase(),
           firebaseUid: user.credentials.user.uid,
           displayName: user.userBase.displayName,
           boatIdentities: [],
+          lastseenAt: null,
         });
+
+        const userInDbFinal = await testDatabase.getUserByFirebaseUid(user.credentials.user.uid);
+        expect(userInDbFinal?.lastseenAt instanceof Date).toBe(true);
       });
 
       test('Fails when request type is not login', async () => {
@@ -774,16 +776,15 @@ export const authTestSuite = (api: TestAgent) => describe('/auth', () => {
         expect(res.body).toBeDefined();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, lastseenAt, ...bodyRest } = res.body;
+        const { id, ...bodyRest } = res.body;
 
         expect(id).toEqual(user.user.id);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        expect(Date.parse(lastseenAt)).not.toBeNaN();
 
         expect(bodyRest).toStrictEqual({
           email: user.user.email,
           firebaseUid: user.credentials.user.uid,
           displayName: user.user.displayName,
+          lastseenAt: null,
           boatIdentities: boats.map(({ sailboat }) => ({
             id: sailboat.id,
             name: sailboat.name,
