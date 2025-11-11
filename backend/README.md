@@ -38,6 +38,16 @@ Make sure that all the required environment variables that are defined in the en
 npm run tsc && npm run start
 ```
 
+#### Insert initial user
+You can insert the initial admin user by running the script [injectInitialAdminUser](https://github.com/kordaniel/gosagora/blob/main/backend/src/database/injectInitialAdminUser.ts), for example in your CI/CD process. On execution, it verifies that no users currently exists in the system. If no users are found, it creates and inserts a new admin user using the credentials provided through environment variables. The script is designed to run only in a production environment and does nothing if it's executed in any other environment or if the production environment is not set up correctly. In addition to the standard production environment variables, this script requires the following variables to be set:
+
+```bash
+NODE_ENV=production
+GOSAGORA_ADMIN_EMAIL=<SPECIFY.ROOT@ADMIN.EMAIL.COM>
+GOSAGORA_ADMIN_DISPLAYNAME=<SPECIFY_ADMIN_DISPLAYNAME>
+GOSAGORA_ADMIN_PASSWORD=<SPECIFY_ADMIN_PASSWD>
+```
+
 ### Run in dev & test environments
 These environments requires that the Firebase Local Emulator Suite is running.
 
