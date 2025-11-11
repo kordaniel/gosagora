@@ -171,4 +171,6 @@
 | 2025.10.28 | 0.5 | FRONTEND: Refactor src/utils/unitConverter units types enum -> string literal union |
 | 2025.11.05 | 1   | BACKEND: Refactor Race model SQL table dateFrom, dateTo columns datatype DATEONLY->DATE |
 | 2025.11.09 | 0.5 | BACKEND: Refactor User SignIn API endpoint to return correct prev signin date |
-| Total | 284 | |
+| 2025.11.10 | 2   | BACKEND: Add module that seeds the DB in DEV env with default values |
+| 2025.11.11 | 2   | BACKEND: Add script that injects the inital (admin, when roles are implemented) user with credentials from env vars in PROD env |
+| Total | 288 | |
