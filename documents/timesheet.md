@@ -174,4 +174,5 @@
 | 2025.11.10 | 2   | BACKEND: Add module that seeds the DB in DEV env with default values |
 | 2025.11.11 | 2   | BACKEND: Add script that injects the inital (admin, when roles are implemented) user with credentials from env vars in PROD env |
 | 2025.11.11 | 0   | BACKEND: Fix auth test suite SignIn tests: assert that the correct value is returned and user lastseenAt field is updated in DB |
-| Total | 288 | |
+| 2025.11.11 | 4 | BACKEND: Add initial trails route |
+| Total | 292 | |
