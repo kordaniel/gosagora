@@ -1,6 +1,8 @@
-import { type FindOptions } from 'sequelize';
+import { DatabaseError, type FindOptions } from 'sequelize';
 
+import { APIRequestError, PermissionForbiddenError } from '../errors/applicationError';
 import { Sailboat, Trail, User } from '../models';
+import boatService from './boatService';
 
 import type {
   CreateTrailArguments,
@@ -45,19 +47,32 @@ const createNewTrail = async (
   userId: User['id'],
   newTrailArguments: CreateTrailArguments
 ): Promise<TrailListingData> => {
-  // TODO: Add check that sailboat with arg id exists
-  //       Add tests for case when id does not exist
-  console.log('newTrailArgs:', newTrailArguments);
-  const trail = await Trail.create({
-    userId,
-    sailboatId: newTrailArguments.sailboatId,
-    //public: newTrailArguments.public, // OPTIONAL, default to true
-    name: newTrailArguments.name,
-    description: newTrailArguments.description,
-  });
+  if (!(await boatService.userIsInUserSailboatsSet(userId, newTrailArguments.sailboatId))) {
+    // NOTE: For simplicity, security and to avoid DB queries return status 403 from here in both cases, where
+    //       - user has no relation to the sailboat
+    //       - there exists no sailboat with the requested id (instead of 400)
+    throw new PermissionForbiddenError(`Forbidden: You are not an owner of the specified boat with ID: '${newTrailArguments.sailboatId}'`);
+  }
 
-  await trail.reload(trailListingDataQueryOpts);
-  return toTrailListingData(trail);
+  try {
+    const trail = await Trail.create({
+      userId,
+      sailboatId: newTrailArguments.sailboatId,
+      public: newTrailArguments.public,
+      name: newTrailArguments.name,
+      description: newTrailArguments.description,
+    });
+
+    await trail.reload(trailListingDataQueryOpts);
+    return toTrailListingData(trail);
+  } catch (error: unknown) {
+    if (error instanceof DatabaseError && error.name === 'SequelizeForeignKeyConstraintError') {
+      // NOTE: If this is true and the if that checks userIsInUserSailboatsSet is in the start of this function
+      //       => DB integrity error
+      throw new APIRequestError(`Invalid ID for boat: '${newTrailArguments.sailboatId}'`);
+    }
+    throw error;
+  }
 };
 
 const getAll = async (): Promise<TrailListingData[]> => {

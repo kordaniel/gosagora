@@ -144,6 +144,10 @@ const getSailboatByPk = async (id: number, paranoid: boolean = true) => {
   return await Sailboat.findByPk(id, { paranoid });
 };
 
+const getTrailByPk = async (id: number, paranoid: boolean = true) => {
+  return await Trail.findByPk(id, { paranoid });
+};
+
 const getUserSailboats = async (userId: number, sailboatId: number) => {
   return await UserSailboats.findOne({
     where: {
@@ -186,6 +190,7 @@ export default {
   getUserByPk,
   getRaceByPk,
   getSailboatByPk,
+  getTrailByPk,
   getUserSailboats,
   getRaceWhereUserIdIsNot,
 };

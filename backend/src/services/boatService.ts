@@ -119,9 +119,22 @@ const updateBoat = async (
   return toBoatCreateResponseData(sailboat);
 };
 
+const userIsInUserSailboatsSet = async (
+  userId: User['id'],
+  boatId: number
+): Promise<boolean> => {
+  // NOTE: count always scans whole table, findOne stops when first matching row is found
+  const userSailboats = await UserSailboats.findOne({
+    attributes: ['userId'],
+    where: { userId, sailboatId: boatId, },
+  });
+  return userSailboats !== null;
+};
+
 export default {
   createNewBoat,
   deleteUserSailboats,
   getOne,
   updateBoat,
+  userIsInUserSailboatsSet,
 };
