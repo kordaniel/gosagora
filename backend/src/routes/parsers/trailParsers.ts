@@ -25,7 +25,7 @@ const NewTrailSchema = matchingZodSchema<APITrailRequest<'create', CreateTrailAr
       description: z.string()
         .trim()
         .min(TRAIL_CONSTANTS.VALIDATION.DESCRIPTION_LEN.MIN)
-        .max(TRAIL_CONSTANTS.VALIDATION.NAME_LEN.MAX),
+        .max(TRAIL_CONSTANTS.VALIDATION.DESCRIPTION_LEN.MAX),
     }).strict()
   }).strict()
 );
