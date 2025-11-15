@@ -1,17 +1,23 @@
 import {
   type PayloadAction,
+  createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
 
 import type { AppAsyncThunk, RootState } from '../index';
 import {
   type NewTrailValuesType,
+  toTrailListing,
 } from '../../models/trail';
+import { type ReplaceField } from '../../types';
 import trailService from '../../services/trailService';
 import { trailValuesToTrailArguments } from '../../schemas/trail';
 
 import {
-  TrailListingData,
+  type TrailListing
+} from '@common/types/trail';
+import {
+  type TrailListingData,
 } from '@common/types/rest_api';
 
 interface TrailSliceTrails {
@@ -83,7 +89,13 @@ const {
 
 export const SelectSubmitNewTrail = (state: RootState): TrailSliceSubmitNewTrail => state.trail.submitNewTrail;
 
-export const SelectTrails = (state: RootState): TrailSliceTrails => state.trail.trails;
+export const SelectTrails = createSelector(
+  (state: RootState) => state.trail.trails,
+  (trails: TrailSliceTrails): ReplaceField<TrailSliceTrails, 'trails', TrailListing[]> => ({
+    ...trails,
+    trails: trails.trails.map(toTrailListing),
+  }),
+);
 
 export const initializeTrails = (): AppAsyncThunk => {
   return async (dispatch) => {
