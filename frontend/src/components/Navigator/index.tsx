@@ -11,6 +11,7 @@ import Home from '../../pages/Home';
 import Navigation from '../../pages/Navigation';
 import Race from '../../pages/Race';
 import Races from '../../pages/Races';
+import Trails from '../../pages/Trails';
 import UserProfile from '../../pages/UserProfile';
 
 import { SelectAuth } from '../../store/slices/authSlice';
@@ -26,6 +27,7 @@ type RootStackParamList = {
   Races: undefined;
   Home: undefined;
   Race: undefined;
+  Trails: undefined;
   Navigation: undefined;
 };
 
@@ -52,6 +54,11 @@ const Navigator = () => {
         name="Races"
         component={Races}
         options={{ title: "Races" }}
+      />
+      <Tab.Screen
+        name="Trails"
+        component={Trails}
+        options={{ title: "Trails" }}
       />
       <Tab.Screen
         name="Home"

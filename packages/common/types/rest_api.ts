@@ -121,3 +121,27 @@ export interface BoatCreateResponseData {
   boat: SailboatData;
   boatIdentity: BoatIdentity;
 };
+
+export interface APITrailRequest<
+  REQT extends 'create',
+  DT
+> {
+  type: REQT;
+  data: DT;
+};
+
+export interface CreateTrailArguments {
+  sailboatId: number;
+  public?: boolean;
+  name: string;
+  description: string;
+};
+
+export interface TrailListingData {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string | null;
+  user: UserIdentity;
+  boat: BoatIdentity;
+}
