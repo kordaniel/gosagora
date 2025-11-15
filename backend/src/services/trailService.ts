@@ -76,7 +76,7 @@ const createNewTrail = async (
 };
 
 const getAll = async (): Promise<TrailListingData[]> => {
-  const trails = await Trail.findAll();
+  const trails = await Trail.findAll(trailListingDataQueryOpts);
   return trails.map(toTrailListingData);
 };
 

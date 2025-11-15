@@ -177,4 +177,5 @@
 | 2025.11.11 | 4   | BACKEND: Add initial trails route |
 | 2025.11.12 | 2   | BACKEND: Add tests for creating trails, implement required logic to route |
 | 2025.11.15 | 5   | FRONTEND: Add Trails page, implement new trail creation, listing of trails |
-| Total | 299 | |
+| 2025.11.15 | 1   | BACKEND: Implement GET all trails, tests |
+| Total | 300 | |

@@ -1,11 +1,19 @@
 import TestAgent from 'supertest/lib/agent';
+import { type UserCredential } from 'firebase/auth';
 
+import {
+  Sailboat,
+  Trail,
+  User,
+  UserSailboats,
+} from '../../src/models';
 import {
   generateRandomInteger,
   generateRandomString
 } from '../testUtils/testHelpers';
 import boatUtils from '../testUtils/boatUtils';
 import testDatabase from '../testUtils/testDatabase';
+import trailUtils from '../testUtils/trailUtils';
 import userUtils from '../testUtils/userUtils';
 
 export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
@@ -520,5 +528,58 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
     }); // Addition of new trails
 
   }); // When no trails exist
+
+  describe('When trails exist', () => {
+    let trailsInDb: Array<{
+      trail: Trail;
+      user: User;
+      userCredentials: UserCredential;
+      boat: { sailboat: Sailboat; userSailboats: UserSailboats | undefined };
+    }> | undefined = undefined;
+
+    beforeAll(async () => {
+      await testDatabase.dropTrails();
+      trailsInDb = await trailUtils.createTrails();
+    });
+
+    describe('Listing trails', () => {
+
+      test('returns all races', async () => {
+        if (!trailsInDb) {
+          throw new Error('Internal test error: No trails in DB');
+        }
+
+        const expected = trailsInDb.map(({
+          trail: { id, name, createdAt, endedAt },
+          user,
+          boat,
+        }) => ({
+          id, name,
+          startDate: createdAt.toISOString(),
+          endDate: endedAt === null ? null : endedAt.toISOString(),
+          user: {
+            id: user.id,
+            displayName: user.displayName,
+          },
+          boat: {
+            id: boat.sailboat.id,
+            boatType: boat.sailboat.boatType,
+            name: boat.sailboat.name,
+          }
+        }));
+
+        const res = await api
+          .get(baseUrl)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toHaveLength(expected.length);
+        expect(res.body).toEqual(expect.arrayContaining(expected));
+      });
+
+    }); // Listing trails
+
+  }); // When trails exist
 
 }); // '/trail'
