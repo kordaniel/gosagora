@@ -1,8 +1,15 @@
 import { Sailboat, Trail, TrailModule, UserSailboats } from '../../src/models';
 import boatUtils from './boatUtils';
+import { generateIdFromTimestamp } from './clientHelpers';
 import userUtils from './userUtils';
 
 let trailNumber: number = 0;
+let lat = -10.0 + Math.random() * 20.0;
+let lon = -10.0 + Math.random() * 20.0;
+let acc = 3.0 + Math.random() * 5.0;
+let hdg = Math.random() * 360.0;
+let vel = Math.random() * 5.0;
+const baseDate = new Date();
 
 const getTrailCreationAttributesObject = (sailboatId?: number): TrailModule.TrailCreationAttributesType => {
   trailNumber++;
@@ -18,6 +25,29 @@ const getTrailCreationAttributesObject = (sailboatId?: number): TrailModule.Trai
   }
 
   return obj;
+};
+
+const getLoggedTrailPositionsAttributesArray = (length: number) => {
+  return Array.from({ length }, (_, i) => {
+    const timestamp = new Date(baseDate.getTime() + i * 100);
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    lat += dir * 0.1;
+    lon += dir * 0.1;
+    acc = Math.max(acc + dir * 0.1, 1.5);
+    hdg += dir * 0.1;
+    hdg = (hdg + 360) % 360;
+    vel = Math.max(vel + dir * 0.1, 0.1);
+    return {
+      clientId: generateIdFromTimestamp(timestamp.getTime()),
+      timestamp, lat, lon, acc, hdg, vel
+    };
+  });
+};
+
+const getLoggedTrailPositionsArgumentsArray = (length: number = 5) => {
+  return getLoggedTrailPositionsAttributesArray(length).map(
+    attr => ({ ...attr, timestamp: attr.timestamp.toISOString() })
+  );
 };
 
 const createTrails = async () => {
@@ -72,4 +102,6 @@ const createTrails = async () => {
 
 export default {
   createTrails,
+  getLoggedTrailPositionsArgumentsArray,
+  getLoggedTrailPositionsAttributesArray,
 };

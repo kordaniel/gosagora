@@ -2,14 +2,17 @@ import express, {
   type Request,
   type Response,
 } from 'express';
+import type { ParamsDictionary } from 'express-serve-static-core';
 
-import { AuthError } from '../errors/applicationError';
+import { APIRequestError, AuthError } from '../errors/applicationError';
+import { loggedTrailPositionsParser, newTrailParser } from './parsers/trailParsers';
+import type { LoggedTrailPositionAttributes } from '../types';
 import middleware from '../utils/middleware';
-import { newTrailParser } from './parsers/trailParsers';
 import trailService from '../services/trailService';
 
 import type {
   APITrailRequest,
+  AppendedLoggedTrailPositionData,
   CreateTrailArguments,
   TrailListingData,
 } from '@common/types/rest_api';
@@ -29,6 +32,31 @@ router.post('/', [middleware.userExtractor, newTrailParser], async (
     req.body.data
   );
   res.status(201).json(newTrail);
+});
+
+router.post('/:id/positions', [
+  middleware.idExtractorInt(),
+  middleware.userExtractor,
+  loggedTrailPositionsParser,
+], async (
+  req: Request<ParamsDictionary, unknown, APITrailRequest<'appendLoggedTrailPositions', LoggedTrailPositionAttributes[]>>,
+  res: Response<AppendedLoggedTrailPositionData[]>
+) => {
+  if (!req.parsedIds?.id) {
+    throw new APIRequestError(`Invalid ID for trail: '${req.params.id}'`);
+  }
+
+  if (!req.user) {
+    throw new AuthError('Forbidden: invalid user', 403);
+  }
+
+  const appendedPositions = await trailService.appendLoggedTrailPositionsToTrail(
+    req.user.id,
+    req.parsedIds.id,
+    req.body.data
+  );
+
+  res.status(201).json(appendedPositions);
 });
 
 router.get('/', async (_req: Request, res: Response<TrailListingData[]>) => {

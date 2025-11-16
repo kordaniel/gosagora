@@ -123,7 +123,7 @@ export interface BoatCreateResponseData {
 };
 
 export interface APITrailRequest<
-  REQT extends 'create',
+  REQT extends 'appendLoggedTrailPositions' | 'create',
   DT
 > {
   type: REQT;
@@ -144,4 +144,19 @@ export interface TrailListingData {
   endDate: string | null;
   user: UserIdentity;
   boat: BoatIdentity;
+}
+
+export interface LoggedTrailPositionData {
+  clientId: string;
+  timestamp: string;
+  lat: number;
+  lon: number;
+  acc: number;
+  hdg: number | null;
+  vel: number | null;
+}
+
+export interface AppendedLoggedTrailPositionData {
+  id: number;
+  clientId: string;
 }

@@ -1,4 +1,11 @@
-import { Race, Sailboat, Trail, User, UserSailboats } from '../../src/models';
+import {
+  LoggedTrailPosition,
+  Race,
+  Sailboat,
+  Trail,
+  User,
+  UserSailboats,
+} from '../../src/models';
 import { connectToDatabase, sequelize } from '../../src/database';
 import type { SailboatCreationAttributesType } from '../../src/models/sailboat';
 import { UserCreationAttributesType } from '../../src/models/user';
@@ -28,6 +35,16 @@ const dropUsers = async () => {
     throw new Error('Attempted to truncate users table outside test environment');
   }
   await User.unscoped().destroy({
+    where: {},
+    force: true,
+  });
+};
+
+const dropLoggedTrailPositions = async () => {
+  if (!config.IS_TEST_ENV) {
+    throw new Error('Attempted to truncate logged_trail_positions table outside test environment');
+  }
+  await LoggedTrailPosition.destroy({
     where: {},
     force: true,
   });
@@ -118,6 +135,10 @@ const trailCount = async () => {
   return await Trail.count({});
 };
 
+const loggedTrailPositionsCount = async () => {
+  return await LoggedTrailPosition.count({});
+};
+
 const userSailboatsCount = async (where?: { userId?: number, sailboatId?: number }) => {
   return await UserSailboats.count(!where || Object.keys(where).length === 0 ? {} : { where });
 };
@@ -172,6 +193,7 @@ export default {
   disconnectFromDatabase,
   dropDb,
   dropUsers,
+  dropLoggedTrailPositions,
   dropRaces,
   dropSailboats,
   dropTrails,
@@ -184,6 +206,7 @@ export default {
   raceCount,
   sailboatCount,
   trailCount,
+  loggedTrailPositionsCount,
   userSailboatsCount,
   //getUsers,
   getUserByFirebaseUid,

@@ -23,7 +23,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
 
     describe('Listing trails', () => {
 
-      test('return empty array', async () => {
+      test('returns empty array', async () => {
         const res = await api
           .get(baseUrl)
           .expect(200)
@@ -579,6 +579,48 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
       });
 
     }); // Listing trails
+
+    describe('Appending LoggedTrailPositions', () => {
+
+      test('succeeds with valid data', async () => {
+        if (!trailsInDb) {
+          throw new Error('Internal test error: No trails in DB');
+        }
+
+        const trail = trailsInDb[0];
+        const data = trailUtils.getLoggedTrailPositionsArgumentsArray();
+        const idToken = await trail.userCredentials.user.getIdToken();
+        const initialLoggedTrailPositionsCount = await testDatabase.loggedTrailPositionsCount();
+        const expectedClientIds = data.map(attr => attr.clientId);
+
+        const res = await api
+          .post(`${baseUrl}/${trail.trail.id}/positions`)
+          .set('Authorization', `Bearer ${idToken}`)
+          .send({
+            type: 'appendLoggedTrailPositions',
+            data,
+          })
+          .expect(201)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toBeDefined();
+        expect(res.body).toHaveLength(expectedClientIds.length);
+
+        const resClientAndDbIds = (res.body as { id: number; clientId: string; }[])
+          .reduce((acc: { clientIds: string[]; ids: number[]; }, cur) => {
+            acc.clientIds.push(cur.clientId);
+            acc.ids.push(cur.id);
+            return acc;
+          }, { clientIds: [], ids: [] });
+
+        expect(resClientAndDbIds.clientIds).toEqual(expect.arrayContaining(expectedClientIds));
+        resClientAndDbIds.ids.forEach(id => {
+          expect(Number.isInteger(id)).toBe(true);
+        });
+        expect(await testDatabase.loggedTrailPositionsCount()).toEqual(initialLoggedTrailPositionsCount + data.length);
+      });
+
+    }); // Appending logged positions
 
   }); // When trails exist
 

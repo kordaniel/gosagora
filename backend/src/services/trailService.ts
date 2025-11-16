@@ -1,10 +1,17 @@
 import { DatabaseError, type FindOptions } from 'sequelize';
 
-import { APIRequestError, PermissionForbiddenError } from '../errors/applicationError';
-import { Sailboat, Trail, User } from '../models';
+import {
+  APIRequestError,
+  NotFoundError,
+  PermissionForbiddenError
+} from '../errors/applicationError';
+import { LoggedTrailPosition, Sailboat, Trail, User } from '../models';
+import type { LoggedTrailPositionAttributes } from '../types';
 import boatService from './boatService';
+import logger from '../utils/logger';
 
 import type {
+  AppendedLoggedTrailPositionData,
   CreateTrailArguments,
   TrailListingData,
 } from '@common/types/rest_api';
@@ -42,6 +49,37 @@ const toTrailListingData = ({ id, name, createdAt, endedAt, user, sailboat }: Tr
     name: sailboat.name,
   }
 });
+
+const appendLoggedTrailPositionsToTrail = async (
+  userId: User['id'],
+  trailId: Trail['id'],
+  positions: LoggedTrailPositionAttributes[]
+): Promise<AppendedLoggedTrailPositionData[]> => {
+  const trail = await Trail.findByPk(trailId, { attributes: ['userId'] });
+
+  if (!trail) {
+    throw new NotFoundError(`Trail with ID ${trailId} not found`);
+  }
+  if (trail.userId !== userId) {
+    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to update this trail'); // TODO: Better error msg
+  }
+
+  // TODO: Add check for endedAt !== null
+
+  const insertedRows = await LoggedTrailPosition.bulkCreate(positions.map(p => ({ ...p, trailId })), {
+    fields: ['trailId', 'timestamp', 'lat', 'lon', 'acc', 'hdg', 'vel'],
+    validate: true,
+  });
+
+  return insertedRows.reduce((acc: AppendedLoggedTrailPositionData[], cur) => {
+    if ('clientId' in cur && cur.clientId !== undefined) {
+      return acc.concat({ id: cur.id, clientId: cur.clientId });
+    }
+    // TODO NOTE: Delete dev logging before commit to main
+    logger.errorAllEnvs('Inserted loggedTrailPosition with id =', cur.id, 'not included in response');
+    return acc;
+  }, []);
+};
 
 const createNewTrail = async (
   userId: User['id'],
@@ -81,6 +119,7 @@ const getAll = async (): Promise<TrailListingData[]> => {
 };
 
 export default {
+  appendLoggedTrailPositionsToTrail,
   createNewTrail,
   getAll,
 };
