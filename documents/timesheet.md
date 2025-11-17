@@ -180,4 +180,5 @@
 | 2025.11.15 | 1   | BACKEND: Implement GET all trails, tests |
 | 2025.11.16 | 4   | BACKEND: Add LoggedTrailPosition, implement posting positions to trail |
 | 2025.11.17 | 1.5 | BACKEND: Add GET trail by id |
-| Total | 305.5 | |
+| 2025.11.17 | 2.5 | FRONTEND: Add TrailView page, fetch and render trail details |
+| Total | 308 | |

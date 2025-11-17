@@ -8,6 +8,7 @@ import config from '../utils/config';
 
 import type {
   CreateTrailArguments,
+  TrailData,
   TrailListingData,
 } from '@common/types/rest_api';
 import type { BoatIdentity } from '@common/types/boat';
@@ -29,6 +30,30 @@ export const trailListingDataSchema: Yup.Schema<TrailListingData> = Yup.object()
 export const trailListingDataArraySchema: Yup.Schema<TrailListingData[]> = Yup.array().of(
   trailListingDataSchema
 ).required();
+
+export const trailDataSchema: Yup.Schema<TrailData> = Yup.object().shape({
+  id: Yup.number()
+    .required(),
+  startDate: Yup.string()
+    .required(),
+  endDate: Yup.string()
+    .nullable()
+    .defined(),
+  user: userIdentitySchema,
+  boat: boatIdentitySchema,
+  public: Yup.boolean()
+    .required(),
+  name: Yup.string()
+    .required(),
+  description: Yup.string()
+    .required(),
+  avgVelocity: Yup.number()
+    .nullable()
+    .defined(),
+  length: Yup.number()
+    .nullable()
+    .defined()
+});
 
 export const newTrailValidationSchema: Yup.Schema<NewTrailValuesType> = Yup.object().shape({
   name: Yup.string()

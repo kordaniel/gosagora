@@ -1,4 +1,5 @@
 import {
+  trailDataSchema,
   trailListingDataArraySchema,
   trailListingDataSchema,
 } from '../schemas/trail';
@@ -8,6 +9,7 @@ import { validateResponse } from './validators';
 import type {
   APITrailRequest,
   CreateTrailArguments,
+  TrailData,
   TrailListingData
 } from '@common/types/rest_api';
 
@@ -44,7 +46,18 @@ const getAll = async (): Promise<TrailListingData[]> => {
   }
 };
 
+const getOne = async (trailId: string): Promise<TrailData> => {
+  const { data } = await axiosInstance.get<TrailData>(`${apiBasePath}/${trailId}`);
+
+  return await validateResponse<TrailData>(
+    data,
+    trailDataSchema,
+    'We encountered a problem loading this trail for you. Please try again, or contact our support team if the problem persists'
+  );
+};
+
 export default {
   create,
   getAll,
+  getOne,
 };

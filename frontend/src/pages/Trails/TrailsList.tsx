@@ -7,7 +7,7 @@ import EmptyFlatList from '../../components/FlatListComponents/EmptyFlatList';
 import ErrorRenderer from '../../components/ErrorRenderer';
 
 import type { AppTheme, SceneMapRouteProps } from '../../types';
-import { SelectTrails, initializeTrails } from '../../store/slices/trailSlice';
+import { SelectTrails, fetchTrail, initializeTrails } from '../../store/slices/trailSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 import type { TrailListing } from '@common/types/trail';
@@ -15,10 +15,11 @@ import type { TrailListing } from '@common/types/trail';
 
 interface TrailListingViewProps {
   trail: TrailListing;
-  jumpto: SceneMapRouteProps['jumpTo'];
+  jumpTo: SceneMapRouteProps['jumpTo'];
 }
 
 const TrailListingView = ({ trail, jumpTo }: TrailListingViewProps) => {
+  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
   const style = StyleSheet.compose(
     theme.styles.secondaryContainer,
@@ -26,12 +27,9 @@ const TrailListingView = ({ trail, jumpTo }: TrailListingViewProps) => {
   );
 
   const onPress = (id: number) => {
-    console.log('clicked id:', id);
+    void dispatch(fetchTrail(id));
+    jumpTo('trailView');
   };
-
-  if (Math.random() < 0.4) {
-    trail.endDate = new Date(); // TODO: Delete dev helper
-  }
 
   return (
     <TouchableOpacity style={style} onPress={() => onPress(trail.id)}>
@@ -74,7 +72,7 @@ const TrailsList = ({ jumpTo }: SceneMapRouteProps) => {
   return (
     <FlatList
       data={trails}
-      renderItem={({ item }) => <TrailListingView trail={item} jumpto={jumpTo} />}
+      renderItem={({ item }) => <TrailListingView trail={item} jumpTo={jumpTo} />}
       keyExtractor={item => item.id.toString()}
       ListEmptyComponent={<EmptyFlatList
         message="No Trails.."

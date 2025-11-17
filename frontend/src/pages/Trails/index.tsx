@@ -14,6 +14,7 @@ import { useTheme } from 'react-native-paper';
 import { useWindowDimensions } from 'react-native';
 
 import NewTrail from './NewTrail';
+import TrailView from './TrailView';
 import TrailsList from './TrailsList';
 
 import type { AppTheme } from '../../types';
@@ -21,11 +22,13 @@ import type { AppTheme } from '../../types';
 const routes: Route[] = [
   { key: 'newTrail', title: 'New Trail' },
   { key: 'trailsList', title: 'Trails' },
+  { key: 'trailView', title: 'Trail' },
 ];
 
 const renderScene = SceneMap({
   newTrail: NewTrail,
   trailsList: TrailsList,
+  trailView: TrailView,
 });
 
 const createRenderTabBar = (theme: AppTheme) =>
@@ -59,7 +62,7 @@ const Trails = () => {
           height: 0,
           width: layout.width
         }}
-        lazy={({ route }) => route.key === 'newTrail'}
+        lazy={({ route }) => route.key === 'newTrail' || route.key === 'trailView'}
         navigationState={{ index: tabViewIndex, routes }}
         onIndexChange={setTabViewIndex}
         renderScene={renderScene}
