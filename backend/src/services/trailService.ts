@@ -8,7 +8,6 @@ import {
 import { LoggedTrailPosition, Sailboat, Trail, User } from '../models';
 import type { LoggedTrailPositionAttributes } from '../types';
 import boatService from './boatService';
-import logger from '../utils/logger';
 
 import type {
   AppendedLoggedTrailPositionData,
@@ -114,8 +113,7 @@ const appendLoggedTrailPositionsToTrail = async (
     if ('clientId' in cur && cur.clientId !== undefined) {
       return acc.concat({ id: cur.id, clientId: cur.clientId });
     }
-    // TODO NOTE: Delete dev logging before commit to main
-    logger.errorAllEnvs('Inserted loggedTrailPosition with id =', cur.id, 'not included in response');
+
     return acc;
   }, []);
 };
