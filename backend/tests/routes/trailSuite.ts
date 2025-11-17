@@ -621,6 +621,47 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
         expect(res.body).toStrictEqual(expected);
       });
 
+      test('succeeds when fetching by id where trail creator and boat has been deleted', async () => {
+        const trailInDb = await trailUtils.createTrail({ public: true });
+        const idToken = await trailInDb.userCredentials.user.getIdToken();
+        const expected = {
+          id: trailInDb.trail.id,
+          startDate: trailInDb.trail.createdAt.toISOString(),
+          endDate: trailInDb.trail.endedAt,
+          public: trailInDb.trail.public,
+          name: trailInDb.trail.name,
+          description: trailInDb.trail.description,
+          avgVelocity: trailInDb.trail.avgVelocity,
+          maxVelocity: trailInDb.trail.maxVelocity,
+          length: trailInDb.trail.length,
+          user: {
+            id: trailInDb.user.id,
+            displayName: trailInDb.user.displayName,
+          },
+          boat: {
+            id: trailInDb.boat.sailboat.id,
+            name: trailInDb.boat.sailboat.name,
+            boatType: trailInDb.boat.sailboat.boatType,
+          },
+        };
+
+        await api // TODO: delete boat directly from DB
+          .delete(`/api/v1/boat/${trailInDb.boat.sailboat.id}/users/${trailInDb.user.id}`)
+          .set('Authorization', `Bearer ${idToken}`)
+          .expect(204);
+        await api // TODO: delete user directly from DB
+          .delete(`/api/v1/user/${trailInDb.user.id}`)
+          .set('Authorization', `Bearer ${idToken}`)
+          .expect(204);
+
+        const res = await api
+          .get(`${baseUrl}/${trailInDb.trail.id}`)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual(expected);
+      });
+
       test('fails with status 404 for non existing ID', async () => {
         let nonexistingId: number = generateRandomInteger();
         while ((await testDatabase.getTrailByPk(nonexistingId)) !== null) {
@@ -702,6 +743,8 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
         });
         expect(await testDatabase.loggedTrailPositionsCount()).toEqual(initialLoggedTrailPositionsCount + data.length);
       });
+
+      // TODO: Add tests for fails with invalid data, trail, authorization and when trail has ended
 
     }); // Appending logged positions
 
