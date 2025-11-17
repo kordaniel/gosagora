@@ -31,19 +31,13 @@ const create = async (trailDetails: CreateTrailArguments): Promise<TrailListingD
 };
 
 const getAll = async (): Promise<TrailListingData[]> => {
-  // TODO: DELETE dev trycatch
-  try {
-    const { data } = await axiosInstance.get<TrailListingData[]>(apiBasePath);
+  const { data } = await axiosInstance.get<TrailListingData[]>(apiBasePath);
 
-    return await validateResponse<TrailListingData[]>(
-      data,
-      trailListingDataArraySchema,
-      'We encountered a problem loading the trails for you. Please try again, or contact our support team if the problem persists'
-    );
-  } catch (error) {
-    console.log('err:', error);
-    throw error;
-  }
+  return await validateResponse<TrailListingData[]>(
+    data,
+    trailListingDataArraySchema,
+    'We encountered a problem loading the trails for you. Please try again, or contact our support team if the problem persists'
+  );
 };
 
 const getOne = async (trailId: string): Promise<TrailData> => {
