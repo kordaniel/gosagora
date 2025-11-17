@@ -1,4 +1,6 @@
-import { Sailboat, Trail, TrailModule, UserSailboats } from '../../src/models';
+import { type UserCredential } from 'firebase/auth';
+
+import { Sailboat, Trail, TrailModule, User, UserSailboats } from '../../src/models';
 import boatUtils from './boatUtils';
 import { generateIdFromTimestamp } from './clientHelpers';
 import userUtils from './userUtils';
@@ -100,8 +102,33 @@ const createTrails = async () => {
   }));
 };
 
+const createTrail = async (
+  trailCreationArguments?: { public: boolean; }
+): Promise<{
+  user: User;
+  userCredentials: UserCredential;
+  boat: { sailboat: Sailboat; userSailboats: UserSailboats | undefined };
+  trail: Trail;
+}> => {
+  const user = await userUtils.createSignedInUser();
+  const boat = await boatUtils.createBoatForUser(user.user);
+  const trail = await Trail.create({
+    userId: user.user.id,
+    ...getTrailCreationAttributesObject(boat.sailboat.id),
+    ...trailCreationArguments,
+  });
+
+  return {
+    user: user.user,
+    userCredentials: user.credentials,
+    boat,
+    trail,
+  };
+};
+
 export default {
   createTrails,
+  createTrail,
   getLoggedTrailPositionsArgumentsArray,
   getLoggedTrailPositionsAttributesArray,
 };
