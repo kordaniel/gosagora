@@ -37,7 +37,7 @@ const trailDataQueryOpts: FindOptions = {
 };
 
 const trailListingDataQueryOpts: FindOptions = {
-  attributes: ['id', 'name', 'createdAt', 'endedAt'],
+  attributes: ['id', 'name', 'description', 'createdAt', 'endedAt'],
   include: [
     {
       model: User,
@@ -75,8 +75,8 @@ const toTrailData = (trail: Trail): TrailData => ({
   },
 });
 
-const toTrailListingData = ({ id, name, createdAt, endedAt, user, sailboat }: Trail): TrailListingData => ({
-  id, name,
+const toTrailListingData = ({ id, name, description, createdAt, endedAt, user, sailboat }: Trail): TrailListingData => ({
+  id, name, description,
   startDate: createdAt.toISOString(),
   endDate: endedAt ? endedAt.toISOString() : null,
   user: { // TODO: Implement virtual fields for user and boat identites, similar to sailboat model !!

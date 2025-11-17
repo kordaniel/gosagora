@@ -153,6 +153,7 @@ export interface TrailData {
 export interface TrailListingData {
   id: number;
   name: string;
+  description: string;
   startDate: string;
   endDate: string | null;
   user: UserIdentity;

@@ -17,6 +17,7 @@ export interface TrailDetails {
 export interface TrailListing {
   id: number;
   name: string;
+  description: string;
   startDate: Date;
   endDate: Date | null;
   user: UserIdentity;

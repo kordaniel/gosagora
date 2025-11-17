@@ -181,4 +181,5 @@
 | 2025.11.16 | 4   | BACKEND: Add LoggedTrailPosition, implement posting positions to trail |
 | 2025.11.17 | 1.5 | BACKEND: Add GET trail by id |
 | 2025.11.17 | 2.5 | FRONTEND: Add TrailView page, fetch and render trail details |
-| Total | 308 | |
+| 2025.11.17 | 1   | COMMON: Include description in TrailListing. FRONTEND: Refactor New Trail - SignIn User before creation, redirect to created trail after creation |
+| Total | 309 | |

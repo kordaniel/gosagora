@@ -18,6 +18,8 @@ export const trailListingDataSchema: Yup.Schema<TrailListingData> = Yup.object()
     .required(),
   name: Yup.string()
     .required(),
+  description: Yup.string()
+    .required(),
   startDate: Yup.string()
     .required(),
   endDate: Yup.string()

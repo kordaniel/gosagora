@@ -72,6 +72,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
 
           expect(rest).toStrictEqual({
             name: trailData.name,
+            description: trailData.description,
             endDate: null,
             user: {
               id: user.user.id,
@@ -121,6 +122,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
 
           expect(rest).toStrictEqual({
             name: trailData.name,
+            description: trailData.description,
             endDate: null,
             user: {
               id: user.user.id,
@@ -171,6 +173,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
 
           expect(rest).toStrictEqual({
             name: trailData.name,
+            description: trailData.description,
             endDate: null,
             user: {
               id: user.user.id,
@@ -550,11 +553,11 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
         }
 
         const expected = trailsInDb.map(({
-          trail: { id, name, createdAt, endedAt },
+          trail: { id, name, description, createdAt, endedAt },
           user,
           boat,
         }) => ({
-          id, name,
+          id, name, description,
           startDate: createdAt.toISOString(),
           endDate: endedAt === null ? null : endedAt.toISOString(),
           user: {
@@ -592,12 +595,12 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
         const expected = {
           id: selectedTrail.trail.id,
           startDate: selectedTrail.trail.createdAt.toISOString(),
-          endDate: selectedTrail.trail.endedAt, // null
+          endDate: selectedTrail.trail.endedAt,
           public: selectedTrail.trail.public,
           name: selectedTrail.trail.name,
           description: selectedTrail.trail.description,
-          avgVelocity: selectedTrail.trail.avgVelocity, // null
-          length: selectedTrail.trail.length, // null
+          avgVelocity: selectedTrail.trail.avgVelocity,
+          length: selectedTrail.trail.length,
           user: {
             id: selectedTrail.user.id,
             displayName: selectedTrail.user.displayName,

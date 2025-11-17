@@ -9,6 +9,8 @@ import ErrorRenderer from '../../components/ErrorRenderer';
 import type { AppTheme, SceneMapRouteProps } from '../../types';
 import { SelectTrails, fetchTrail, initializeTrails } from '../../store/slices/trailSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { clampString } from '../../utils/helpers';
+import config from '../../utils/config';
 
 import type { TrailListing } from '@common/types/trail';
 
@@ -25,6 +27,8 @@ const TrailListingView = ({ trail, jumpTo }: TrailListingViewProps) => {
     theme.styles.secondaryContainer,
     theme.styles.borderContainer,
   );
+
+  const trailDescription = clampString(trail.description, config.IS_MOBILE ? 100 : 300);
 
   const onPress = (id: number) => {
     void dispatch(fetchTrail(id));
@@ -43,6 +47,7 @@ const TrailListingView = ({ trail, jumpTo }: TrailListingViewProps) => {
       <Text variant="bodySmall">Created by: {trail.user.displayName}</Text>
       <Text variant="bodySmall">Boat: {trail.boat.name}</Text>
       <Text variant="bodySmall">Boat type: {trail.boat.boatType}</Text>
+      <Text variant="bodySmall">Description: {trailDescription}</Text>
     </TouchableOpacity>
   );
 };

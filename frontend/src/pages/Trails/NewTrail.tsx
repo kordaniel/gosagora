@@ -3,12 +3,14 @@ import React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
+import Authentication from '../../components/Authentication';
 import ErrorRenderer from '../../components/ErrorRenderer';
 import Form from '../../components/Form';
 
 import { type AppTheme, type SceneMapRouteProps, } from '../../types';
 import {
   SelectSubmitNewTrail,
+  fetchTrail,
   submitNewTrail,
 } from '../../store/slices/trailSlice';
 import { createTrailFormFields, newTrailValidationSchema } from '../../schemas/trail';
@@ -20,25 +22,27 @@ import { SelectAuth } from '../../store/slices/authSlice';
 const NewTrail = ({ jumpTo }: SceneMapRouteProps) => {
   const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
-  const { user } = useAppSelector(SelectAuth);
+  const { user, isAuthenticated } = useAppSelector(SelectAuth);
   const { error, loading } = useAppSelector(SelectSubmitNewTrail);
 
-  console.log('user:', user?.boatIdentities);
-
   const onSubmit = async (newTrailDetails: NewTrailValuesType): Promise<boolean> => {
-    console.log('new race:', newTrailDetails);
     const createdTrailId = await dispatch(submitNewTrail(newTrailDetails));
     if (createdTrailId === null) {
       return false;
     }
 
-    console.log('new trail ID:', createdTrailId);
+    void dispatch(fetchTrail(createdTrailId));
+    jumpTo('trailView');
     return true;
   };
 
-  if (!user) {
+  if (!(isAuthenticated && user)) {
     return (
-      <ActivityIndicator />
+      <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
+        <Text variant="headlineSmall">New Trail</Text>
+        <Text style={{ fontWeight: "bold" }}>Sign In to start your own Trail</Text>
+        <Authentication />
+      </ScrollView>
     );
   }
 
