@@ -62,30 +62,16 @@ const toTrailData = (trail: Trail): TrailData => ({
   avgVelocity: trail.avgVelocity,
   maxVelocity: trail.maxVelocity,
   length: trail.length,
-  user: {
-    id: trail.user.id,
-    displayName: trail.user.displayName,
-  },
-  boat: {
-    id: trail.sailboat.id,
-    boatType: trail.sailboat.boatType,
-    name: trail.sailboat.name,
-  },
+  user: trail.userIdentity,
+  boat: trail.boatIdentity,
 });
 
-const toTrailListingData = ({ id, name, description, createdAt, endedAt, user, sailboat }: Trail): TrailListingData => ({
+const toTrailListingData = ({ id, name, description, createdAt, endedAt, userIdentity, boatIdentity }: Trail): TrailListingData => ({
   id, name, description,
   startDate: createdAt.toISOString(),
   endDate: endedAt ? endedAt.toISOString() : null,
-  user: { // TODO: Implement virtual fields for user and boat identites, similar to sailboat model !!
-    id: user.id,
-    displayName: user.displayName,
-  },
-  boat: {
-    id: sailboat.id,
-    boatType: sailboat.boatType,
-    name: sailboat.name,
-  }
+  user: userIdentity,
+  boat: boatIdentity,
 });
 
 const appendLoggedTrailPositionsToTrail = async (

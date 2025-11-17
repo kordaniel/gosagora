@@ -18,13 +18,21 @@ import Sailboat from './sailboat';
 import User from './user';
 import { sequelize } from '../database';
 
+import type { BoatIdentity } from '@common/types/boat';
+import type { UserIdentity } from '@common/types/user';
+
 export type TrailAttributesType = Attributes<Trail>;
 export type TrailCreationAttributesType = CreationAttributes<Trail>;
 
-class Trail extends Model<InferAttributes<Trail>, InferCreationAttributes<Trail>> {
+class Trail extends Model<
+  InferAttributes<Trail>,
+  InferCreationAttributes<Trail, { omit: 'userIdentity' | 'boatIdentity'}>
+> {
   declare id: CreationOptional<number>;
   declare userId: number | null;
   declare sailboatId: number | null;
+  declare readonly userIdentity: UserIdentity; // virtual
+  declare readonly boatIdentity: BoatIdentity; // virtual
   declare public: CreationOptional<boolean>;
   declare name: string;
   declare description: string;
@@ -57,6 +65,22 @@ Trail.init({
     allowNull: true,
     references: { model: SAILBOAT_CONSTANTS.MODEL_NAME, key: 'id' },
     onDelete: 'SET NULL',
+  },
+  userIdentity: {
+    type: DataTypes.VIRTUAL,
+    get(): UserIdentity | null {
+      return this.user
+        ? { id: this.user.id, displayName: this.user.displayName }
+        : null;
+    },
+  },
+  boatIdentity: {
+    type: DataTypes.VIRTUAL,
+    get(): BoatIdentity | null {
+      return this.sailboat
+        ? { id: this.sailboat.id, name: this.sailboat.name, boatType: this.sailboat.boatType }
+        : null;
+    },
   },
   public: {
     type: DataTypes.BOOLEAN,
