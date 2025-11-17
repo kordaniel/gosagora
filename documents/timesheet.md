@@ -178,4 +178,6 @@
 | 2025.11.12 | 2   | BACKEND: Add tests for creating trails, implement required logic to route |
 | 2025.11.15 | 5   | FRONTEND: Add Trails page, implement new trail creation, listing of trails |
 | 2025.11.15 | 1   | BACKEND: Implement GET all trails, tests |
-| Total | 300 | |
+| 2025.11.16 | 4   | BACKEND: Add LoggedTrailPosition, implement posting positions to trail |
+| 2025.11.17 | 1.5 | BACKEND: Add GET trail by id |
+| Total | 305.5 | |

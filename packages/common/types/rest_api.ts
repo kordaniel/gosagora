@@ -137,6 +137,19 @@ export interface CreateTrailArguments {
   description: string;
 };
 
+export interface TrailData {
+  id: number;
+  startDate: string;
+  endDate: string | null;
+  user: UserIdentity;
+  boat: BoatIdentity;
+  public: boolean;
+  name: string;
+  description: string;
+  avgVelocity: number | null;
+  length: number | null;
+}
+
 export interface TrailListingData {
   id: number;
   name: string;

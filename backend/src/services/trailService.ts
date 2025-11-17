@@ -13,8 +13,28 @@ import logger from '../utils/logger';
 import type {
   AppendedLoggedTrailPositionData,
   CreateTrailArguments,
+  TrailData,
   TrailListingData,
 } from '@common/types/rest_api';
+
+
+//import { BoatType } from '@common/types/boat';
+
+const trailDataQueryOpts: FindOptions = {
+  attributes: ['id', 'public', 'name', 'description', 'avgVelocity', 'length', 'createdAt', 'endedAt'],
+  include: [
+    {
+      model: User,
+      paranoid: false,
+      attributes: ['id', 'displayName'],
+    },
+    {
+      model: Sailboat,
+      paranoid: false,
+      attributes: ['id', 'name', 'boatType'],
+    },
+  ],
+};
 
 const trailListingDataQueryOpts: FindOptions = {
   attributes: ['id', 'name', 'createdAt', 'endedAt'],
@@ -34,6 +54,26 @@ const trailListingDataQueryOpts: FindOptions = {
     },
   ],
 };
+
+const toTrailData = (trail: Trail): TrailData => ({
+  id: trail.id,
+  name: trail.name,
+  description: trail.description,
+  public: trail.public,
+  startDate: trail.createdAt.toISOString(),
+  endDate: trail.endedAt ? trail.endedAt.toISOString() : null,
+  avgVelocity: trail.avgVelocity,
+  length: trail.length,
+  user: {
+    id: trail.user.id,
+    displayName: trail.user.displayName,
+  },
+  boat: {
+    id: trail.sailboat.id,
+    boatType: trail.sailboat.boatType,
+    name: trail.sailboat.name,
+  },
+});
 
 const toTrailListingData = ({ id, name, createdAt, endedAt, user, sailboat }: Trail): TrailListingData => ({
   id, name,
@@ -118,8 +158,19 @@ const getAll = async (): Promise<TrailListingData[]> => {
   return trails.map(toTrailListingData);
 };
 
+const getOne = async (id: Trail['id']): Promise<TrailData> => {
+  const trail = await Trail.findByPk(id, trailDataQueryOpts);
+
+  if (!trail) {
+    throw new NotFoundError(`Trail with ID ${id} not found`);
+  }
+
+  return toTrailData(trail);
+};
+
 export default {
   appendLoggedTrailPositionsToTrail,
   createNewTrail,
   getAll,
+  getOne,
 };

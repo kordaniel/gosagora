@@ -14,6 +14,7 @@ import type {
   APITrailRequest,
   AppendedLoggedTrailPositionData,
   CreateTrailArguments,
+  TrailData,
   TrailListingData,
 } from '@common/types/rest_api';
 
@@ -62,6 +63,15 @@ router.post('/:id/positions', [
 router.get('/', async (_req: Request, res: Response<TrailListingData[]>) => {
   const trails = await trailService.getAll();
   res.json(trails);
+});
+
+router.get('/:id', middleware.idExtractorInt(), async (req: Request, res: Response<TrailData>) => {
+  if (!req.parsedIds?.id) {
+    throw new APIRequestError(`Invalid ID for trail: '${req.params.id}'`);
+  }
+
+  const trail = await trailService.getOne(req.parsedIds.id);
+  res.json(trail);
 });
 
 export default router;

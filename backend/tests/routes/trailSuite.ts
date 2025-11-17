@@ -580,6 +580,85 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
 
     }); // Listing trails
 
+    describe('Fetching single trail', () => {
+
+      test('succeeds when fetching by id', async () => {
+        if (!trailsInDb) {
+          throw new Error('Internal test error: No trails in DB');
+        }
+
+        const selectedTrail = trailsInDb[0];
+
+        const expected = {
+          id: selectedTrail.trail.id,
+          startDate: selectedTrail.trail.createdAt.toISOString(),
+          endDate: selectedTrail.trail.endedAt, // null
+          public: selectedTrail.trail.public,
+          name: selectedTrail.trail.name,
+          description: selectedTrail.trail.description,
+          avgVelocity: selectedTrail.trail.avgVelocity, // null
+          length: selectedTrail.trail.length, // null
+          user: {
+            id: selectedTrail.user.id,
+            displayName: selectedTrail.user.displayName,
+          },
+          boat: {
+            id: selectedTrail.boat.sailboat.id,
+            name: selectedTrail.boat.sailboat.name,
+            boatType: selectedTrail.boat.sailboat.boatType,
+          },
+        };
+
+        const res = await api
+          .get(`${baseUrl}/${selectedTrail.trail.id}`)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual(expected);
+      });
+
+      test('fails with status 404 for non existing ID', async () => {
+        let nonexistingId: number = generateRandomInteger();
+        while ((await testDatabase.getTrailByPk(nonexistingId)) !== null) {
+          nonexistingId = generateRandomInteger();
+        }
+
+        const res = await api
+          .get(`${baseUrl}/${nonexistingId}`)
+          .expect(404)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual({
+          status: 404,
+          error: {
+            message: `Trail with ID ${nonexistingId} not found`,
+          },
+        });
+      });
+
+      test('Fails with status 400 for malformed ID', async () => {
+        if (!trailsInDb) {
+          throw new Error('Internal test error: No trails in DB');
+        }
+
+        const selectedTrail = trailsInDb[0];
+        const malformedId = `x${selectedTrail.trail.id}`;
+
+        const res = await api
+          .get(`${baseUrl}/${malformedId}`)
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+        expect(res.body).toStrictEqual({
+          status: 400,
+          error: {
+            message: `Invalid ID for trail: '${malformedId}'`,
+          },
+        });
+      });
+
+    }); // Fetching single trail
+
     describe('Appending LoggedTrailPositions', () => {
 
       test('succeeds with valid data', async () => {
@@ -587,7 +666,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
           throw new Error('Internal test error: No trails in DB');
         }
 
-        const trail = trailsInDb[0];
+        const trail = trailsInDb[1];
         const data = trailUtils.getLoggedTrailPositionsArgumentsArray();
         const idToken = await trail.userCredentials.user.getIdToken();
         const initialLoggedTrailPositionsCount = await testDatabase.loggedTrailPositionsCount();
