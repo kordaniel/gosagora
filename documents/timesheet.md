@@ -174,4 +174,14 @@
 | 2025.11.10 | 2   | BACKEND: Add module that seeds the DB in DEV env with default values |
 | 2025.11.11 | 2   | BACKEND: Add script that injects the inital (admin, when roles are implemented) user with credentials from env vars in PROD env |
 | 2025.11.11 | 0   | BACKEND: Fix auth test suite SignIn tests: assert that the correct value is returned and user lastseenAt field is updated in DB |
-| Total | 288 | |
+| 2025.11.11 | 4   | BACKEND: Add initial trails route |
+| 2025.11.12 | 2   | BACKEND: Add tests for creating trails, implement required logic to route |
+| 2025.11.15 | 5   | FRONTEND: Add Trails page, implement new trail creation, listing of trails |
+| 2025.11.15 | 1   | BACKEND: Implement GET all trails, tests |
+| 2025.11.16 | 4   | BACKEND: Add LoggedTrailPosition, implement posting positions to trail |
+| 2025.11.17 | 1.5 | BACKEND: Add GET trail by id |
+| 2025.11.17 | 2.5 | FRONTEND: Add TrailView page, fetch and render trail details |
+| 2025.11.17 | 1   | COMMON: Include description in TrailListing. FRONTEND: Refactor New Trail - SignIn User before creation, redirect to created trail after creation |
+| 2025.11.17 | 0.5 | COMMON: Add maxVelocity to trails table |
+| 2025.11.17 | 0.5 | BACKEND: Cleanup, test, restructure Trails code |
+| Total | 310 | |

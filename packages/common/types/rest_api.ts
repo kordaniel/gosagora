@@ -121,3 +121,57 @@ export interface BoatCreateResponseData {
   boat: SailboatData;
   boatIdentity: BoatIdentity;
 };
+
+export interface APITrailRequest<
+  REQT extends 'appendLoggedTrailPositions' | 'create',
+  DT
+> {
+  type: REQT;
+  data: DT;
+};
+
+export interface CreateTrailArguments {
+  sailboatId: number;
+  public?: boolean;
+  name: string;
+  description: string;
+};
+
+export interface TrailData {
+  id: number;
+  startDate: string;
+  endDate: string | null;
+  user: UserIdentity;
+  boat: BoatIdentity;
+  public: boolean;
+  name: string;
+  description: string;
+  avgVelocity: number | null;
+  maxVelocity: number | null;
+  length: number | null;
+}
+
+export interface TrailListingData {
+  id: number;
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string | null;
+  user: UserIdentity;
+  boat: BoatIdentity;
+}
+
+export interface LoggedTrailPositionData {
+  clientId: string;
+  timestamp: string;
+  lat: number;
+  lon: number;
+  acc: number;
+  hdg: number | null;
+  vel: number | null;
+}
+
+export interface AppendedLoggedTrailPositionData {
+  id: number;
+  clientId: string;
+}

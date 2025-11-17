@@ -1,0 +1,159 @@
+import { DatabaseError, type FindOptions } from 'sequelize';
+
+import {
+  APIRequestError,
+  NotFoundError,
+  PermissionForbiddenError
+} from '../errors/applicationError';
+import { LoggedTrailPosition, Sailboat, Trail, User } from '../models';
+import type { LoggedTrailPositionAttributes } from '../types';
+import boatService from './boatService';
+
+import type {
+  AppendedLoggedTrailPositionData,
+  CreateTrailArguments,
+  TrailData,
+  TrailListingData,
+} from '@common/types/rest_api';
+
+
+const trailDataQueryOpts: FindOptions = {
+  attributes: ['id', 'public', 'name', 'description', 'avgVelocity', 'maxVelocity', 'length', 'createdAt', 'endedAt'],
+  include: [
+    {
+      model: User,
+      paranoid: false,
+      attributes: ['id', 'displayName'],
+    },
+    {
+      model: Sailboat,
+      paranoid: false,
+      attributes: ['id', 'name', 'boatType'],
+    },
+  ],
+};
+
+const trailListingDataQueryOpts: FindOptions = {
+  attributes: ['id', 'name', 'description', 'createdAt', 'endedAt'],
+  include: [
+    {
+      model: User,
+      paranoid: false,
+      attributes: ['id', 'displayName'],
+    },
+    {
+      model: Sailboat,
+      paranoid: false,
+      // NOTE: boatType is a virtual field in Sailboat model => need not be specified in
+      //       attributes list. Still included here to guard for future refactoring if
+      //       more boat types are added.
+      attributes: ['id', 'name', 'boatType'],
+    },
+  ],
+};
+
+const toTrailData = (trail: Trail): TrailData => ({
+  id: trail.id,
+  name: trail.name,
+  description: trail.description,
+  public: trail.public,
+  startDate: trail.createdAt.toISOString(),
+  endDate: trail.endedAt ? trail.endedAt.toISOString() : null,
+  avgVelocity: trail.avgVelocity,
+  maxVelocity: trail.maxVelocity,
+  length: trail.length,
+  user: trail.userIdentity,
+  boat: trail.boatIdentity,
+});
+
+const toTrailListingData = ({ id, name, description, createdAt, endedAt, userIdentity, boatIdentity }: Trail): TrailListingData => ({
+  id, name, description,
+  startDate: createdAt.toISOString(),
+  endDate: endedAt ? endedAt.toISOString() : null,
+  user: userIdentity,
+  boat: boatIdentity,
+});
+
+const appendLoggedTrailPositionsToTrail = async (
+  userId: User['id'],
+  trailId: Trail['id'],
+  positions: LoggedTrailPositionAttributes[]
+): Promise<AppendedLoggedTrailPositionData[]> => {
+  const trail = await Trail.findByPk(trailId, { attributes: ['userId'] });
+
+  if (!trail) {
+    throw new NotFoundError(`Trail with ID ${trailId} not found`);
+  }
+  if (trail.userId !== userId) {
+    throw new PermissionForbiddenError('Forbidden: You dont have the required credentials to update this trail'); // TODO: Better error msg
+  }
+
+  // TODO: Add check for endedAt !== null
+
+  const insertedRows = await LoggedTrailPosition.bulkCreate(positions.map(p => ({ ...p, trailId })), {
+    fields: ['trailId', 'timestamp', 'lat', 'lon', 'acc', 'hdg', 'vel'],
+    validate: true,
+  });
+
+  return insertedRows.reduce((acc: AppendedLoggedTrailPositionData[], cur) => {
+    if ('clientId' in cur && cur.clientId !== undefined) {
+      return acc.concat({ id: cur.id, clientId: cur.clientId });
+    }
+
+    return acc;
+  }, []);
+};
+
+const createNewTrail = async (
+  userId: User['id'],
+  newTrailArguments: CreateTrailArguments
+): Promise<TrailListingData> => {
+  if (!(await boatService.userIsInUserSailboatsSet(userId, newTrailArguments.sailboatId))) {
+    // NOTE: For simplicity, security and to avoid DB queries return status 403 from here in both cases, where
+    //       - user has no relation to the sailboat
+    //       - there exists no sailboat with the requested id (instead of 400)
+    throw new PermissionForbiddenError(`Forbidden: You are not an owner of the specified boat with ID: '${newTrailArguments.sailboatId}'`);
+  }
+
+  try {
+    const trail = await Trail.create({
+      userId,
+      sailboatId: newTrailArguments.sailboatId,
+      public: newTrailArguments.public,
+      name: newTrailArguments.name,
+      description: newTrailArguments.description,
+    });
+
+    await trail.reload(trailListingDataQueryOpts);
+    return toTrailListingData(trail);
+  } catch (error: unknown) {
+    if (error instanceof DatabaseError && error.name === 'SequelizeForeignKeyConstraintError') {
+      // NOTE: If this is true and the if that checks userIsInUserSailboatsSet is in the start of this function
+      //       => DB integrity error
+      throw new APIRequestError(`Invalid ID for boat: '${newTrailArguments.sailboatId}'`);
+    }
+    throw error;
+  }
+};
+
+const getAll = async (): Promise<TrailListingData[]> => {
+  const trails = await Trail.findAll(trailListingDataQueryOpts);
+  return trails.map(toTrailListingData);
+};
+
+const getOne = async (id: Trail['id']): Promise<TrailData> => {
+  const trail = await Trail.findByPk(id, trailDataQueryOpts);
+
+  if (!trail) {
+    throw new NotFoundError(`Trail with ID ${id} not found`);
+  }
+
+  return toTrailData(trail);
+};
+
+export default {
+  appendLoggedTrailPositionsToTrail,
+  createNewTrail,
+  getAll,
+  getOne,
+};

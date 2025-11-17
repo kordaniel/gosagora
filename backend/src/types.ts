@@ -1,4 +1,7 @@
-import { CreateRaceArguments } from '@common/types/rest_api';
+import type {
+  CreateRaceArguments,
+  LoggedTrailPositionData,
+} from '@common/types/rest_api';
 
 export type AssertEqual<T, U> = (
   <V>() => V extends T ? 1 : 2
@@ -11,6 +14,10 @@ export type EnvironmentType =
   | 'development'
   | 'test'
   | 'test-production'; // Simulate production, with test db
+
+export interface LoggedTrailPositionAttributes extends Omit<LoggedTrailPositionData, 'timestamp'> {
+  timestamp: Date;
+}
 
 export interface NewRaceAttributes extends Omit<CreateRaceArguments,
   'dateFrom' | 'dateTo' | 'registrationOpenDate' | 'registrationCloseDate'
