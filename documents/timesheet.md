@@ -182,4 +182,5 @@
 | 2025.11.17 | 1.5 | BACKEND: Add GET trail by id |
 | 2025.11.17 | 2.5 | FRONTEND: Add TrailView page, fetch and render trail details |
 | 2025.11.17 | 1   | COMMON: Include description in TrailListing. FRONTEND: Refactor New Trail - SignIn User before creation, redirect to created trail after creation |
-| Total | 309 | |
+| 2025.11.17 | 0.5 | COMMON: Add maxVelocity to trails table |
+| Total | 309.5 | |

@@ -600,6 +600,7 @@ export const trailTestSuite = (api: TestAgent) => describe('/trail', () => {
           name: selectedTrail.trail.name,
           description: selectedTrail.trail.description,
           avgVelocity: selectedTrail.trail.avgVelocity,
+          maxVelocity: selectedTrail.trail.maxVelocity,
           length: selectedTrail.trail.length,
           user: {
             id: selectedTrail.user.id,

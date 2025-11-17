@@ -58,10 +58,9 @@ const TrailView = ({ jumpTo }: SceneMapRouteProps) => {
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <Text variant="headlineSmall">{selectedTrail.name}</Text>
       {isSignedUsersTrail && <>
-        <Text>This is your trail!</Text>
         <Text>{selectedTrail.public
-          ? "This trail is public for everyone"
-          : "FILLER TEXT FOR PRIVATE ROUTES"
+          ? "This is your public trail that anyone can view"
+          : "This is your private trail that only you can view"
         }</Text>
       </>}
       <View style={theme.styles.table}>
@@ -89,7 +88,7 @@ const TrailView = ({ jumpTo }: SceneMapRouteProps) => {
         </View>
         <View style={theme.styles.tableRow}>
           <Text style={tableCellDataBold}>Max velocity</Text>
-          <Text style={theme.styles.tableCellData}>TODO</Text>
+          <Text style={theme.styles.tableCellData}>{velocityToString(selectedTrail.maxVelocity)}</Text>
         </View>
         <View style={theme.styles.tableRow}>
           <Text style={tableCellDataBold}>User</Text>

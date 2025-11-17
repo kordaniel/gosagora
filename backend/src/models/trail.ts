@@ -29,6 +29,7 @@ class Trail extends Model<InferAttributes<Trail>, InferCreationAttributes<Trail>
   declare name: string;
   declare description: string;
   declare avgVelocity: CreationOptional<number | null>;
+  declare maxVelocity: CreationOptional<number | null>;
   declare length: CreationOptional<number | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -83,6 +84,15 @@ Trail.init({
     },
   },
   avgVelocity: {
+    type: DataTypes.DOUBLE,
+    allowNull: true,
+    defaultValue: null,
+    validate: {
+      isNumeric: true,
+      min: 0,
+    },
+  },
+  maxVelocity: {
     type: DataTypes.DOUBLE,
     allowNull: true,
     defaultValue: null,

@@ -52,6 +52,9 @@ export const trailDataSchema: Yup.Schema<TrailData> = Yup.object().shape({
   avgVelocity: Yup.number()
     .nullable()
     .defined(),
+  maxVelocity: Yup.number()
+    .nullable()
+    .defined(),
   length: Yup.number()
     .nullable()
     .defined()

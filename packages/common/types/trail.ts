@@ -11,6 +11,7 @@ export interface TrailDetails {
   name: string;
   description: string;
   avgVelocity: number | null;
+  maxVelocity: number | null;
   length: number | null;
 }
 

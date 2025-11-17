@@ -18,10 +18,8 @@ import type {
 } from '@common/types/rest_api';
 
 
-//import { BoatType } from '@common/types/boat';
-
 const trailDataQueryOpts: FindOptions = {
-  attributes: ['id', 'public', 'name', 'description', 'avgVelocity', 'length', 'createdAt', 'endedAt'],
+  attributes: ['id', 'public', 'name', 'description', 'avgVelocity', 'maxVelocity', 'length', 'createdAt', 'endedAt'],
   include: [
     {
       model: User,
@@ -63,6 +61,7 @@ const toTrailData = (trail: Trail): TrailData => ({
   startDate: trail.createdAt.toISOString(),
   endDate: trail.endedAt ? trail.endedAt.toISOString() : null,
   avgVelocity: trail.avgVelocity,
+  maxVelocity: trail.maxVelocity,
   length: trail.length,
   user: {
     id: trail.user.id,
