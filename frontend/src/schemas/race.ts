@@ -76,7 +76,7 @@ export const newRaceValidationSchema: Yup.Schema<NewRaceValuesType> = Yup.object
   name: Yup.string()
     .trim()
     .min(4, 'Race name must be at least 4 characters long')
-    .max(128, 'Race name can not be longer than 256 characters')
+    .max(128, 'Race name can not be longer than 128 characters')
     .required('Race name is required'),
   type: Yup.mixed<RaceType>()
     .oneOf(Object.values(RaceType), `Race type must be selected from the list of:\n- ${Object.keys(RaceType).join('\n- ')}`)

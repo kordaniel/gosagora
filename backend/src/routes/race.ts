@@ -44,7 +44,7 @@ router.get('/:id', middleware.idExtractorInt(), async (req: Request, res: Respon
     throw new APIRequestError(`Invalid ID for race: '${req.params.id}'`);
   }
 
-  const race = await raceService.getOne(req.parsedIds?.id);
+  const race = await raceService.getOne(req.parsedIds.id);
   res.json(race);
 });
 
