@@ -10,8 +10,6 @@ import {
 } from '../../modules/location/helpers';
 import type { GeoPos } from '../../types';
 
-// TODO: Cut history by MAX(minutes, array length)
-const HISTORY_MAX_LEN = 100;
 const LOCATION_WINDOW_LEN = 3;
 const LOCATION_WINDOW_OVERLAP = 2; // must be integer in [0, LOCATION_WINDOW_LEN-1]
 
@@ -30,8 +28,6 @@ interface LocationWindow {
 export interface LocationState {
   currentPosition: GeoPos | null;
   error: string | null;
-  history: Array<GeoPos | null>;
-  historyMaxLen: number;
   locationWindow: LocationWindow;
   signalQuality: number;
   trackingStatus: TrackingStatus;
@@ -40,8 +36,6 @@ export interface LocationState {
 const initialState: LocationState = {
   currentPosition: null,
   error: null,
-  history: [],
-  historyMaxLen: HISTORY_MAX_LEN,
   locationWindow: {
     buffer: [],
     idxNext: 0,
@@ -56,22 +50,11 @@ const locationSlice = createSlice({
   initialState,
   reducers: {
     addLocation: (state, action: PayloadAction<{ currentPosition: GeoPos | null; signalQuality: number; }>) => {
-      if (state.currentPosition !== null || (state.history.length > 0 && state.history.at(-1) !== null)) {
-        state.history = state.history
-          .slice(-(state.historyMaxLen-1))
-          .concat(state.currentPosition);
-      }
       state.currentPosition = action.payload.currentPosition;
       state.signalQuality = action.payload.signalQuality;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
-    },
-    setHistoryMaxLen: (state, action: PayloadAction<number>) => {
-      state.historyMaxLen = action.payload;
-      if (state.history.length > action.payload) {
-        state.history = state.history.slice(-action.payload);
-      }
     },
     setLocationWindow: (state, action: PayloadAction<Omit<LocationWindow, 'length'>>) => {
       state.locationWindow = {
@@ -90,7 +73,6 @@ const locationSlice = createSlice({
 
 export const {
   setError: setLocationError,
-  setHistoryMaxLen: setLocationHistoryMaxLen,
   setTrackingAndErrorStatus: setLocationTrackingAndErrorStatus,
 } = locationSlice.actions;
 const {
@@ -101,8 +83,6 @@ const {
 export const SelectLocation = (state: RootState): Omit<LocationState, 'locationWindow'> => ({
   currentPosition: state.location.currentPosition,
   error: state.location.error,
-  history: state.location.history,
-  historyMaxLen: state.location.historyMaxLen,
   signalQuality: state.location.signalQuality,
   trackingStatus: state.location.trackingStatus,
 });
