@@ -28,7 +28,11 @@ const handleRNMessage = (msg: RNToLeafletMessage) => {
       handleSetPosition(msg.payload.position);
       break;
     }
-    default: assertNever(msg.payload.command);
+    case 'setPositions': {
+      msg.payload.positions.forEach(handleSetPosition);
+      break;
+    }
+    default: assertNever(msg.payload);
   }
 };
 
@@ -97,3 +101,10 @@ const handleSetPosition = (pos: GeoPos | null) => {
     vel: pos.vel
   });
 };
+
+msgBridgeToRN.sendMsg({
+  type: 'command',
+  payload: {
+    command: 'reqPositionsHistory',
+  },
+});

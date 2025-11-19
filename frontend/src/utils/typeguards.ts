@@ -15,6 +15,13 @@ const hasOptionalStringField = <T extends object, K extends string>(
   return !(key in param) || isString((param as any)[key]);
 };
 
+const isArrayOf = <T>(
+  param: unknown,
+  typeGuard: (el: unknown) => el is T,
+): param is T[] => {
+  return Array.isArray(param) && param.every(typeGuard);
+};
+
 const isNotNullObject = (param: unknown): param is object => {
   return typeof param === 'object' && param !== null;
 };
@@ -51,6 +58,10 @@ export const isGeoPos = (param: unknown): param is GeoPos => {
     ('vel' in param && (param.vel === null || isNumber(param.vel)));
 };
 
+export const isNullableGeoPos = (param: unknown): param is GeoPos | null => {
+  return param === null || isGeoPos(param);
+};
+
 export const isNumber = (param: unknown): param is number => {
   return typeof param === 'number';
 };
@@ -76,6 +87,8 @@ const isLeafletToRNCommandMessagePayload = (payload: NonNullable<object>): paylo
 
   if (payload.command === 'openUrl') {
     return 'href' in payload && isString(payload.href);
+  } else if (payload.command === 'reqPositionsHistory') {
+    return true;
   } else {
     return false;
   }
@@ -93,7 +106,12 @@ const isRNToLeafletCommandMessagePayload = (payload: NonNullable<object>): paylo
     if (!('position' in payload)) {
       return false;
     }
-    return payload.position === null || isGeoPos(payload.position);
+    return isNullableGeoPos(payload.position);
+  } else if (payload.command === 'setPositions') {
+    if (!('positions' in payload)) {
+      return false;
+    }
+    return isArrayOf(payload.positions, isNullableGeoPos);
   } else {
     return false;
   }

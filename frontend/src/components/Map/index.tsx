@@ -7,6 +7,7 @@ import { assertNever, isLeafletToRNMessage } from '../../utils/typeguards';
 import type { RNToLeafletMessage } from '../../bundles/leaflet/msgBridgeToRN';
 import { SelectLocation } from '../../store/slices/locationSlice';
 import config from '../../utils/config';
+import geoPosManager from '../../modules/location/geoPosManager';
 import htmlBuilder from '../../modules/htmlBuilder';
 import { loadAsset } from '../../modules/assetManager';
 import { openLink } from '../../utils/linking';
@@ -37,8 +38,20 @@ const Map = () => {
           case 'openUrl':
             openLink(leafletMsg.payload.href);
             break;
+          case 'reqPositionsHistory':
+            if (sendDataToWebRef.current) {
+              const message: RNToLeafletMessage = {
+                type: 'command',
+                payload: {
+                  command: 'setPositions',
+                  positions: geoPosManager.getHistory(),
+                },
+              };
+              sendDataToWebRef.current.sendDataToWeb(JSON.stringify(message));
+            }
+            break;
           default:
-            assertNever(leafletMsg.payload.command);
+            assertNever(leafletMsg.payload);
         }
         break;
       case 'debug':
