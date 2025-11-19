@@ -187,4 +187,5 @@
 | 2025.11.18 | 0.5 | FRONTEND: Add GeoPosManager |
 | 2025.11.19 | 1.5 | FRONTEND: Add LocationWindowBuffer class, use in GeoPosManager. Remove locationWindow from redux state |
 | 2025.11.19 | 1   | FRONTEND: Send positions history to leaflet map after it has loaded |
-| Total | 313 | |
+| 2025.11.19 | 0.5 | FRONTEND: Center leaflet map at users location after it has loaded |
+| Total | 313.5 | |

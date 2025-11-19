@@ -1,9 +1,10 @@
 import L, { GosaGoraMap } from './initPatchedLeaflet';
 
 import msgBridgeToRN, { type RNToLeafletMessage } from './msgBridgeToRN';
-import type { GeoPos } from '../../types';
 import { assertNever } from '../../utils/typeguards';
+import { geoPosToLatLngType } from './helpers';
 import tileLayers from './tileLayers';
+
 
 const SEND_DEBUG_ECHO_MESSAGES = false;
 
@@ -25,11 +26,11 @@ const handleRNMessage = (msg: RNToLeafletMessage) => {
 
   switch (msg.payload.command) {
     case 'setPosition': {
-      handleSetPosition(msg.payload.position);
+      map.setCurrentPosition(geoPosToLatLngType(msg.payload.position));
       break;
     }
     case 'setPositions': {
-      msg.payload.positions.forEach(handleSetPosition);
+      map.setPositions(msg.payload.positions.map(geoPosToLatLngType));
       break;
     }
     default: assertNever(msg.payload);
@@ -89,22 +90,3 @@ const vesselMarkerCircle = L.circle([0, 0], {
 }).addTo(map);
 
 L.marker.vesselMarker([0, 0], vesselMarkerCircle).addTo(map);
-
-const handleSetPosition = (pos: GeoPos | null) => {
-  map.setCurrentPosition(!pos ? null : {
-    id: pos.id,
-    timestamp: pos.timestamp,
-    lat: pos.lat,
-    lng: pos.lon,
-    acc: pos.acc,
-    hdg: pos.hdg,
-    vel: pos.vel
-  });
-};
-
-msgBridgeToRN.sendMsg({
-  type: 'command',
-  payload: {
-    command: 'reqPositionsHistory',
-  },
-});
