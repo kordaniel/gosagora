@@ -1,26 +1,39 @@
 import type { GeoPos } from '../../types';
+import { LocationWindowBuffer } from './helpers';
 import { clampNumber } from '../../utils/helpers';
 import { handleNewLocation } from '../../store/slices/locationSlice';
 import store from '../../store';
 
+const locationWindowBuffer = new LocationWindowBuffer();
 const history: Array<GeoPos | null> = []; // TODO: Replace with ringbuffer
-const historyMaxLength: number = 30_000;
+const historyMaxLength: number = 30_000; // TODO: Cut by MAX(minutes, array length)
 const historyTrimLength: number = clampNumber(Math.round(0.1 * historyMaxLength), 1, 500);
 
 /* ----- \/ Default exported functions \/ ----- */
 
-const addPosition = (pos: GeoPos | null, dispatchToStore: boolean = true) => {
-  if (historyIsEmpty()) {
-    history.push(pos);
-    if (dispatchToStore) {
-      store.dispatch(handleNewLocation(pos));
+const addPosition = (position: GeoPos | null, dispatchToStore: boolean = true) => {
+  trimHistoryLength();
+
+  if (position === null) {
+    if (historyIsEmpty() || history.at(-1) !== null) {
+      history.push(position);
+      if (dispatchToStore) {
+        store.dispatch(handleNewLocation(position));
+      }
     }
     return;
   }
 
-  trimHistoryLength();
+  const pos = locationWindowBuffer.addPosition(position);
 
-  if (pos !== null || history.at(-1) !== null) {
+  if (pos === null) {
+    if (historyIsEmpty() || history.at(-1) !== null) {
+      history.push(pos);
+      if (dispatchToStore) {
+        store.dispatch(handleNewLocation(pos));
+      }
+    }
+  } else {
     history.push(pos);
     if (dispatchToStore) {
       store.dispatch(handleNewLocation(pos));

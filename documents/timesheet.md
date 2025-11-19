@@ -184,4 +184,6 @@
 | 2025.11.17 | 1   | COMMON: Include description in TrailListing. FRONTEND: Refactor New Trail - SignIn User before creation, redirect to created trail after creation |
 | 2025.11.17 | 0.5 | COMMON: Add maxVelocity to trails table |
 | 2025.11.17 | 0.5 | BACKEND: Cleanup, test, restructure Trails code |
-| Total | 310 | |
+| 2025.11.18 | 0.5 | FRONTEND: Add GeoPosManager |
+| 2025.11.19 | 1.5 | FRONTEND: Add LocationWindowBuffer class, use in GeoPosManager. Remove locationWindow from redux state |
+| Total | 312 | |
