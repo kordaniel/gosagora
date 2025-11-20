@@ -180,6 +180,7 @@ declare module 'leaflet' {
     setIsTrackingCurrentPosition: (trackCurrentPosition: boolean) => void;
     subscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
     unsubscribeCurrentPositionChangeCallback: (cb: CurrentPositionChangeCallback) => void;
+    centerToCurrentPosition: (currentPosition?: LatLngType | null) => void;
     isVesselMarkerTrailEnabled: () => boolean;
     setIsVesselMarkerTrailEnabled: (enableVesselMarkerTrail: boolean) => void;
     isVelocityVectorEnabled: () => boolean;

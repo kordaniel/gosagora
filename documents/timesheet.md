@@ -184,4 +184,9 @@
 | 2025.11.17 | 1   | COMMON: Include description in TrailListing. FRONTEND: Refactor New Trail - SignIn User before creation, redirect to created trail after creation |
 | 2025.11.17 | 0.5 | COMMON: Add maxVelocity to trails table |
 | 2025.11.17 | 0.5 | BACKEND: Cleanup, test, restructure Trails code |
-| Total | 310 | |
+| 2025.11.18 | 0.5 | FRONTEND: Add GeoPosManager |
+| 2025.11.19 | 1.5 | FRONTEND: Add LocationWindowBuffer class, use in GeoPosManager. Remove locationWindow from redux state |
+| 2025.11.19 | 1   | FRONTEND: Send positions history to leaflet map after it has loaded |
+| 2025.11.19 | 0.5 | FRONTEND: Center leaflet map at users location after it has loaded |
+| 2025.11.20 | 1.5 | FRONTEND: Add useTrailTracker hook, connect geoPosManager state to the new hook with useSyncExternalStore |
+| Total | 315 | |

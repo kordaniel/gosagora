@@ -6,15 +6,81 @@ import config from '../../utils/config';
 import { generateIdFromTimestamp } from '../../utils/idGenerator';
 import unitConverter from '../../utils/unitConverter';
 
+const LOCATION_WINDOW_LEN = 3;
+const LOCATION_WINDOW_OVERLAP = 2; // must be integer in [0, LOCATION_WINDOW_LEN-1]
+
 const MAX_ACC_TRESHOLD = config.IS_DEVELOPMENT_ENV ?   0.0 : 3.0;  // meters, "signal quality" = 100%
 const MIN_ACC_TRESHOLD = config.IS_DEVELOPMENT_ENV ? 100.0 : 12.0; // meters, "signal quality" = 0%. Positions with lower accuracy are discarded
+
+
+export class LocationWindowBuffer {
+  private _averagedPosition: GeoPos | null;
+  private _buffer: GeoPos[];
+  private _bufferMaxLength: number;
+  private _idx: number;
+  private _isInitializing: boolean;
+  private _overlap: number;
+
+  constructor(
+    windowLength: number = LOCATION_WINDOW_LEN,
+    windowOverlap: number = LOCATION_WINDOW_OVERLAP
+  ) {
+    if (windowLength < 1) {
+      throw new RangeError('LocationWindowBuffer: windowLength must be >= 1');
+    }
+    if (windowOverlap < 0 || windowOverlap >= windowLength) {
+      throw new RangeError(`LocationWindowBuffer: windowOverlap must be an integer in [0,windowLength(default = ${LOCATION_WINDOW_LEN})[`);
+    }
+
+    this._averagedPosition = null;
+    this._buffer = [];
+    this._bufferMaxLength = windowLength;
+    this._idx = -1;
+    this._isInitializing = true;
+    this._overlap = windowOverlap;
+  }
+
+  addPosition = (position: GeoPos): GeoPos | null => {
+    const pos = { ...position };
+    this._idx++;
+    if (this._idx === this._bufferMaxLength) {
+      this._buffer = this._buffer.slice(this._bufferMaxLength - this._overlap);
+      this._idx = this._overlap;
+      if (this._isInitializing) {
+        this._isInitializing = false;
+      }
+    }
+
+    this._buffer[this._idx] = pos;
+
+    if (this._isInitializing || this._idx+1 === this._bufferMaxLength) {
+      this._computeAveragedPosition();
+      return this.getAveragedCurrentPosition();
+    }
+
+    return null;
+  };
+
+  getAveragedCurrentPosition = (): GeoPos | null => {
+    return this._averagedPosition ? { ...this._averagedPosition } : null;
+  };
+
+  private _bufferIsEmpty() {
+    return this._buffer.length === 0;
+  }
+
+  private _computeAveragedPosition() {
+    this._averagedPosition = this._bufferIsEmpty()
+      ? null
+      : computeAveragedGeoPos(this._buffer);
+  }
+}
 
 /**
  * Compute a new GeoPos object by averaging all fields across every GeoPos instance
  * in the buffer array. If any of the nullable fields in one or more of the input
  * GeoPos instances are null then the corresponding field in the output object will
  * be set to null.
- * the input instances
  * @param buffer Input buffer containing GeoPos object instances.
  * @returns Averaged GeoPos object.
  */
