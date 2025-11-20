@@ -26,7 +26,7 @@ const Dashboard = () => {
     trackingStatus,
     signalQuality
   } = useAppSelector(SelectLocation);
-  const { startTracking, stopTracking } = useLocation();
+  const { allowStopTracking, startTracking, stopTracking } = useLocation();
   const { width } = useWindowDimensions();
   const [renderCompassNorthUp, setRenderCompassNorthUp] = useState<boolean>(false);
   const style = StyleSheet.create({
@@ -49,7 +49,9 @@ const Dashboard = () => {
     if (trackingStatus === 'idle') {
       void startTracking();
     } else {
-      stopTracking(true);
+      if (allowStopTracking) {
+        stopTracking(true);
+      }
     }
   };
 
@@ -92,7 +94,7 @@ const Dashboard = () => {
             : "Switch Compass to North-Up mode"
           }
         </Button>
-        <Button mode="outlined" onPress={toggleTracking}>
+        <Button disabled={!allowStopTracking} mode="outlined" onPress={toggleTracking}>
           {trackingStatus === "idle" ? "Enable Location Services" : "Turn Off Location Services"}
         </Button>
       </View>

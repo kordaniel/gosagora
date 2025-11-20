@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import type { LocationSubscription } from 'expo-location';
 
 import config from '../utils/config';
+import geoPosManager from '../modules/location/geoPosManager';
 import location from '../modules/location';
 import { setLocationTrackingAndErrorStatus } from '../store/slices/locationSlice';
 import { useAppDispatch } from '../store/hooks';
@@ -10,8 +11,14 @@ import { useAppDispatch } from '../store/hooks';
 const useLocation = () => {
   const dispatch = useAppDispatch();
   const fgWatchPositionSubscriptionRef = useRef<LocationSubscription | null>(null);
+  const isTrackingTrail = useSyncExternalStore(geoPosManager.subscribe, geoPosManager.isTrackingTrail);
+
+  const allowStopTracking = !isTrackingTrail;
 
   const stopTracking = useCallback((clearErrors: boolean) => {
+    if (!allowStopTracking) {
+      return;
+    }
     if (clearErrors) {
       dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle', error: null }));
     } else {
@@ -25,7 +32,7 @@ const useLocation = () => {
       fgWatchPositionSubscriptionRef.current.remove();
       fgWatchPositionSubscriptionRef.current = null;
     }
-  }, [dispatch]);
+  }, [allowStopTracking, dispatch]);
 
   const startTracking = useCallback(async () => {
     const errorMessages: string[] = [];
@@ -81,7 +88,7 @@ const useLocation = () => {
     return () => stopTracking(true);
   }, [startTracking, stopTracking]);
 
-  return { startTracking, stopTracking };
+  return { allowStopTracking, startTracking, stopTracking };
 };
 
 export default useLocation;
