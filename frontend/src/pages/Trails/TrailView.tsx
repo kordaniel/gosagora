@@ -12,6 +12,7 @@ import { SelectTrail } from '../../store/slices/trailSlice';
 import { clampString } from '../../utils/helpers';
 import config from '../../utils/config';
 import { useAppSelector } from '../../store/hooks';
+import useTrailTracker from '../../hooks/useTrailTracker';
 
 
 const TrailView = ({ jumpTo }: SceneMapRouteProps) => {
@@ -23,6 +24,7 @@ const TrailView = ({ jumpTo }: SceneMapRouteProps) => {
   const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
   const { user, isAuthenticated } = useAppSelector(SelectAuth);
   const { error, loading, selectedTrail } = useAppSelector(SelectTrail);
+  const { trackingTrailId } = useTrailTracker();
 
   if (loading || error) {
     return (
@@ -62,6 +64,7 @@ const TrailView = ({ jumpTo }: SceneMapRouteProps) => {
           ? "This is your public trail that anyone can view"
           : "This is your private trail that only you can view"
         }</Text>
+        <Text>TrackingTrailId: {trackingTrailId === null ? "No trackingTrailId" : trackingTrailId}</Text>
       </>}
       <View style={theme.styles.table}>
         <Pressable onPress={() => setShowFullDescription(!showFullDescription)}>
