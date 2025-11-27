@@ -8,8 +8,6 @@ import {
 import { randRange, randUnitRangeFrom } from '../../utils/helpers';
 import geoPosManager from './geoPosManager';
 import { locObjToGeoPos } from './helpers';
-import { setLocationError } from '../../store/slices/locationSlice';
-import store from '../../store';
 
 export interface LocationTaskExecutorBody {
   locations: Location.LocationObject[];
@@ -23,7 +21,7 @@ const locationAccuracyOptions = {
 
 export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecutorBody> = async ({ data, error }) => {
   if (error) {
-    store.dispatch(setLocationError(error.message));
+    geoPosManager.setLocationTrackingError(error.message);
   } else if (data) {
     geoPosManager.addPositions(data.locations.map(locObjToGeoPos));
   }
@@ -89,7 +87,7 @@ const subscribeToFgWatchPosition = async (): Promise<Location.LocationSubscripti
     locationAccuracyOptions,
     fgWatchPositionCb,
     (error: string) => {
-      store.dispatch(setLocationError(error));
+      geoPosManager.setLocationTrackingError(error);
     }
   );
 };

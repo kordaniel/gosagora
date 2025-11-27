@@ -13,20 +13,19 @@ import {
   velocityToString,
 } from '../../utils/stringTools';
 import type { AppTheme } from '../../types';
-import { SelectLocation } from '../../store/slices/locationSlice';
 import { clampNumber } from '../../utils/helpers';
-import { useAppSelector } from '../../store/hooks';
+import { computeGeoPosAccuracyQuality } from '../../modules/location/helpers';
 import useLocation from '../../hooks/useLocation';
 
 const Dashboard = () => {
   const theme = useTheme<AppTheme>();
   const {
     currentPosition,
-    error,
-    trackingStatus,
-    signalQuality
-  } = useAppSelector(SelectLocation);
-  const { allowStopTracking, startTracking, stopTracking } = useLocation();
+    startTracking,
+    stopTracking,
+    stopTrackingAllowed,
+    locationTrackingStatus
+  } = useLocation();
   const { width } = useWindowDimensions();
   const [renderCompassNorthUp, setRenderCompassNorthUp] = useState<boolean>(false);
   const style = StyleSheet.create({
@@ -44,20 +43,22 @@ const Dashboard = () => {
   const dms = decimalCoordsToDMSString(
     currentPosition !== null ? { lat: currentPosition.lat, lon: currentPosition.lon } : null
   );
+  const positionAccuracyStr = geoPosAccuracyQualityToString(
+    computeGeoPosAccuracyQuality(currentPosition?.acc),
+    currentPosition?.acc
+  );
 
   const toggleTracking = () => {
-    if (trackingStatus === 'idle') {
+    if (locationTrackingStatus.state === 'idle') {
       void startTracking();
     } else {
-      if (allowStopTracking) {
-        stopTracking(true);
-      }
+      stopTracking(true);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={style.scrollView}>
-      <ErrorRenderer>{error}</ErrorRenderer>
+      <ErrorRenderer>{locationTrackingStatus.error}</ErrorRenderer>
       <View style={theme.styles.containerFlexColumn}>
         <View style={[
           theme.styles.containerFlexRow,
@@ -84,18 +85,18 @@ const Dashboard = () => {
           </View>
         </View>
         <Text>Last position received at: {dateOrTimestampToString(currentPosition?.timestamp)}</Text>
-        <Text>Signal quality: {geoPosAccuracyQualityToString(signalQuality, currentPosition?.acc)}</Text>
+        <Text>Signal quality: {positionAccuracyStr}</Text>
       </View>
       <View style={theme.styles.containerFlexColumn}>
-        <Text>Location services status: {trackingStatus}</Text>
+        <Text>Location services status: {locationTrackingStatus.state}</Text>
         <Button mode="outlined" onPress={() => setRenderCompassNorthUp(prev => !prev)}>
           {renderCompassNorthUp
             ? "Switch Compass to Head-Up mode"
             : "Switch Compass to North-Up mode"
           }
         </Button>
-        <Button disabled={!allowStopTracking} mode="outlined" onPress={toggleTracking}>
-          {trackingStatus === "idle" ? "Enable Location Services" : "Turn Off Location Services"}
+        <Button disabled={!stopTrackingAllowed} mode="outlined" onPress={toggleTracking}>
+          {locationTrackingStatus.state === "idle" ? "Enable Location Services" : "Turn Off Location Services"}
         </Button>
       </View>
     </ScrollView>

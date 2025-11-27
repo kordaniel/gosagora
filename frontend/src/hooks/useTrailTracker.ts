@@ -4,20 +4,20 @@ import {
   fetchTrail,
   submitNewTrail,
 } from '../store/slices/trailSlice';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { type NewTrailValuesType } from '../models/trail';
-import { SelectLocation } from '../store/slices/locationSlice';
 import geoPosManager from '../modules/location/geoPosManager';
+import { useAppDispatch } from '../store/hooks';
 import useLocation from './useLocation';
+
 
 const useTrailTracker = () => {
   const dispatch = useAppDispatch();
-  const { startTracking } = useLocation();
-  const { trackingStatus } = useAppSelector(SelectLocation);
+  const { startTracking } = useLocation(false);
   const trackingTrailId = useSyncExternalStore(geoPosManager.subscribe, geoPosManager.getTrackingTrailId);
+  const locationTrackingStatus = useSyncExternalStore(geoPosManager.subscribe, geoPosManager.getLocationTrackingStatus);
 
   const startNewTrail = async (newTrailDetails: NewTrailValuesType): Promise<boolean> => {
-    if (trackingStatus === 'idle') {
+    if (locationTrackingStatus.state === 'idle') {
       await startTracking();
     }
     const createdTrailId = await dispatch(submitNewTrail(newTrailDetails));
@@ -31,6 +31,7 @@ const useTrailTracker = () => {
   };
 
   return {
+    locationTrackingStatus,
     startNewTrail,
     trackingTrailId,
   };

@@ -5,18 +5,17 @@ import LoadingOrErrorRenderer from '../LoadingOrErrorRenderer';
 
 import { assertNever, isLeafletToRNMessage } from '../../utils/typeguards';
 import type { RNToLeafletMessage } from '../../bundles/leaflet/msgBridgeToRN';
-import { SelectLocation } from '../../store/slices/locationSlice';
 import config from '../../utils/config';
 import geoPosManager from '../../modules/location/geoPosManager';
 import htmlBuilder from '../../modules/htmlBuilder';
 import { loadAsset } from '../../modules/assetManager';
 import { openLink } from '../../utils/linking';
 import { parseJSON } from '../../utils/parsers';
-import { useAppSelector } from '../../store/hooks';
+import useLocation from '../../hooks/useLocation';
 
 
 const Map = () => {
-  const { currentPosition } = useAppSelector(SelectLocation);
+  const { currentPosition } = useLocation();
   const [leafletHtml, setLeafletHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
