@@ -5,13 +5,9 @@ import {
   BG_TASK,
   type LocationTaskExecutorType
 } from '../../backgroundTasks/taskManager';
-import {
-  handleNewLocation,
-  setLocationError
-} from '../../store/slices/locationSlice';
 import { randRange, randUnitRangeFrom } from '../../utils/helpers';
+import geoPosManager from './geoPosManager';
 import { locObjToGeoPos } from './helpers';
-import store from '../../store';
 
 export interface LocationTaskExecutorBody {
   locations: Location.LocationObject[];
@@ -25,18 +21,16 @@ const locationAccuracyOptions = {
 
 export const bgLocationTaskExecutor: LocationTaskExecutorType<LocationTaskExecutorBody> = async ({ data, error }) => {
   if (error) {
-    store.dispatch(setLocationError(error.message));
+    geoPosManager.setLocationTrackingError(error.message);
   } else if (data) {
-    data.locations.forEach(loc => {
-      store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
-    });
+    geoPosManager.addPositions(data.locations.map(locObjToGeoPos));
   }
 
   return Promise.resolve();
 };
 
 const fgWatchPositionCb: Location.LocationCallback = (loc) => {
-  store.dispatch(handleNewLocation(locObjToGeoPos(loc)));
+  geoPosManager.addPosition(locObjToGeoPos(loc));
 };
 
 const requestPermissions = async (includeBgPermissions: boolean = true): Promise<{
@@ -93,7 +87,7 @@ const subscribeToFgWatchPosition = async (): Promise<Location.LocationSubscripti
     locationAccuracyOptions,
     fgWatchPositionCb,
     (error: string) => {
-      store.dispatch(setLocationError(error));
+      geoPosManager.setLocationTrackingError(error);
     }
   );
 };

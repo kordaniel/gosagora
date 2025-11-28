@@ -9,6 +9,7 @@ import type {
 } from './leafletTypes';
 import controls from './controls';
 import markers from './markers';
+import msgBridgeToRN from './msgBridgeToRN';
 import polylines from './polylines';
 
 // Fix marker default icon (not bundled by esbuild), encode png's in base64.
@@ -160,6 +161,13 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
         this._markers.delete(e.layer);
       }
     });
+
+    msgBridgeToRN.sendMsg({
+      type: 'command',
+      payload: {
+        command: 'reqPositionsHistory',
+      }
+    });
   }
 
   appendControlElementToGroupedControls = (control: HTMLElement): HTMLElement | undefined => {
@@ -182,7 +190,17 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
     this._currentPositionChangeCallbacks.delete(cb);
   };
 
-  getCurrentGeoPos = () => {
+  centerToCurrentPosition = (currentPosition?: LatLngType | null) => {
+    const currentGeoPos = currentPosition !== undefined ? currentPosition : this.getCurrentGeoPos();
+    if (currentGeoPos) {
+      this.setView(
+        [currentGeoPos.lat, currentGeoPos.lng],
+        Math.max(this.getZoom(), 12)
+      );
+    }
+  };
+
+  getCurrentGeoPos = (): LatLngType | null => {
     return this._currentPosition;
   };
 
@@ -217,6 +235,17 @@ export class GosaGoraMap extends L.Map implements L.GosaGoraMap {
 
     if (this._isTrackingCurrentPosition && newCurrentPosition) {
       this.panTo([newCurrentPosition.lat, newCurrentPosition.lng]);
+    }
+  };
+
+  setPositions = (positions: Array<LatLngType | null>) => {
+    positions.forEach(p => this.setCurrentPosition(p));
+    for (let i = positions.length-1; i >= 0; i--) {
+      if (positions[i] === null) {
+        continue;
+      }
+      this.centerToCurrentPosition(positions[i]);
+      break;
     }
   };
 

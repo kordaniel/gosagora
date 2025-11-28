@@ -8,32 +8,26 @@ import ErrorRenderer from '../../components/ErrorRenderer';
 import Form from '../../components/Form';
 
 import { type AppTheme, type SceneMapRouteProps, } from '../../types';
-import {
-  SelectSubmitNewTrail,
-  fetchTrail,
-  submitNewTrail,
-} from '../../store/slices/trailSlice';
 import { createTrailFormFields, newTrailValidationSchema } from '../../schemas/trail';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { NewTrailValuesType } from '../../models/trail';
 import { SelectAuth } from '../../store/slices/authSlice';
+import { SelectSubmitNewTrail } from '../../store/slices/trailSlice';
+import { useAppSelector } from '../../store/hooks';
+import useTrailTracker from '../../hooks/useTrailTracker';
 
 
 const NewTrail = ({ jumpTo }: SceneMapRouteProps) => {
-  const dispatch = useAppDispatch();
   const theme = useTheme<AppTheme>();
   const { user, isAuthenticated } = useAppSelector(SelectAuth);
   const { error, loading } = useAppSelector(SelectSubmitNewTrail);
+  const { startNewTrail, trackingTrailId } = useTrailTracker();
 
   const onSubmit = async (newTrailDetails: NewTrailValuesType): Promise<boolean> => {
-    const createdTrailId = await dispatch(submitNewTrail(newTrailDetails));
-    if (createdTrailId === null) {
-      return false;
+    const trailCreated = await startNewTrail(newTrailDetails);
+    if (trailCreated) {
+      jumpTo('trailView');
     }
-
-    void dispatch(fetchTrail(createdTrailId));
-    jumpTo('trailView');
-    return true;
+    return trailCreated;
   };
 
   if (!(isAuthenticated && user)) {
@@ -49,6 +43,7 @@ const NewTrail = ({ jumpTo }: SceneMapRouteProps) => {
   return (
     <ScrollView contentContainerStyle={theme.styles.primaryContainer}>
       <Text variant="headlineSmall">New Trail</Text>
+      <Text>Tracking trail: {trackingTrailId === null ? "No trackingTrailId" : trackingTrailId}</Text>
       <ErrorRenderer>{error}</ErrorRenderer>
       <Form<NewTrailValuesType>
         formFields={createTrailFormFields(user.boatIdentities)}

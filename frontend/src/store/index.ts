@@ -6,7 +6,6 @@ import {
 
 import authReducer from './slices/authSlice';
 import boatReducer from './slices/boatSlice';
-import locationSlice from './slices/locationSlice';
 import raceReducer from './slices/raceSlice';
 import trailReducer from './slices/trailSlice';
 
@@ -14,7 +13,6 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     boat: boatReducer,
-    location: locationSlice,
     race: raceReducer,
     trail: trailReducer,
   },

@@ -1,21 +1,39 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import type { LocationSubscription } from 'expo-location';
 
 import config from '../utils/config';
+import geoPosManager from '../modules/location/geoPosManager';
 import location from '../modules/location';
-import { setLocationTrackingAndErrorStatus } from '../store/slices/locationSlice';
-import { useAppDispatch } from '../store/hooks';
 
-const useLocation = () => {
-  const dispatch = useAppDispatch();
+const useLocation = (autostartTracking: boolean = true) => {
   const fgWatchPositionSubscriptionRef = useRef<LocationSubscription | null>(null);
+  const locationTrackingStatus = useSyncExternalStore(geoPosManager.subscribe, geoPosManager.getLocationTrackingStatus);
+  const currentPosition = useSyncExternalStore(geoPosManager.subscribeToCurrentPosition, geoPosManager.getCurrentPosition);
+  const isTrackingTrail = useSyncExternalStore(geoPosManager.subscribe, geoPosManager.isTrackingTrail);
+
+  const stopTrackingAllowed = !isTrackingTrail;
+
+  const initializeTrackingRef = useRef<() => void>(() => {
+    if (autostartTracking && locationTrackingStatus.state === 'idle') {
+      void startTracking();
+      return () => stopTracking(true);
+    }
+    return () => {};
+  });
+
+  useEffect(() => {
+    return initializeTrackingRef.current(); // NOTE: Callback defined in the useRef() call => always defined
+  }, []);
 
   const stopTracking = useCallback((clearErrors: boolean) => {
+    if (!stopTrackingAllowed) {
+      return;
+    }
     if (clearErrors) {
-      dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle', error: null }));
+      geoPosManager.setLocationTrackingStatus({ error: null, state: 'idle' });
     } else {
-      dispatch(setLocationTrackingAndErrorStatus({ trackingStatus: 'idle' }));
+      geoPosManager.setLocationTrackingState('idle');
     }
 
     if (config.IS_MOBILE) {
@@ -25,17 +43,17 @@ const useLocation = () => {
       fgWatchPositionSubscriptionRef.current.remove();
       fgWatchPositionSubscriptionRef.current = null;
     }
-  }, [dispatch]);
+  }, [stopTrackingAllowed]);
 
   const startTracking = useCallback(async () => {
     const errorMessages: string[] = [];
     const { backgroundPermission, foregroundPermission } = await location.requestPermissions(config.IS_MOBILE);
 
     if (!foregroundPermission) {
-      dispatch(setLocationTrackingAndErrorStatus({
-        trackingStatus: 'idle',
+      geoPosManager.setLocationTrackingStatus({
+        state: 'idle',
         error: 'GosaGora Navigation needs to access your location. Please enable location permissions in system settings',
-      }));
+      });
       return;
     }
     if (config.IS_MOBILE && !backgroundPermission) {
@@ -54,10 +72,10 @@ const useLocation = () => {
           'Please check your settings and restart GosaGora if the issue continues, and contact our support team if the problem persists'
         ].join(' '));
       }
-      dispatch(setLocationTrackingAndErrorStatus({
-        trackingStatus: isTrackingLocation ? 'background' : 'idle',
+      geoPosManager.setLocationTrackingStatus({
         error: errorMessages.length === 0 ? null : errorMessages.join('\n'),
-      }));
+        state: isTrackingLocation ? 'background' : 'idle',
+      });
     } else {
       if (fgWatchPositionSubscriptionRef.current !== null) {
         stopTracking(false);
@@ -69,19 +87,20 @@ const useLocation = () => {
         ? location.subscribeToSimulatedFgWatchPosition()
         : await location.subscribeToFgWatchPosition();
 
-      dispatch(setLocationTrackingAndErrorStatus({
-        trackingStatus: useSimulatedLocation ? 'foreground-simulated' : 'foreground',
+      geoPosManager.setLocationTrackingStatus({
         error: errorMessages.length === 0 ? null : errorMessages.join('\n'),
-      }));
+        state: useSimulatedLocation ? 'foreground-simulated' : 'foreground',
+      });
     }
-  }, [dispatch, stopTracking]);
+  }, [stopTracking]);
 
-  useEffect(() => {
-    void startTracking();
-    return () => stopTracking(true);
-  }, [startTracking, stopTracking]);
-
-  return { startTracking, stopTracking };
+  return {
+    currentPosition,
+    locationTrackingStatus,
+    startTracking,
+    stopTracking,
+    stopTrackingAllowed,
+  };
 };
 
 export default useLocation;

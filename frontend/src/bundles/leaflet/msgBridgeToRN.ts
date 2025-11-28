@@ -13,10 +13,12 @@ export type RNLeafletBidirectionalMessages = {
 };
 
 export type LeafletToRNCommandMessage =
-  | { command: 'openUrl'; href: string; };
+  | { command: 'openUrl'; href: string; }
+  | { command: 'reqPositionsHistory' };
 
 export type RNToLeafletCommandMessage =
-  | { command: 'setPosition'; position: GeoPos | null; };
+  | { command: 'setPosition'; position: GeoPos | null; }
+  | { command: 'setPositions'; positions: Array<GeoPos | null>; };
 
 type LeafletToRNMessageTypesPayloads = {
   command: LeafletToRNCommandMessage;
